@@ -1,0 +1,414 @@
+:root {
+  --ink: #171514;
+  --paper: #f3efe5;
+  --seal: #791010;
+  --seal-bright: #b31b1b;
+  --seal-dark: #4a0707;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  /* Ivoire chaud + tileable washi grain. The colour stays under the texture so
+     the page still reads correctly if the SVG fails to load. */
+  background-color: var(--paper);
+  background-image: url('/textures/paper.svg');
+  background-repeat: repeat;
+  background-size: 600px 600px;
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------------------------------------------------------------- navbar -- */
+
+.nav {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px clamp(20px, 4vw, 44px);
+  transition: background-color 0.3s ease;
+}
+
+.nav--scrolled {
+  background-color: rgba(243, 239, 229, 0.8);
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+.nav__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.nav--scrolled .nav__rule {
+  opacity: 0.45;
+}
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+}
+
+.nav__wordmark {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.nav__seal {
+  width: 24px;
+  height: 24px;
+  transform: rotate(2.5deg);
+  flex: none;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2.8vw, 36px);
+}
+
+/* Link with a brush dash that draws in on hover. Used in nav and hero. */
+.brush-link {
+  position: relative;
+  display: inline-block;
+  padding: 6px 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(23, 21, 20, 0.68);
+  transition: color 0.2s ease;
+}
+
+.brush-link:hover,
+.brush-link:focus-visible {
+  color: var(--ink);
+}
+
+.brush-link__dash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 6px;
+  pointer-events: none;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.24s ease;
+}
+
+.brush-link:hover .brush-link__dash,
+.brush-link:focus-visible .brush-link__dash {
+  clip-path: inset(0 0 0 0);
+}
+
+/* ------------------------------------------------------------ hanko CTA -- */
+
+.stamp {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 24px;
+  text-decoration: none;
+  transform: rotate(-1.2deg);
+  transition: transform 0.18s ease;
+}
+
+.stamp svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stamp rect {
+  fill: var(--seal);
+  transition: fill 0.18s ease;
+}
+
+.stamp span {
+  position: relative;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+
+.stamp:hover,
+.stamp:focus-visible {
+  transform: rotate(-1.2deg) scale(0.97);
+}
+
+.stamp:hover rect,
+.stamp:focus-visible rect {
+  fill: var(--seal-dark);
+}
+
+.stamp:active {
+  transform: rotate(-1.2deg) scale(0.94);
+}
+
+.stamp--sm {
+  padding: 11px 18px;
+}
+
+.stamp--sm span {
+  font-size: 10.5px;
+}
+
+/* ---------------------------------------------------------- mobile menu -- */
+
+.nav__toggle {
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 10px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.nav__toggle span {
+  display: block;
+  height: 4px;
+}
+
+.nav__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -1; /* below the header row, so brand + toggle stay on top */
+  background: var(--paper) url('/textures/paper.svg') repeat;
+  background-size: 600px 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 34px;
+}
+
+.nav__overlay nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav__overlay nav a {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2rem, 9vw, 2.6rem);
+  font-weight: 300;
+  color: var(--ink);
+  text-decoration: none;
+  padding: 12px 0;
+}
+
+.nav__overlay .stamp {
+  align-self: flex-start;
+  margin-top: 30px;
+}
+
+/* ------------------------------------------------------------------ hero -- */
+
+.hero {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.hero__content {
+  position: absolute;
+  left: clamp(24px, 9vw, 150px);
+  top: 50%;
+  transform: translateY(-54%);
+  max-width: 640px;
+  z-index: 2;
+}
+
+.hero__kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 24px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.62);
+}
+
+.seal-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--seal-bright);
+  flex: none;
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.9rem, 6.8vw, 5.1rem);
+  font-weight: 300;
+  line-height: 1.03;
+  letter-spacing: 0.005em;
+  color: var(--ink);
+}
+
+.hero__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+.hero__underline {
+  position: absolute;
+  left: -2%;
+  right: -5%;
+  bottom: -0.1em;
+  height: 0.13em;
+  pointer-events: none;
+}
+
+.hero__splat {
+  position: absolute;
+  left: 101%;
+  bottom: 0.14em;
+  width: 0.42em;
+  height: auto;
+  pointer-events: none;
+}
+
+.hero__sub {
+  margin: 28px 0 0;
+  max-width: 42ch;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.08rem, 1.6vw, 1.28rem);
+  line-height: 1.55;
+  color: rgba(23, 21, 20, 0.78);
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 40px;
+}
+
+.hero__rail {
+  position: absolute;
+  right: clamp(16px, 2.8vw, 40px);
+  top: 46%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  z-index: 2;
+}
+
+.hero__logo {
+  width: clamp(88px, 9vw, 118px);
+}
+
+.hero__vertical {
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.hero__scroll {
+  position: absolute;
+  left: clamp(24px, 9vw, 150px);
+  bottom: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 2;
+}
+
+.hero__scroll-stroke {
+  display: block;
+  width: 5px;
+  height: 46px;
+}
+
+.hero__scroll-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.5);
+}
+
+/* ------------------------------------------------------------ responsive -- */
+
+@media (max-width: 760px) {
+  .nav__links {
+    display: none;
+  }
+
+  .nav__toggle {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero__content {
+    left: 24px;
+    right: 24px;
+    max-width: none;
+    top: 52%;
+  }
+
+  .hero__rail {
+    display: none;
+  }
+
+  .hero__scroll {
+    left: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav,
+  .nav__rule,
+  .stamp,
+  .stamp rect,
+  .brush-link,
+  .brush-link__dash {
+    transition: none !important;
+  }
+}
