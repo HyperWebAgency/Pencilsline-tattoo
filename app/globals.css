@@ -19,15 +19,31 @@ body {
 }
 
 body {
-  /* Ivoire chaud + tileable washi grain. The colour stays under the texture so
-     the page still reads correctly if the SVG fails to load. */
+  /* Ivoire chaud. The colour stays under the texture so the page still reads
+     correctly if the SVG fails to load. */
   background-color: var(--paper);
-  background-image: url('/textures/paper.svg');
-  background-repeat: repeat;
-  background-size: 600px 600px;
   color: var(--ink);
   font-family: var(--font-sans), system-ui, -apple-system, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
+}
+
+/* The washi grain, on its own fixed compositor layer.
+
+   As a scrolling background on <body> it had to be re-rasterised tile by tile
+   as each new row came into view, and the tile is an SVG filter — turbulence
+   plus lighting — so every one of those tiles is expensive. Held still and
+   promoted, it rasterises once and is only composited thereafter. A uniform
+   noise field is indistinguishable whether it scrolls or not. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url('/textures/paper.svg');
+  background-repeat: repeat;
+  background-size: 600px 600px;
+  transform: translateZ(0);
+  pointer-events: none;
 }
 
 /* ---------------------------------------------------------------- navbar -- */
@@ -1593,6 +1609,7 @@ body {
 /* Slides are buttons: centre opens the photo, sides step to it. */
 .pf__open {
   display: block;
+  position: relative; /* the fill image measures against this */
   width: 100%;
   height: 100%;
   padding: 0;

@@ -1,8 +1,16 @@
 'use client';
 
+import Image from 'next/image';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import GalleryTransition from './GalleryTransition';
 import Lightbox from './Lightbox';
+
+/**
+ * A slide is never wider than --pf-slide-w (max 400px). Telling Next that keeps
+ * it from serving the 3000px originals, which cost far more to decode and
+ * downscale each frame than they do to download.
+ */
+const SLIDE_SIZES = '(max-width: 640px) 80vw, (max-width: 1200px) 30vw, 400px';
 
 /** Empty slots until real photos are passed in — no drawn placeholders. */
 const DEFAULT_COUNT = 6;
@@ -232,9 +240,11 @@ export default function PortfolioCarousel({
                   }
                   onClick={(e) => activateSlide(e.currentTarget)}
                 >
-                  <img
+                  <Image
                     src={item.src}
                     alt={item.alt || ''}
+                    fill
+                    sizes={SLIDE_SIZES}
                     draggable={false}
                     loading={Math.abs(pos) <= 1 ? 'eager' : 'lazy'}
                   />
