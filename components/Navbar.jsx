@@ -1,40 +1,32 @@
 'use client';
 
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import InkStroke from './InkStroke';
 import SealStamp from './SealStamp';
+import { useGalleryTransition } from './TransitionProvider';
+
+const GALLERY = '/portfolio';
+
+const HOME = { href: '/', label: 'Accueil' };
 
 const LINKS = [
-  { href: '#realisations', label: 'Réalisations' },
+  { href: '/portfolio', label: 'Réalisations' },
   { href: '#univers', label: 'Univers' },
-  { href: '#apropos', label: 'À propos' },
+  { href: '/contact', label: 'Contact' },
 ];
 
-/** Small red monogram seal next to the wordmark. */
-function SealMark() {
-  return (
-    <svg className="nav__seal" viewBox="0 0 26 26" aria-hidden="true" focusable="false">
-      <defs>
-        <filter id="pl-sealmark" filterUnits="userSpaceOnUse" x="-4" y="-4" width="34" height="34">
-          <feTurbulence type="fractalNoise" baseFrequency="0.3" numOctaves="2" seed="7" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.7" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </defs>
-      <rect x="1.5" y="1.5" width="23" height="23" rx="2" fill="#791010" filter="url(#pl-sealmark)" />
-      <text
-        x="13"
-        y="14"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#f3efe5"
-        fontSize="14"
-        fontFamily="var(--font-serif), Georgia, serif"
-        fontWeight="500"
-      >
-        P
-      </text>
-    </svg>
+/**
+ * Away from the home page, lead with Accueil so there is always a way back,
+ * and send in-page anchors home rather than nowhere: a bare "#univers" on
+ * /contact scrolls to a section that does not exist there.
+ */
+function linksFor(pathname) {
+  const isHome = pathname === '/';
+  const resolved = LINKS.map((l) =>
+    !isHome && l.href.startsWith('#') ? { ...l, href: `/${l.href}` } : l
   );
+  return isHome ? resolved : [HOME, ...resolved];
 }
 
 /**
@@ -45,6 +37,10 @@ function SealMark() {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const transition = useGalleryTransition();
+  const links = linksFor(pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -52,6 +48,28 @@ export default function Navbar() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // Le lien mène à la galerie depuis toutes les pages : on la précharge pour
+  // que les portes s'ouvrent sur une page déjà prête.
+  useEffect(() => {
+    if (pathname !== GALLERY) router.prefetch(GALLERY);
+  }, [router, pathname]);
+
+  /**
+   * Réalisations passe par la donne de polaroids, comme le bouton de la
+   * page d'accueil — sinon le lien de la navbar sautait l'animation. Le
+   * provider retombe sur une navigation simple si le mouvement est réduit ou
+   * si le jeu est vide, donc le href reste la vraie destination.
+   */
+  const onNavClick = (event, href) => {
+    if (href !== GALLERY || pathname === GALLERY) return;
+    if (!transition || transition.active) return;
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+
+    event.preventDefault();
+    setOpen(false);
+    transition.start({ href });
+  };
 
   useEffect(() => {
     document.body.style.overflow = open ? 'hidden' : '';
@@ -62,21 +80,22 @@ export default function Navbar() {
 
   return (
     <header className={`nav${scrolled ? ' nav--scrolled' : ''}`}>
-      <a className="nav__brand" href="/" aria-label="Pencilsline — accueil">
-        <span className="nav__wordmark">Pencilsline</span>
-        <SealMark />
-      </a>
-
       <nav className="nav__links" aria-label="Navigation principale">
-        {LINKS.map((l, i) => (
-          <a key={l.href} className="brush-link" href={l.href}>
+        {links.map((l, i) => (
+          <a
+            key={l.href}
+            className="brush-link"
+            href={l.href}
+            aria-current={l.href === pathname ? 'page' : undefined}
+            onClick={(e) => onNavClick(e, l.href)}
+          >
             {l.label}
             <span className="brush-link__dash" aria-hidden="true">
               <InkStroke length={70} thickness={2.8} seed={31 + i} color="#b31b1b" />
             </span>
           </a>
         ))}
-        <SealStamp href="#contact" seed={9} small>
+        <SealStamp href="/contact" seed={9} small>
           Prendre RDV
         </SealStamp>
       </nav>
@@ -102,13 +121,21 @@ export default function Navbar() {
       {open && (
         <div className="nav__overlay">
           <nav aria-label="Navigation mobile">
-            {LINKS.map((l) => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
+            {links.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                aria-current={l.href === pathname ? 'page' : undefined}
+                onClick={(e) => {
+                  onNavClick(e, l.href);
+                  setOpen(false);
+                }}
+              >
                 {l.label}
               </a>
             ))}
           </nav>
-          <SealStamp href="#contact" seed={9}>
+          <SealStamp href="/contact" seed={9}>
             Prendre rendez-vous
           </SealStamp>
         </div>

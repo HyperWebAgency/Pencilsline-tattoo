@@ -26,12 +26,18 @@ export default function HeroBranches() {
 
   const shell = { position: 'absolute', pointerEvents: 'none' };
 
+  // Nudged right of the corner: the hanko mark hangs there now, and its right
+  // edge lands between 74px and 120px depending on viewport width.
+  const topLeft = {
+    ...shell,
+    top: -40,
+    left: 'clamp(90px, 13vw, 190px)',
+    width: 'clamp(140px, 36vw, 345px)',
+  };
+
   return (
     <>
-      <div
-        aria-hidden="true"
-        style={{ ...shell, top: -40, left: -70, width: 'clamp(170px, 46vw, 440px)' }}
-      >
+      <div aria-hidden="true" style={topLeft}>
         <InkBranch
           seed={7997}
           angle={1.05}

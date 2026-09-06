@@ -7,12 +7,26 @@ import { useId } from 'react';
  * The edge is displaced turbulence (same technique as the branches); the text
  * stays crisp on top, like carved characters inside a rough impression.
  */
-export default function SealStamp({ href = '#', seed = 3, small = false, children, className }) {
+export default function SealStamp({
+  href = '#',
+  as = 'a',
+  seed = 3,
+  small = false,
+  children,
+  className,
+  ...rest
+}) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const fid = `seal-${uid}`;
+  const Tag = as;
+  const tagProps = as === 'a' ? { href } : {};
 
   return (
-    <a href={href} className={`stamp${small ? ' stamp--sm' : ''}${className ? ` ${className}` : ''}`}>
+    <Tag
+      {...tagProps}
+      {...rest}
+      className={`stamp${small ? ' stamp--sm' : ''}${className ? ` ${className}` : ''}`}
+    >
       <svg viewBox="0 0 200 52" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <filter id={fid} filterUnits="userSpaceOnUse" x="-8" y="-8" width="216" height="68">
@@ -35,6 +49,6 @@ export default function SealStamp({ href = '#', seed = 3, small = false, childre
         <rect x="3" y="3" width="194" height="46" rx="2.5" filter={`url(#${fid})`} />
       </svg>
       <span>{children}</span>
-    </a>
+    </Tag>
   );
 }

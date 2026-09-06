@@ -49,6 +49,11 @@ export default function CursorTrail({
     let height = window.innerHeight;
     let frame = 0;
     let moved = false;
+    // Idle-detection state: skip repainting a viewport-sized canvas when the
+    // trail has nothing new to show.
+    let lastX = -1;
+    let lastY = -1;
+    let cleared = false;
     const started = typeof performance !== 'undefined' ? performance.now() : Date.now();
 
     const pointer = { x: width / 2, y: height / 2 };
@@ -96,6 +101,7 @@ export default function CursorTrail({
       }
 
       let lead = pointer;
+      let motion = 0;
       for (let i = 0; i < n; i += 1) {
         const p = trail[i];
         const k = i === 0 ? spring * 0.4 : spring;
@@ -105,8 +111,26 @@ export default function CursorTrail({
         p.dy *= friction;
         p.x += p.dx;
         p.y += p.dy;
+        motion += Math.abs(p.dx) + Math.abs(p.dy);
         lead = p;
       }
+
+      // Nothing to repaint once the chain has caught up with a still pointer.
+      // Skipping matters: this canvas covers the viewport, so redrawing it
+      // every frame to paint an invisible dot competes with the browser's own
+      // work while the page scrolls. The physics above still runs — it is
+      // free — so the trail springs back to life the instant the pointer moves.
+      const settled = motion < 0.05 && pointer.x === lastX && pointer.y === lastY;
+      lastX = pointer.x;
+      lastY = pointer.y;
+      if (settled) {
+        if (!cleared) {
+          ctx.clearRect(0, 0, width, height);
+          cleared = true;
+        }
+        return;
+      }
+      cleared = false;
 
       ctx.clearRect(0, 0, width, height);
       ctx.beginPath();

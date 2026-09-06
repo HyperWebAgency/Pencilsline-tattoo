@@ -38,7 +38,7 @@ body {
   z-index: 40;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 18px clamp(20px, 4vw, 44px);
   transition: background-color 0.3s ease;
 }
@@ -62,28 +62,6 @@ body {
 
 .nav--scrolled .nav__rule {
   opacity: 0.45;
-}
-
-.nav__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-  text-decoration: none;
-}
-
-.nav__wordmark {
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.nav__seal {
-  width: 24px;
-  height: 24px;
-  transform: rotate(2.5deg);
-  flex: none;
 }
 
 .nav__links {
@@ -322,30 +300,28 @@ body {
   margin-top: 40px;
 }
 
-.hero__rail {
+/* Top-left mark. Left edge lines up with the navbar's own side padding, and it
+   hangs below the nav row so the two never fight for the corner. Narrow enough
+   to stay clear of the headline column, which starts at 9vw. */
+/* Sits level with the nav row — the links are all on the right, so the corner
+   is free — which buys the mark the height it needs. */
+.hero__mark {
   position: absolute;
-  right: clamp(16px, 2.8vw, 40px);
-  top: 46%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-  z-index: 2;
+  top: clamp(24px, 3vh, 40px);
+  left: clamp(20px, 4vw, 44px);
+  /* Two ceilings, whichever binds first. Height: the mark is 2.4× taller than
+     wide and the headline block is vertically centred, so the room ABOVE the
+     headline caps it. Width: it must stop short of the branch, which starts at
+     13vw. On a desktop the height rules; on a tablet the branch does. */
+  width: clamp(46px, min(calc(21vh - 104px), calc(13vw - 60px)), 132px);
+  z-index: 3;
+  pointer-events: none;
 }
 
-.hero__logo {
-  width: clamp(88px, 9vw, 118px);
-}
-
-.hero__vertical {
-  margin: 0;
-  writing-mode: vertical-rl;
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: rgba(23, 21, 20, 0.55);
+@media (max-height: 660px) {
+  .hero__mark {
+    display: none;
+  }
 }
 
 .hero__scroll {
@@ -393,10 +369,6 @@ body {
     top: 52%;
   }
 
-  .hero__rail {
-    display: none;
-  }
-
   .hero__scroll {
     left: 24px;
   }
@@ -411,4 +383,1236 @@ body {
   .brush-link__dash {
     transition: none !important;
   }
+}
+
+/* --------------------------------------------------------- contact intro -- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: var(--paper) url('/textures/paper.svg') repeat;
+  background-size: 600px 600px;
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease;
+}
+
+/* First paint, before sessionStorage is read: cover the page but stay blank so
+   the title never flashes for someone who has already seen it. */
+.intro--hold .intro__card {
+  opacity: 0;
+}
+
+.intro--lifting {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+
+.intro__card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 0 24px;
+  text-align: center;
+  font-family: var(--font-intro), 'DejaVu Sans', Verdana, sans-serif;
+  color: var(--ink);
+}
+
+.intro__artist,
+.intro__studio,
+.intro__tail {
+  opacity: 0;
+  animation: intro-rise 0.75s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+.intro__artist {
+  font-size: clamp(0.82rem, 1.7vw, 1rem);
+  letter-spacing: 0.46em;
+  text-transform: uppercase;
+  text-indent: 0.46em;
+  animation-delay: 0.1s;
+}
+
+.intro__studio {
+  font-size: clamp(2.1rem, 7.2vw, 4.4rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  animation-delay: 0.28s;
+}
+
+.intro__tail {
+  font-size: clamp(0.78rem, 1.5vw, 0.95rem);
+  letter-spacing: 0.58em;
+  text-transform: uppercase;
+  text-indent: 0.58em;
+  color: rgba(23, 21, 20, 0.66);
+  animation-delay: 0.72s;
+}
+
+/* The stroke sweeps in under the name, like a signature being underlined. */
+.intro__stroke {
+  display: block;
+  width: min(300px, 62vw);
+  height: 8px;
+  margin: 10px 0 14px;
+  clip-path: inset(0 100% 0 0);
+  animation: intro-sweep 0.62s cubic-bezier(0.6, 0, 0.3, 1) 0.52s forwards;
+}
+
+@keyframes intro-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes intro-sweep {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ---------------------------------------------------------- contact page -- */
+
+.contact {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(110px, 15vh, 170px) clamp(24px, 6vw, 60px) 90px;
+}
+
+/* Breadcrumb sits where the kicker did: same understated caps, same rhythm. */
+.breadcrumb {
+  margin: 0 0 20px;
+}
+
+.breadcrumb__list {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.62);
+}
+
+/* Separator drawn in CSS so it is never read aloud as content. */
+.breadcrumb__item + .breadcrumb__item::before {
+  content: '/';
+  margin-right: 10px;
+  color: rgba(23, 21, 20, 0.34);
+}
+
+.breadcrumb__link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.breadcrumb__link:hover,
+.breadcrumb__link:focus-visible {
+  color: var(--ink, #171514);
+  border-bottom-color: currentColor;
+}
+
+.breadcrumb__item[aria-current='page'] {
+  color: rgba(23, 21, 20, 0.4);
+}
+
+.contact__title {
+  margin: 0;
+  max-width: 16ch;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.4rem, 5.6vw, 4rem);
+  font-weight: 300;
+  line-height: 1.05;
+}
+
+.contact__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+.contact__underline {
+  position: absolute;
+  left: -2%;
+  right: -4%;
+  bottom: -0.12em;
+  height: 0.13em;
+  pointer-events: none;
+}
+
+.contact__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: clamp(34px, 5vw, 72px);
+  margin-top: clamp(46px, 7vw, 76px);
+}
+
+.contact__h2 {
+  margin: 0 0 22px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.contact__aside section + section {
+  margin-top: 42px;
+}
+
+.contact__address {
+  font-style: normal;
+  line-height: 1.7;
+  font-size: 0.95rem;
+}
+
+.contact__artist {
+  display: block;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.4rem;
+  /* Own leading: inheriting the address's 1.7 adds ~8px of dead space above
+     this display-size line, detaching it from the heading. */
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.contact__maplink {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+.contact__map {
+  position: relative;
+  margin-top: 20px;
+  border: 1px solid rgba(23, 21, 20, 0.13);
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+/* Left in full colour deliberately: a desaturated map reads as broken, and
+   people scanning for a location want it to look like the map they know. */
+.contact__map iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.contact__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.contact__link {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(23, 21, 20, 0.25);
+  padding-bottom: 2px;
+  transition: border-color 0.2s ease;
+}
+
+.contact__link:hover {
+  border-color: var(--seal-bright);
+}
+
+/* ------------------------------------------------------------------ form -- */
+
+.form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 18px;
+}
+
+.field {
+  display: block;
+  margin-bottom: 18px;
+  position: relative;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.field__input {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: rgba(255, 253, 247, 0.5);
+  border: 1px solid rgba(23, 21, 20, 0.2);
+  border-radius: 0;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.field__input:focus {
+  outline: none;
+  border-color: var(--seal);
+  background: rgba(255, 253, 247, 0.85);
+}
+
+.field__input--area {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.field__hint {
+  position: absolute;
+  right: 2px;
+  bottom: -16px;
+  font-size: 10px;
+  color: rgba(23, 21, 20, 0.42);
+}
+
+.form__actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.form .stamp {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.form .stamp[disabled] {
+  opacity: 0.62;
+  cursor: progress;
+}
+
+.form__note,
+.form__error {
+  font-size: 12px;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.form__error {
+  color: var(--seal);
+  font-weight: 500;
+}
+
+.form__done {
+  padding: 26px 0;
+}
+
+.form__done-title {
+  margin: 0 0 8px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.7rem;
+}
+
+.form__done-text {
+  margin: 0 0 18px;
+  max-width: 44ch;
+  line-height: 1.6;
+  color: rgba(23, 21, 20, 0.75);
+}
+
+.form__again {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--seal);
+  cursor: pointer;
+  border-bottom: 1px solid currentColor;
+}
+
+@media (max-width: 860px) {
+  .contact__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro,
+  .intro__artist,
+  .intro__studio,
+  .intro__tail,
+  .intro__stroke {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1;
+    clip-path: none;
+  }
+}
+
+.contact__phone {
+  display: inline-block;
+  margin-top: 6px;
+}
+
+.contact__hours {
+  margin: 0;
+  display: grid;
+  gap: 10px;
+  font-size: 0.92rem;
+}
+
+.contact__hours > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px dotted rgba(23, 21, 20, 0.2);
+  padding-bottom: 8px;
+}
+
+.contact__hours dt {
+  color: rgba(23, 21, 20, 0.68);
+}
+
+.contact__hours dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.contact__venue {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+/* --------------------------------------------------- booking notice -- */
+
+.notice {
+  margin: 30px 0 0;
+  padding: 15px 18px;
+  border: 1px solid rgba(121, 16, 16, 0.3);
+  background: rgba(121, 16, 16, 0.045);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(23, 21, 20, 0.85);
+}
+
+.notice__label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--seal);
+}
+
+/* ---------------------------------------------------- portfolio carousel -- */
+
+.pf {
+  --pf-slide-w: clamp(280px, 27vw, 400px);
+  --pf-gap: clamp(18px, 2.4vw, 38px);
+  --pf-step: calc(var(--pf-slide-w) + var(--pf-gap));
+  /* 25° of fold through a close-enough camera to read as real depth. */
+  --pf-rot: 25deg;
+  --pf-side-scale: 0.85;
+  /* Centre-to-inner-edge of a side slide: where the arrows sit. */
+  --pf-arrow-x: calc(var(--pf-step) - var(--pf-slide-w) / 2);
+  --pf-ease: cubic-bezier(0.22, 0.68, 0.24, 1);
+
+  padding: clamp(64px, 9vw, 116px) 0 clamp(56px, 8vw, 100px);
+  overflow: hidden;
+}
+
+.pf__title {
+  margin: 0 auto;
+  max-width: 92%;
+  text-align: center;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(1.9rem, 5.6vw, 4.1rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.pf__dots {
+  display: flex;
+  justify-content: center;
+  gap: 9px;
+  margin: clamp(20px, 3vw, 32px) 0 clamp(28px, 4vw, 46px);
+}
+
+.pf__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(23, 21, 20, 0.24);
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+
+.pf__dot:hover {
+  background: rgba(23, 21, 20, 0.45);
+}
+
+.pf__dot.is-active {
+  background: var(--seal);
+  transform: scale(1.45);
+}
+
+.pf__dot:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 3px;
+}
+
+/* The track: perspective lives HERE, on the slides' parent, and the slides
+   are its direct children in a preserved 3D context. */
+/* Flat wrapper around the 3D viewport, so the arrows can stack above it. */
+.pf__stage {
+  position: relative;
+}
+
+.pf__viewport {
+  position: relative;
+  width: 100%;
+  height: calc(var(--pf-slide-w) * 1.52);
+  perspective: 1200px;
+  perspective-origin: 50% 50%;
+  transform-style: preserve-3d;
+  touch-action: pan-y; /* let the page scroll vertically, we take horizontal */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.pf__viewport:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 6px;
+}
+
+.pf__slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--pf-slide-w);
+  /* Tattoo photos are shot portrait; 4/5 cropped the top and bottom off the
+     longer pieces, which is exactly what people came to look at. */
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  background: rgba(23, 21, 20, 0.06);
+  box-shadow: inset 0 0 0 1px rgba(23, 21, 20, 0.08);
+  /* Transform and opacity only — nothing here touches layout. */
+  transition: transform 600ms var(--pf-ease), opacity 600ms var(--pf-ease);
+  /* will-change is set per slide in JS: promoting all ten permanently costs
+     compositor memory for slides that are off screen. */
+  backface-visibility: hidden;
+}
+
+.pf__slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+}
+
+.pf__slide.is-peek {
+  opacity: 0.45;
+}
+
+.pf__viewport.is-dragging .pf__slide {
+  transition: none;
+}
+
+.pf__arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  color: var(--paper);
+  background: rgba(23, 21, 20, 0.5);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pf__arrow:hover {
+  background: rgba(23, 21, 20, 0.78);
+}
+
+.pf__arrow:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 3px;
+}
+
+.pf__arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+.pf__arrow--prev {
+  transform: translate(calc(-50% - var(--pf-arrow-x)), -50%);
+}
+
+.pf__arrow--next {
+  transform: translate(calc(-50% + var(--pf-arrow-x)), -50%);
+}
+
+/* "Voir toutes les réalisations", under the carousel. */
+.pf__all {
+  display: block;
+  margin: clamp(34px, 4.5vw, 56px) auto 0;
+  padding: 0 0 6px;
+  border: none;
+  border-bottom: 1px solid rgba(23, 21, 20, 0.28);
+  background: none;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.72);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.pf__all:hover,
+.pf__all:focus-visible {
+  color: var(--ink, #171514);
+  border-bottom-color: var(--seal, #b31b1b);
+}
+
+/* Table pleine écran où les polaroids s'accumulent, fendue en deux battants
+   qui s'ouvrent comme une porte une fois la galerie affichée dessous. */
+.deal {
+  /* Encombrement d'une carte, utilisé par le JS pour caler les positions dans
+     l'écran : cadre 10px + image 4/5 + tags ≈ (largeur − 20px) × 1.25 + 43px. */
+  --deal-card-w: clamp(150px, 21vw, 250px);
+  --deal-card-h: calc((var(--deal-card-w) - 20px) * 1.25 + 43px);
+
+  position: fixed;
+  inset: 0;
+  /* Au-dessus du trait d'encre du curseur (9999). */
+  z-index: 10000;
+}
+
+/* Dès que les portes s'ouvrent, la galerie dessous redevient cliquable. */
+.deal--open {
+  pointer-events: none;
+}
+
+/* Un battant = la moitié de l'écran, fenêtre sur le pane pleine largeur. */
+.deal__half {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+  /* Durée à garder égale à DOOR_MS dans TransitionProvider.jsx. */
+  transition: transform 750ms cubic-bezier(0.72, 0, 0.24, 1);
+  will-change: transform;
+}
+
+.deal__half--left {
+  left: 0;
+}
+
+.deal__half--right {
+  right: 0;
+}
+
+/* 101% et pas 100 : évite un liseré d'un pixel en fin de course. */
+.deal--open .deal__half--left {
+  transform: translateX(-101%);
+}
+
+.deal--open .deal__half--right {
+  transform: translateX(101%);
+}
+
+/* Le pane fait tout l'écran (200 % d'un demi) : les deux battants montrent la
+   même table, chacun sa moitié, et le raccord tombe au pixel. */
+.deal__pane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: var(--paper) url('/textures/paper.svg') repeat;
+  background-size: 600px 600px;
+}
+
+.deal__half--right .deal__pane {
+  left: -100%;
+}
+
+.deal__card {
+  position: absolute;
+  width: var(--deal-card-w);
+  animation: polaroid-drop 220ms cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+}
+
+/* ------------------------------------------------------- carte polaroid -- */
+
+.polaroid {
+  margin: 0;
+  /* Marges fines sur les côtés et en haut, plus larges en bas. */
+  padding: 10px 10px 12px;
+  background: var(--paper);
+  box-shadow:
+    0 10px 28px rgba(23, 21, 20, 0.18),
+    0 2px 6px rgba(23, 21, 20, 0.12),
+    0 0 0 1px rgba(23, 21, 20, 0.06);
+  transform: rotate(var(--polaroid-rot, 0deg));
+}
+
+.polaroid__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.polaroid__tags {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 9px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+@keyframes polaroid-drop {
+  from {
+    opacity: 0;
+    transform: rotate(var(--polaroid-rot, 0deg)) scale(1.12);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(var(--polaroid-rot, 0deg)) scale(1);
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Tablet: centre slide flanked by partial sides. */
+@media (max-width: 1024px) {
+  .pf {
+    --pf-slide-w: 44vw;
+    --pf-rot: 18deg;
+    --pf-side-scale: 0.88;
+  }
+}
+
+/* Mobile: one flat slide at a time, driven by swipe. */
+@media (max-width: 640px) {
+  .pf {
+    --pf-slide-w: 76vw;
+    --pf-gap: 16px;
+    --pf-rot: 0deg;
+    --pf-side-scale: 1;
+  }
+
+  .pf__arrow--prev {
+    left: 12px;
+    transform: translate(0, -50%);
+  }
+
+  .pf__arrow--next {
+    left: auto;
+    right: 12px;
+    transform: translate(0, -50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf {
+    --pf-rot: 0deg;
+    --pf-side-scale: 1;
+  }
+
+  /* Instant swap, with only the opacity crossfade left. */
+  .pf__slide {
+    transition: opacity 150ms linear;
+  }
+
+  .pf__dot {
+    transition: none;
+  }
+}
+
+/* -------------------------------------------------------- portfolio page -- */
+
+.pfolio {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(110px, 15vh, 170px) clamp(20px, 4vw, 48px) 90px;
+}
+
+.pfolio__kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.62);
+}
+
+.pfolio__title {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.4rem, 5.6vw, 4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.pfolio__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+.pfolio__underline {
+  position: absolute;
+  left: -2%;
+  right: -4%;
+  bottom: -0.12em;
+  height: 0.13em;
+  pointer-events: none;
+}
+
+.pfolio__count {
+  margin: 22px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.pfolio__empty {
+  margin: 60px 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: 1.2rem;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+/* Masonry via columns; ratios are known so nothing shifts on load. */
+.gal {
+  margin: clamp(40px, 6vw, 64px) 0 0;
+  padding: 0;
+  list-style: none;
+  columns: 3 260px;
+  column-gap: clamp(14px, 2vw, 24px);
+}
+
+.gal__item {
+  break-inside: avoid;
+  margin-bottom: clamp(14px, 2vw, 24px);
+}
+
+.gal__open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: rgba(23, 21, 20, 0.05);
+  cursor: zoom-in;
+}
+
+.gal__open img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.35s ease, filter 0.35s ease;
+}
+
+.gal__open:hover img,
+.gal__open:focus-visible img {
+  transform: scale(1.015);
+  filter: contrast(1.03);
+}
+
+.gal__open:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: 3px;
+}
+
+.pfolio__cta {
+  margin-top: clamp(60px, 9vw, 100px);
+  text-align: center;
+}
+
+.pfolio__cta-text {
+  margin: 0 0 26px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  color: var(--ink);
+}
+
+.pfolio__cta-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+/* Artist-only shortcut to /admin. */
+.admin-shortcut {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 30;
+  padding: 12px 18px;
+  background: var(--seal);
+  color: var(--paper);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transform: rotate(-1.2deg);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-shortcut:hover {
+  background: var(--seal-dark);
+  transform: rotate(-1.2deg) scale(0.97);
+}
+
+/* --------------------------------------------------------------- lightbox -- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  background: rgba(23, 21, 20, 0.88);
+  padding: clamp(16px, 4vw, 48px);
+}
+
+.lightbox__figure {
+  margin: 0;
+  max-width: min(1100px, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.lightbox__figure img {
+  max-width: 100%;
+  max-height: calc(100svh - 140px);
+  width: auto;
+  height: auto;
+  display: block;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+}
+
+.lightbox__count {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  color: rgba(243, 239, 229, 0.65);
+}
+
+.lightbox__btn {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  color: var(--paper);
+  background: rgba(243, 239, 229, 0.12);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.lightbox__btn:hover {
+  background: rgba(243, 239, 229, 0.26);
+}
+
+.lightbox__btn:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 2px;
+}
+
+.lightbox__btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+.lightbox__btn--prev {
+  left: clamp(8px, 2vw, 28px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox__btn--next {
+  right: clamp(8px, 2vw, 28px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightbox__btn--close {
+  top: 14px;
+  right: clamp(8px, 2vw, 28px);
+}
+
+/* ------------------------------------------------- admin (artist only) -- */
+
+.admin,
+.admin-login {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(110px, 15vh, 160px) clamp(20px, 4vw, 44px) 80px;
+}
+
+.admin__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 34px;
+}
+
+.admin h1,
+.admin-login h1 {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2rem, 4.5vw, 2.8rem);
+  font-weight: 300;
+}
+
+.admin__count {
+  margin: 6px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.admin input[type='text'],
+.admin input[type='email'],
+.admin input[type='password'],
+.admin textarea,
+.admin-login input {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: rgba(255, 253, 247, 0.5);
+  border: 1px solid rgba(23, 21, 20, 0.2);
+  border-radius: 0;
+}
+
+.admin input:focus,
+.admin textarea:focus,
+.admin-login input:focus {
+  outline: none;
+  border-color: var(--seal);
+  background: rgba(255, 253, 247, 0.85);
+}
+
+.admin button[type='submit'],
+.admin-login button[type='submit'] {
+  padding: 13px 22px;
+  border: none;
+  background: var(--seal);
+  color: var(--paper);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.18s ease;
+}
+
+.admin button[type='submit']:hover,
+.admin-login button[type='submit']:hover {
+  background: var(--seal-dark);
+}
+
+.upload,
+.admin-login__form {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  margin-bottom: 40px;
+  background: rgba(255, 253, 247, 0.45);
+  border-left: 2px solid var(--seal);
+}
+
+.upload__hint,
+.upload__required {
+  font-size: 12px;
+  color: rgba(23, 21, 20, 0.6);
+  margin: 0;
+}
+
+.upload__preview {
+  max-width: 180px;
+  height: auto;
+}
+
+.upload__error,
+.admin__error,
+.admin-login__error {
+  color: var(--seal);
+  font-weight: 500;
+  font-size: 0.92rem;
+  margin: 0;
+}
+
+.photo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.photo-list__item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px;
+  background: rgba(255, 253, 247, 0.45);
+  border: 1px solid rgba(23, 21, 20, 0.12);
+}
+
+.photo-list__thumb {
+  width: 84px;
+  height: 105px;
+  object-fit: cover;
+  flex: none;
+}
+
+.photo-list__meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-list__alt {
+  margin: 0 0 4px;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+.photo-list__description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.photo-list__actions {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.photo-list__actions button {
+  padding: 7px 10px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  background: none;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.photo-list__delete {
+  color: var(--seal);
+  border-color: rgba(121, 16, 16, 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gal__open img,
+  .admin-shortcut,
+  .lightbox__btn {
+    transition: none;
+  }
+}
+
+/* Slides are buttons: centre opens the photo, sides step to it. */
+.pf__open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.pf__slide.is-active .pf__open {
+  cursor: zoom-in;
+}
+
+.pf__open:focus-visible {
+  outline: 2px solid var(--seal);
+  outline-offset: -2px;
+}
+
+.pf__open img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
