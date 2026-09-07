@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
 import TransitionProvider from '@/components/TransitionProvider';
 import { getTransitionDeck } from '@/lib/photos';
+import { STUDIO_NAME, STUDIO_SITE } from '@/lib/supabase/config';
 import './globals.css';
 
 // Fineline = the type: a light high-contrast serif for display, a quiet
@@ -45,10 +46,30 @@ const introFace = localFont({
   display: 'swap',
 });
 
+const TITLE = 'Pencilsline — Tatouage graphique à Montpellier';
+const DESCRIPTION =
+  "Tatouage graphique, brush, abstrait et fineline à Montpellier — l'esprit de l'encre de Chine, une influence japonaise.";
+
 export const metadata = {
-  title: 'Pencilsline — Tatouage graphique à Montpellier',
-  description:
-    "Tatouage graphique, brush, abstrait et fineline à Montpellier — l'esprit de l'encre de Chine, une influence japonaise.",
+  // Required for the share card: og:image must be an absolute URL, and this is
+  // what Next resolves the generated path against.
+  metadataBase: new URL(STUDIO_SITE),
+  title: TITLE,
+  description: DESCRIPTION,
+  // title/description are deliberately omitted here: set explicitly, every page
+  // would inherit the home page's, and sharing /contact would show the wrong
+  // headline. Left out, Next derives them from each page's own metadata.
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    siteName: STUDIO_NAME,
+    url: '/',
+  },
+  // No twitter-image file: X, Slack, Discord and WhatsApp all fall back to
+  // og:image, so one file serves every platform.
+  twitter: {
+    card: 'summary_large_image',
+  },
 };
 
 export default async function RootLayout({ children }) {
