@@ -8,7 +8,9 @@ import {
   STUDIO_ARTIST,
   STUDIO_CITY,
   STUDIO_EMAIL,
+  STUDIO_FACEBOOK,
   STUDIO_GEO,
+  STUDIO_GOOGLE_URL,
   STUDIO_HOURS,
   STUDIO_HOURS_SCHEMA,
   STUDIO_INSTAGRAM,
@@ -17,6 +19,7 @@ import {
   STUDIO_NAME,
   STUDIO_PHONE,
   STUDIO_PHONE_E164,
+  STUDIO_REVIEW_COUNT,
   STUDIO_SITE,
   VENUE_NAME,
 } from '@/lib/supabase/config'
@@ -38,7 +41,7 @@ const schema = {
     '@type': 'Person',
     name: `${STUDIO_ARTIST} — ${STUDIO_NAME}`,
     jobTitle: 'Tatoueuse',
-    sameAs: [STUDIO_INSTAGRAM],
+    sameAs: [STUDIO_INSTAGRAM, STUDIO_FACEBOOK, STUDIO_GOOGLE_URL],
   },
   description: `Tatouage graphique, brush, abstrait et fineline par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
   address: {
@@ -57,7 +60,7 @@ const schema = {
   telephone: STUDIO_PHONE_E164,
   email: STUDIO_EMAIL,
   url: STUDIO_MAPS_URL,
-  sameAs: [STUDIO_INSTAGRAM, STUDIO_MAPS_URL],
+  sameAs: [STUDIO_INSTAGRAM, STUDIO_FACEBOOK, STUDIO_GOOGLE_URL, STUDIO_MAPS_URL],
   openingHoursSpecification: STUDIO_HOURS_SCHEMA,
   areaServed: [STUDIO_ADDRESS.city, STUDIO_CITY],
 }
@@ -196,7 +199,17 @@ export default function ContactPage() {
                 </li>
                 <li>
                   <a className="contact__link" href={STUDIO_INSTAGRAM} target="_blank" rel="noreferrer">
-                    {STUDIO_INSTAGRAM_HANDLE}
+                    Instagram — {STUDIO_INSTAGRAM_HANDLE}
+                  </a>
+                </li>
+                <li>
+                  <a className="contact__link" href={STUDIO_FACEBOOK} target="_blank" rel="noreferrer">
+                    Facebook — Pencilsline Tattoo
+                  </a>
+                </li>
+                <li>
+                  <a className="contact__link" href={STUDIO_GOOGLE_URL} target="_blank" rel="noreferrer">
+                    Google — {STUDIO_REVIEW_COUNT} avis
                   </a>
                 </li>
               </ul>

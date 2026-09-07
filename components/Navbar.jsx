@@ -1,12 +1,15 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import InkStroke from './InkStroke';
+import NoticeDialog from './NoticeDialog';
 import SealStamp from './SealStamp';
 import { useGalleryTransition } from './TransitionProvider';
 
 const GALLERY = '/portfolio';
+/** Univers has no section to scroll to yet — say so instead of going nowhere. */
+const UNBUILT = '#univers';
 
 const HOME = { href: '/', label: 'Accueil' };
 
@@ -37,6 +40,8 @@ function linksFor(pathname) {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [notice, setNotice] = useState(false);
+  const noticeOpener = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
   const transition = useGalleryTransition();
@@ -62,6 +67,14 @@ export default function Navbar() {
    * si le jeu est vide, donc le href reste la vraie destination.
    */
   const onNavClick = (event, href) => {
+    if (href.endsWith(UNBUILT)) {
+      event.preventDefault();
+      noticeOpener.current = event.currentTarget;
+      setOpen(false);
+      setNotice(true);
+      return;
+    }
+
     if (href !== GALLERY || pathname === GALLERY) return;
     if (!transition || transition.active) return;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
@@ -144,6 +157,25 @@ export default function Navbar() {
       <div className="nav__rule" aria-hidden="true">
         <InkStroke length={900} thickness={1.7} seed={77} rough={1.2} />
       </div>
+
+      {notice && (
+        <NoticeDialog
+          title="Section en construction"
+          onClose={() => {
+            setNotice(false);
+            noticeOpener.current?.focus();
+          }}
+        >
+          <p>
+            La section <em>Univers</em> n&apos;est pas encore en ligne : elle
+            reste à construire.
+          </p>
+          <p>
+            En attendant, les <strong>Réalisations</strong> montrent le travail,
+            et la page <strong>Contact</strong> permet de prendre rendez-vous.
+          </p>
+        </NoticeDialog>
+      )}
     </header>
   );
 }

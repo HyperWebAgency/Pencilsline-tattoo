@@ -1,5 +1,6 @@
 import { Cormorant_Garamond, Inter, Roboto_Slab } from 'next/font/google';
 import localFont from 'next/font/local';
+import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
 import TransitionProvider from '@/components/TransitionProvider';
@@ -65,6 +66,7 @@ export default async function RootLayout({ children }) {
         <TransitionProvider photos={deck}>
           <Navbar />
           {children}
+          <Footer />
         </TransitionProvider>
       </body>
     </html>

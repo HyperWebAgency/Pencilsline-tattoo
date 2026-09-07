@@ -241,9 +241,21 @@ body::before {
      and not the 9vw the rest of the page uses. */
   left: clamp(24px, 11.5vw, 220px);
   top: 50%;
-  transform: translateY(-54%);
+  /* Sits below centre rather than above it: -54% would centre the block on the
+     hero, -34% drops it by a fifth of its own height. Overridden on phones,
+     where there is no spare room to give away. */
+  transform: translateY(-34%);
   max-width: 640px;
   z-index: 2;
+}
+
+/* A short screen cannot absorb the same drop: the block is taller than the room
+   below it, and the CTAs would end up crowding the scroll cue. Give some of the
+   drop back. Declared before the phone rule below, which keeps its own value. */
+@media (max-height: 790px) {
+  .hero__content {
+    transform: translateY(-46%);
+  }
 }
 
 .hero__kicker {
@@ -318,20 +330,17 @@ body::before {
   margin-top: 40px;
 }
 
-/* Top-left mark. Left edge lines up with the navbar's own side padding, and it
-   hangs below the nav row so the two never fight for the corner. Narrow enough
-   to stay clear of the headline column, which starts at 9vw. */
 /* Sits level with the nav row — the links are all on the right, so the corner
    is free — which buys the mark the height it needs. */
 .hero__mark {
   position: absolute;
   top: 16px;
   left: clamp(16px, 2.6vw, 32px);
-  /* The mark now has a column of its own: the headline starts at 11.5vw and
-     this is what is left over, minus its own offset and a gap. Because it no
-     longer reaches into the headline's column, it is free to run PAST the first
-     line — which is what used to cap it, hard, on any short screen. */
-  width: clamp(46px, calc(11.5vw - 52px), 176px);
+  /* The mark has a column of its own to the left of the headline (which starts
+     at 11.5vw), so it is free to run PAST the first line — that is what used to
+     cap it, hard, on any short screen. Sized a comfortable step inside its
+     column rather than filling it, which leaves air between mark and headline. */
+  width: clamp(46px, calc(9.8vw - 44px), 150px);
   z-index: 3;
   pointer-events: none;
 }
@@ -379,6 +388,7 @@ body::before {
     right: 24px;
     max-width: none;
     top: 52%;
+    transform: translateY(-54%); /* keep the phone layout as it was */
   }
 
   .hero__scroll {
@@ -1628,4 +1638,322 @@ body::before {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* ---------------------------------------------------- google rating -- */
+
+/* Shared by the hero and the footer. */
+.grate {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.grate__stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--seal-bright);
+  transform: translateY(2px);
+}
+
+.grate__stars svg {
+  width: 15px;
+  height: 15px;
+}
+
+.grate__score {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.grate__count {
+  font-size: 12.5px;
+  letter-spacing: 0.06em;
+  color: rgba(23, 21, 20, 0.6);
+  transition: color 0.2s ease;
+}
+
+.grate:hover .grate__count,
+.grate:focus-visible .grate__count {
+  color: var(--seal-bright);
+}
+
+/* In the hero it sits above the headline, so it stays quiet: the headline is
+   the thing to read first. */
+.grate--hero {
+  margin-bottom: 20px;
+  gap: 9px;
+}
+
+.grate--hero .grate__stars svg {
+  width: 13px;
+  height: 13px;
+}
+
+.grate--hero .grate__score {
+  font-size: 17px;
+}
+
+.grate--hero .grate__count {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+/* ---------------------------------------------------------------- footer -- */
+
+.foot {
+  position: relative;
+  padding: 64px clamp(24px, 6vw, 90px) 34px;
+  margin-top: clamp(60px, 9vw, 120px);
+}
+
+.foot__rule {
+  position: absolute;
+  top: 0;
+  left: clamp(24px, 6vw, 90px);
+  right: clamp(24px, 6vw, 90px);
+  height: 3px;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.foot__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: clamp(32px, 5vw, 72px);
+  align-items: start;
+}
+
+.foot__h {
+  margin: 0 0 16px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.5);
+}
+
+.foot__address {
+  margin: 0 0 14px;
+  font-style: normal;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(23, 21, 20, 0.76);
+}
+
+.foot__name {
+  display: block;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 21px;
+  color: var(--ink);
+}
+
+.foot__sub {
+  display: block;
+  margin-bottom: 8px;
+  font-style: italic;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 15px;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.foot__link {
+  display: block;
+  font-size: 14.5px;
+  line-height: 1.9;
+  text-decoration: none;
+  color: rgba(23, 21, 20, 0.76);
+  transition: color 0.2s ease;
+}
+
+.foot__link:hover,
+.foot__link:focus-visible {
+  color: var(--seal-bright);
+}
+
+.foot__pages,
+.foot__socials {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.foot .grate {
+  margin-bottom: 22px;
+}
+
+/* Sits inside the brush-link, so it must not swallow the hover colour. */
+.foot__detail {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  color: rgba(23, 21, 20, 0.45);
+}
+
+.foot__legal {
+  margin: clamp(38px, 5vw, 60px) 0 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.4);
+}
+
+/* Affordance on the centre slide — it is the only one that opens a photo.
+   Always legible on touch, where there is no hover to reveal it; on a pointer
+   it lifts on hover. The scrim keeps it readable over a light tattoo photo. */
+.pf__hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 30px 14px 13px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  text-align: center;
+  color: rgba(243, 239, 229, 0.94);
+  background: linear-gradient(to top, rgba(23, 21, 20, 0.6), rgba(23, 21, 20, 0));
+  pointer-events: none;
+}
+
+@media (hover: hover) {
+  .pf__hint {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+  }
+
+  .pf__slide.is-active:hover .pf__hint,
+  .pf__open:focus-visible .pf__hint {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pf__hint {
+    transition: none;
+  }
+}
+
+/* -------------------------------------------------------- notice modal -- */
+
+.notice-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(23, 21, 20, 0.42);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: notice-in 0.22s ease both;
+}
+
+.notice-modal__card {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 40px 34px 30px;
+  background: var(--paper) url('/textures/paper.svg') repeat;
+  background-size: 600px 600px;
+  box-shadow: 0 26px 70px rgba(23, 21, 20, 0.3);
+  outline: none;
+  animation: notice-rise 0.26s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+/* The seal mark, top-left of the card. */
+.notice-modal__seal {
+  position: absolute;
+  top: 22px;
+  left: 34px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--seal-bright);
+}
+
+.notice-modal__title {
+  margin: 0 0 14px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 27px;
+  font-weight: 300;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.notice-modal__body p {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(23, 21, 20, 0.76);
+}
+
+.notice-modal__body em {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 16px;
+}
+
+.notice-modal__body strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.notice-modal__btn {
+  position: relative;
+  margin-top: 14px;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.notice-modal__dash {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 6px;
+  pointer-events: none;
+  clip-path: inset(0 0 0 0);
+}
+
+.notice-modal__btn:hover,
+.notice-modal__btn:focus-visible {
+  color: var(--seal-bright);
+}
+
+@keyframes notice-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes notice-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notice-modal,
+  .notice-modal__card {
+    animation: none;
+  }
 }

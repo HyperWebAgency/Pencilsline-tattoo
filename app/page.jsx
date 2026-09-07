@@ -1,4 +1,5 @@
 import CursorTrail from '@/components/CursorTrail';
+import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
@@ -58,6 +59,8 @@ export default async function Page() {
         </div>
 
         <div className="hero__content">
+          <GoogleRating variant="hero" />
+
           <h1 className="hero__title">
             Tatoueuse à{' '}
             <span className="hero__word">

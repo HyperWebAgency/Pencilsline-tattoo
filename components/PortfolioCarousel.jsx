@@ -248,6 +248,14 @@ export default function PortfolioCarousel({
                     draggable={false}
                     loading={Math.abs(pos) <= 1 ? 'eager' : 'lazy'}
                   />
+                  {/* Only the centre slide opens a photo, so only it says so.
+                      aria-hidden because the button's own label already tells a
+                      screen reader what activating it does. */}
+                  {pos === 0 && (
+                    <span className="pf__hint" aria-hidden="true">
+                      Cliquer pour agrandir
+                    </span>
+                  )}
                 </button>
               )}
             </div>
