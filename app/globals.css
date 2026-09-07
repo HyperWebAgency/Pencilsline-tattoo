@@ -237,7 +237,9 @@ body::before {
 
 .hero__content {
   position: absolute;
-  left: clamp(24px, 9vw, 150px);
+  /* Indented past the mark's column — the mark is the reason this is 11.5vw
+     and not the 9vw the rest of the page uses. */
+  left: clamp(24px, 11.5vw, 220px);
   top: 50%;
   transform: translateY(-54%);
   max-width: 640px;
@@ -323,26 +325,20 @@ body::before {
    is free — which buys the mark the height it needs. */
 .hero__mark {
   position: absolute;
-  top: clamp(24px, 3vh, 40px);
-  left: clamp(20px, 4vw, 44px);
-  /* Two ceilings, whichever binds first. Height: the mark is 2.4× taller than
-     wide and the headline block is vertically centred, so the room ABOVE the
-     headline caps it. Width: it must stop short of the branch, which starts at
-     13vw. On a desktop the height rules; on a tablet the branch does. */
-  width: clamp(46px, min(calc(21vh - 104px), calc(13vw - 60px)), 132px);
+  top: 16px;
+  left: clamp(16px, 2.6vw, 32px);
+  /* The mark now has a column of its own: the headline starts at 11.5vw and
+     this is what is left over, minus its own offset and a gap. Because it no
+     longer reaches into the headline's column, it is free to run PAST the first
+     line — which is what used to cap it, hard, on any short screen. */
+  width: clamp(46px, calc(11.5vw - 52px), 176px);
   z-index: 3;
   pointer-events: none;
 }
 
-@media (max-height: 660px) {
-  .hero__mark {
-    display: none;
-  }
-}
-
 .hero__scroll {
   position: absolute;
-  left: clamp(24px, 9vw, 150px);
+  left: clamp(24px, 11.5vw, 220px); /* stays under the headline */
   bottom: 30px;
   display: flex;
   flex-direction: column;

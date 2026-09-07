@@ -31,7 +31,7 @@ export default function HeroBranches() {
   const topLeft = {
     ...shell,
     top: -40,
-    left: 'clamp(90px, 13vw, 190px)',
+    left: 'clamp(90px, 16vw, 300px)',
     width: 'clamp(140px, 36vw, 345px)',
   };
 
