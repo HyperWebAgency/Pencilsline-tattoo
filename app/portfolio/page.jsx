@@ -18,7 +18,7 @@ export const revalidate = 3600
 
 export const metadata = {
   title: `Réalisations — ${STUDIO_NAME}, ${STUDIO_CITY}`,
-  description: `Tatouages graphiques, brush, abstraits et fineline réalisés par ${STUDIO_ARTIST} — ${STUDIO_NAME}, ${STUDIO_CITY}.`,
+  description: `Tatouages graphiques, brush et abstraits réalisés par ${STUDIO_ARTIST} — ${STUDIO_NAME}, ${STUDIO_CITY}.`,
 }
 
 export default async function PortfolioPage() {
@@ -60,8 +60,8 @@ export default async function PortfolioPage() {
         </h1>
         {photos.length > 0 && (
           <p className="pfolio__count">
-            {photos.length} pièce{photos.length > 1 ? 's' : ''} — graphique, brush, abstrait
-            &amp; fineline
+            {photos.length} pièce{photos.length > 1 ? 's' : ''} — graphique, brush
+            &amp; abstrait
           </p>
         )}
       </header>

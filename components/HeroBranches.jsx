@@ -26,13 +26,14 @@ export default function HeroBranches() {
 
   const shell = { position: 'absolute', pointerEvents: 'none' };
 
-  // Nudged right of the corner: the hanko mark hangs there now, and its right
-  // edge lands between 74px and 120px depending on viewport width.
+  // Anchored into the corner and running off both edges, so it reads as growing
+  // in from outside the frame — the same move as the bottom-right branch, which
+  // sits at bottom:-50 / right:-60.
   const topLeft = {
     ...shell,
-    top: -40,
-    left: 'clamp(90px, 16vw, 300px)',
-    width: 'clamp(140px, 36vw, 345px)',
+    top: -62,
+    left: -145,
+    width: 'clamp(170px, 43vw, 415px)',
   };
 
   return (
@@ -40,7 +41,13 @@ export default function HeroBranches() {
       <div aria-hidden="true" style={topLeft}>
         <InkBranch
           seed={7997}
-          angle={1.05}
+          /* Mirrors the bottom-right branch. That one grows at 3.62 rad — left
+             and slightly up, out of its corner — so the reflection is right and
+             slightly down. Gravity matches it too: on the default 0.1 the limb
+             folded downwards and slid off the left edge instead of reaching
+             across the frame. */
+          angle={0.45}
+          gravity={0.05}
           length={215}
           sway={false}
           detail={narrow ? 'low' : 'high'}

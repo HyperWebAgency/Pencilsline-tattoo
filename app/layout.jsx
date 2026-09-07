@@ -9,7 +9,7 @@ import { getSiteUrl } from '@/lib/site-url';
 import { STUDIO_NAME } from '@/lib/supabase/config';
 import './globals.css';
 
-// Fineline = the type: a light high-contrast serif for display, a quiet
+// The type carries it: a light high-contrast serif for display, a quiet
 // grotesque for the small tracked labels. The brush lives in the drawn strokes.
 const serif = Cormorant_Garamond({
   subsets: ['latin'],
@@ -49,7 +49,7 @@ const introFace = localFont({
 
 const TITLE = 'Pencilsline — Tatouage graphique à Montpellier';
 const DESCRIPTION =
-  "Tatouage graphique, brush, abstrait et fineline à Montpellier — l'esprit de l'encre de Chine, une influence japonaise.";
+  "Tatouage graphique, brush et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
 
 export const metadata = {
   // Required for the share card: og:image must be an absolute URL, and this is

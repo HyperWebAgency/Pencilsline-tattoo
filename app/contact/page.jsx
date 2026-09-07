@@ -5,6 +5,7 @@ import InkStroke from '@/components/InkStroke'
 import { getSiteUrl } from '@/lib/site-url'
 import {
   BOOKING_WARNING,
+  STUDIO_ACCESS,
   STUDIO_ADDRESS,
   STUDIO_ARTIST,
   STUDIO_CITY,
@@ -26,7 +27,7 @@ import {
 
 export const metadata = {
   title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_ADDRESS.city}`,
-  description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, brush et fineline à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
+  description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, brush et abstrait à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
 }
 
 const fullAddress = `${STUDIO_ADDRESS.street}, ${STUDIO_ADDRESS.postalCode} ${STUDIO_ADDRESS.city}`
@@ -43,7 +44,7 @@ const schema = {
     jobTitle: 'Tatoueuse',
     sameAs: [STUDIO_INSTAGRAM, STUDIO_FACEBOOK, STUDIO_GOOGLE_URL],
   },
-  description: `Tatouage graphique, brush, abstrait et fineline par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
+  description: `Tatouage graphique, brush et abstrait par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: STUDIO_ADDRESS.street,
@@ -141,8 +142,9 @@ export default function ContactPage() {
                 Le studio
               </h2>
               <address className="contact__address">
-                <span className="contact__artist">{VENUE_NAME}</span>
-                <span className="contact__venue">avec {STUDIO_ARTIST}</span>
+                <span className="contact__artist">
+                  {STUDIO_NAME} chez {VENUE_NAME}
+                </span>
                 {STUDIO_ADDRESS.street}
                 <br />
                 {STUDIO_ADDRESS.postalCode} {STUDIO_ADDRESS.city}
@@ -151,6 +153,12 @@ export default function ContactPage() {
                   {STUDIO_PHONE}
                 </a>
               </address>
+
+              <ul className="contact__access">
+                {STUDIO_ACCESS.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
               <a
                 className="brush-link contact__maplink"
                 href={STUDIO_MAPS_URL}

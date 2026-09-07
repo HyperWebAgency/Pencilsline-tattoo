@@ -112,7 +112,7 @@ export default function UploadForm() {
         id="description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Ex. : Fleur fineline sur l'avant-bras"
+        placeholder="Ex. : Fleur au pinceau sur l'avant-bras"
         rows={2}
         required
       />

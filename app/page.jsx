@@ -1,11 +1,12 @@
 import CursorTrail from '@/components/CursorTrail';
 import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
+import HeroVideo from '@/components/HeroVideo';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
 import PortfolioCarousel from '@/components/PortfolioCarousel';
 import SealStamp from '@/components/SealStamp';
-import { BUCKET } from '@/lib/supabase/config';
+import { BUCKET, STUDIO_ARTIST, STUDIO_NAME } from '@/lib/supabase/config';
 import { createSupabasePublicClient } from '@/lib/supabase/server';
 
 // Same strategy as /portfolio: static HTML rebuilt hourly, and the upload route
@@ -49,6 +50,10 @@ export default async function Page() {
 
   return (
     <main>
+      {/* The video is a sibling of the hero, not a child: on a wide screen it is
+          positioned into the hero's right side, and on a narrow one it simply
+          flows underneath. A child could not escape the hero's fixed height. */}
+      <div className="hero-wrap">
       <section className="hero">
         <HeroBranches />
 
@@ -59,7 +64,9 @@ export default async function Page() {
         </div>
 
         <div className="hero__content">
-          <GoogleRating variant="hero" />
+          <p className="hero__kicker">
+            {STUDIO_ARTIST} — {STUDIO_NAME}
+          </p>
 
           <h1 className="hero__title">
             Tatoueuse à{' '}
@@ -73,7 +80,7 @@ export default async function Page() {
           </h1>
 
           <p className="hero__sub">
-            Tatouage graphique, brush, abstrait et fineline — l&apos;esprit de
+            Tatouage graphique, brush et abstrait. L&apos;esprit de
             l&apos;encre de Chine, une influence japonaise.
           </p>
 
@@ -88,6 +95,8 @@ export default async function Page() {
               </span>
             </a>
           </div>
+
+          <GoogleRating variant="hero" />
         </div>
 
         <div className="hero__scroll" aria-hidden="true">
@@ -97,6 +106,9 @@ export default async function Page() {
           <span className="hero__scroll-label">défiler</span>
         </div>
       </section>
+
+      <HeroVideo />
+      </div>
 
       <PortfolioCarousel images={photos} />
 
