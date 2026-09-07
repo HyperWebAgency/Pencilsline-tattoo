@@ -2,6 +2,7 @@ import Link from 'next/link'
 import BookingForm from '@/components/BookingForm'
 import ContactIntro from '@/components/ContactIntro'
 import InkStroke from '@/components/InkStroke'
+import { getSiteUrl } from '@/lib/site-url'
 import {
   BOOKING_WARNING,
   STUDIO_ADDRESS,
@@ -20,7 +21,6 @@ import {
   STUDIO_PHONE,
   STUDIO_PHONE_E164,
   STUDIO_REVIEW_COUNT,
-  STUDIO_SITE,
   VENUE_NAME,
 } from '@/lib/supabase/config'
 
@@ -66,26 +66,32 @@ const schema = {
 }
 
 // Mirrors the visible breadcrumb so Google can show the trail in results.
-const breadcrumbSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    {
-      '@type': 'ListItem',
-      position: 1,
-      name: 'Accueil',
-      item: STUDIO_SITE,
-    },
-    {
-      '@type': 'ListItem',
-      position: 2,
-      name: 'Contact',
-      item: `${STUDIO_SITE}/contact`,
-    },
-  ],
+// Built from the live origin, not the intended domain: pointing a breadcrumb at
+// a host that serves a different site is worse than having no breadcrumb.
+function buildBreadcrumbSchema(site) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Accueil',
+        item: site,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Contact',
+        item: `${site}/contact`,
+      },
+    ],
+  }
 }
 
 export default function ContactPage() {
+  const breadcrumbSchema = buildBreadcrumbSchema(getSiteUrl())
+
   return (
     <>
       <ContactIntro artist={STUDIO_ARTIST} studio="Pencilsline" tail="Tattoo" />

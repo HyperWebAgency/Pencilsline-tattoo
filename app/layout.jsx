@@ -5,7 +5,8 @@ import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
 import TransitionProvider from '@/components/TransitionProvider';
 import { getTransitionDeck } from '@/lib/photos';
-import { STUDIO_NAME, STUDIO_SITE } from '@/lib/supabase/config';
+import { getSiteUrl } from '@/lib/site-url';
+import { STUDIO_NAME } from '@/lib/supabase/config';
 import './globals.css';
 
 // Fineline = the type: a light high-contrast serif for display, a quiet
@@ -52,8 +53,9 @@ const DESCRIPTION =
 
 export const metadata = {
   // Required for the share card: og:image must be an absolute URL, and this is
-  // what Next resolves the generated path against.
-  metadataBase: new URL(STUDIO_SITE),
+  // what Next resolves the generated path against. It must be the host actually
+  // serving this build, or the crawler fetches the image from the wrong site.
+  metadataBase: new URL(getSiteUrl()),
   title: TITLE,
   description: DESCRIPTION,
   // title/description are deliberately omitted here: set explicitly, every page
