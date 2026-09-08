@@ -1,11 +1,11 @@
 import CursorTrail from '@/components/CursorTrail';
 import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
-import HeroVideo from '@/components/HeroVideo';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
 import PortfolioCarousel from '@/components/PortfolioCarousel';
 import SealStamp from '@/components/SealStamp';
+import VideoTrio from '@/components/VideoTrio';
 import { BUCKET, STUDIO_ARTIST, STUDIO_NAME } from '@/lib/supabase/config';
 import { createSupabasePublicClient } from '@/lib/supabase/server';
 
@@ -50,10 +50,6 @@ export default async function Page() {
 
   return (
     <main>
-      {/* The video is a sibling of the hero, not a child: on a wide screen it is
-          positioned into the hero's right side, and on a narrow one it simply
-          flows underneath. A child could not escape the hero's fixed height. */}
-      <div className="hero-wrap">
       <section className="hero">
         <HeroBranches />
 
@@ -107,8 +103,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <HeroVideo />
-      </div>
+      <VideoTrio />
 
       <PortfolioCarousel images={photos} />
 

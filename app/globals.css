@@ -415,11 +415,10 @@ body::before {
     right: 24px;
     max-width: none;
     top: 52%;
-    transform: translateY(-54%); /* keep the phone layout as it was */
+    transform: translateY(-54%);
   }
 
-  /* No scroll cue on a phone: swiping down is the one thing nobody needs
-     telling, and it was taking room the video wanted. */
+  /* No scroll cue on a phone — swiping is the one thing nobody needs telling. */
   .hero__scroll {
     display: none;
   }
@@ -2003,61 +2002,52 @@ body::before {
   }
 }
 
-/* ------------------------------------------------------------ hero video -- */
+/* ------------------------------------------------------------- video trio -- */
 
-/* Right of the hero, clear of the mark above it. The headline column ends at
-   11.5vw + 640px, so there is room here on a wide screen; below 1100px the
-   two would fight, and the video drops under the text instead. */
-.hero-wrap {
+/* Three clips under the hero. Same radius and shadow as the carousel slides and
+   the old hero panel, so it reads as part of the same set. */
+.trio {
+  padding: clamp(44px, 7vw, 96px) clamp(20px, 5vw, 70px) 0;
+}
+
+.trio__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* Bottom-aligned, so the taller middle cell rises out of the row. */
+  align-items: end;
+  gap: clamp(10px, 2vw, 26px);
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.trio__cell {
   position: relative;
-}
-
-.hero__video {
-  position: absolute;
-  top: 50%;
-  right: clamp(160px, 23vw, 390px);
-  transform: translateY(-48%);
-  width: clamp(170px, 19vw, 310px);
-  aspect-ratio: 9 / 16;
-  z-index: 2;
-  background: rgba(23, 21, 20, 0.06);
-  border-radius: 12px;
-  /* Clips the video and the play overlay to the rounded corners. The element
-     already has a transform, so it makes its own stacking context and Safari
-     clips the video reliably. */
+  aspect-ratio: 9 / 13;
   overflow: hidden;
+  border-radius: 12px;
+  background: rgba(23, 21, 20, 0.06);
   box-shadow: 0 18px 50px rgba(23, 21, 20, 0.18);
+  /* Reveal: fade up, staggered by --trio-delay. Transition rather than an
+     animation so the resting state is simply the element's real style. */
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 620ms cubic-bezier(0.22, 0.68, 0.24, 1) var(--trio-delay, 0ms),
+    transform 620ms cubic-bezier(0.22, 0.68, 0.24, 1) var(--trio-delay, 0ms);
 }
 
-/* Under about 1040px the headline column and the panel would fight for the same
-   space, so the panel stops floating and becomes a band below the hero. Her
-   traffic is mostly phones, so hiding it there was not an option. */
-@media (max-width: 1040px) {
-  .hero__video {
-    /* relative, NOT static: it lays out identically in flow, but it must stay a
-       containing block. Static made the absolutely-positioned play overlay
-       resolve against .hero-wrap instead, so the button stretched over the
-       whole hero and any tap on blank paper started the video. */
-    position: relative;
-    /* and the desktop offsets must be cleared — static ignored them, relative
-       does not, which would drag the panel off the left edge. */
-    top: auto;
-    right: auto;
-    transform: none;
-    width: min(340px, 76vw);
-    margin: clamp(18px, 4vw, 44px) auto clamp(10px, 3vw, 24px);
-  }
+.trio__cell--tall {
+  aspect-ratio: 9 / 16;
 }
 
-/* Phones take a smaller panel still. This must come AFTER the rule above, not
-   before it: same specificity, so source order decides the winner. */
-@media (max-width: 640px) {
-  .hero__video {
-    width: min(280px, 62vw);
-  }
+.trio.is-revealed .trio__cell {
+  opacity: 1;
+  transform: translateY(0);
 }
 
-.hero__video-el {
+.trio__video {
   display: block;
   width: 100%;
   height: 100%;
@@ -2066,84 +2056,126 @@ body::before {
   background: var(--ink);
 }
 
-/* Fullscreen must NOT use cover. The clip is 9:16 and a screen is 16:9, so
-   filling it means scaling a narrow vertical strip up to the full width and
-   cropping nearly everything away. Contain fits the whole frame and pillarboxes
-   the sides instead — which is what a portrait video should do on a landscape
-   screen. In the panel itself the two are identical, since the container is
-   also 9:16, so cover stays there purely as a guard against stray bars. */
-.hero__video-el:fullscreen,
-.hero__video-el:-webkit-full-screen {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 0;
-  background: #000;
+/* Narrow: keep the triptych, but close the gap and flatten the height
+   difference — at this size a tall middle cell just makes the row spindly. */
+@media (max-width: 640px) {
+  .trio {
+    padding: clamp(34px, 8vw, 56px) 16px 0;
+  }
+
+  .trio__grid {
+    gap: 7px;
+  }
+
+  .trio__cell {
+    aspect-ratio: 9 / 12;
+    border-radius: 8px;
+    box-shadow: 0 10px 26px rgba(23, 21, 20, 0.16);
+  }
+
+  .trio__cell--tall {
+    aspect-ratio: 9 / 13.5;
+  }
 }
 
-/* Covers the poster until play, so the native control bar never sits over it. */
-.hero__video-play {
+/* Reduced motion: show them, do not slide them. */
+@media (prefers-reduced-motion: reduce) {
+  .trio__cell {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Play button over each poster. Same seal disc as the rest of the site; the
+   scrim only has to lift the disc off a bright frame. */
+.trio__play {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 0;
-  background: linear-gradient(
-    to top,
-    rgba(23, 21, 20, 0.55),
-    rgba(23, 21, 20, 0.12) 45%,
-    rgba(23, 21, 20, 0.3)
-  );
+  gap: 12px;
+  padding: 0 10px;
   border: none;
   cursor: pointer;
+  background: linear-gradient(
+    to top,
+    rgba(23, 21, 20, 0.42),
+    rgba(23, 21, 20, 0.06) 55%,
+    rgba(23, 21, 20, 0.22)
+  );
+  border-radius: inherit;
   transition: background-color 0.25s ease;
 }
 
-.hero__video-disc {
+.trio__disc {
   display: grid;
   place-items: center;
-  width: 54px;
-  height: 54px;
+  width: clamp(34px, 3.6vw, 54px);
+  height: clamp(34px, 3.6vw, 54px);
   border-radius: 50%;
   background: var(--seal);
   color: var(--paper);
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
-.hero__video-disc svg {
-  width: 22px;
-  height: 22px;
+.trio__disc svg {
+  width: 42%;
+  height: 42%;
   transform: translateX(1px); /* optical centring of the triangle */
 }
 
-.hero__video-play:hover .hero__video-disc,
-.hero__video-play:focus-visible .hero__video-disc {
-  transform: scale(1.07);
+.trio__play:hover .trio__disc,
+.trio__play:focus-visible .trio__disc {
+  transform: scale(1.08);
   background: var(--seal-bright);
 }
 
-.hero__video-label {
-  max-width: 80%;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.6;
-  color: rgba(243, 239, 229, 0.92);
-}
-
-.hero__video-play:focus-visible {
+.trio__play:focus-visible {
   outline: 2px solid var(--seal-bright);
   outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__video-disc,
-  .hero__video-play {
+  .trio__play,
+  .trio__disc {
     transition: none;
+  }
+}
+
+/* Prompt under the disc on the centre clip. */
+.trio__hint {
+  max-width: 84%;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 1.6;
+  color: rgba(243, 239, 229, 0.94);
+}
+
+/* Phones show the centre clip only: three columns on a 390px screen left each
+   one about 115px wide, too small to read as anything. Alone, it gets room. */
+@media (max-width: 640px) {
+  .trio__cell:not(.trio__cell--tall) {
+    display: none;
+  }
+
+  .trio__grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .trio__cell--tall {
+    width: min(300px, 72vw);
+    aspect-ratio: 9 / 16;
+    border-radius: 12px;
+  }
+
+  .trio__hint {
+    font-size: 10px;
   }
 }
