@@ -24,13 +24,21 @@ function Splatter() {
   );
 }
 
-/** Portfolio photos, managed by Alexandra from /admin — never hardcoded here. */
+/**
+ * Photos for the home carousel, managed by Alexandra from /admin — never
+ * hardcoded here.
+ *
+ * show_on_home is the only difference from the /portfolio query: a photo can be
+ * dropped from this carousel while staying in the portfolio grid and in the
+ * polaroid deal that plays on the way there.
+ */
 async function getPhotos() {
   const supabase = createSupabasePublicClient();
 
   const { data, error } = await supabase
     .from('photos')
     .select('storage_path, alt_text')
+    .eq('show_on_home', true)
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: true });
 
