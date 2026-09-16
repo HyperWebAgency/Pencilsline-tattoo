@@ -115,7 +115,7 @@ export default function Navbar() {
 
       <button
         type="button"
-        className="nav__toggle"
+        className={`nav__toggle${open ? ' is-open' : ''}`}
         aria-expanded={open}
         aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
         onClick={() => setOpen((v) => !v)}

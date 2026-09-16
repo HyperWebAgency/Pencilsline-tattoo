@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-/** Middle one is the tall centrepiece; the outer two sit lower. */
+/** The middle one leads: it carries the prompt, and is the only one on phones. */
 const CLIPS = [
   { src: '/videos/atelier-1', label: "Tatouage en cours à l'encre de Chine" },
   { src: '/videos/atelier-2', label: "Alexandra dessine le motif à l'atelier" },
@@ -75,7 +75,7 @@ export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
         {CLIPS.map((clip, i) => (
           <li
             key={clip.src}
-            className={`trio__cell${i === 1 ? ' trio__cell--tall' : ''}`}
+            className={`trio__cell${i === 1 ? ' trio__cell--lead' : ''}`}
             style={{ '--trio-delay': `${i * 120}ms` }}
           >
             <video

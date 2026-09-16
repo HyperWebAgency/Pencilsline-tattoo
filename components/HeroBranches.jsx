@@ -33,7 +33,16 @@ export default function HeroBranches() {
     ...shell,
     top: -62,
     left: -145,
-    width: 'clamp(170px, 43vw, 415px)',
+    // Two caps, because the headline moves in two directions and the blossoms
+    // were landing on "Alexandra — Pencilsline Tattoo".
+    //   Height — the block is vertically centred, so a short screen lifts it
+    //   into the branch's band.
+    //   Width  — the text column starts at 11.5vw, so a narrow window slides it
+    //   left, under the branch. The 133px is this box's own -145px offset less
+    //   a gap, i.e. how far it may extend before touching that column.
+    // Whichever binds first wins.
+    width:
+      'clamp(150px, min(43vw, calc(97vh - 460px), calc(clamp(24px, 11.5vw, 220px) + 133px)), 415px)',
   };
 
   return (
