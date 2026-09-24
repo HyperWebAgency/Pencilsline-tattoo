@@ -1,10 +1,10 @@
-import AboutAlexandra from '@/components/AboutAlexandra';
 import CursorTrail from '@/components/CursorTrail';
 import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
 import PortfolioCarousel from '@/components/PortfolioCarousel';
+import ProcessSteps from '@/components/ProcessSteps';
 import SealStamp from '@/components/SealStamp';
 import VideoTrio from '@/components/VideoTrio';
 import { BUCKET, STUDIO_ARTIST, STUDIO_NAME } from '@/lib/supabase/config';
@@ -109,7 +109,7 @@ export default async function Page() {
 
       <PortfolioCarousel images={photos} />
 
-      <AboutAlexandra />
+      <ProcessSteps />
 
       <CursorTrail />
     </main>

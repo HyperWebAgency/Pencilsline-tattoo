@@ -56,7 +56,16 @@ body::before {
   align-items: center;
   justify-content: flex-end;
   padding: 18px clamp(20px, 4vw, 44px);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.35s ease;
+}
+
+/* Out of the way while the process cards stack: ProcessSteps puts
+   data-nav-hidden on <html> for exactly that stretch. Focus inside brings it
+   back, so a keyboard user never tabs through an offscreen menu, and an open
+   mobile menu keeps it (the overlay is fixed inside it, so a transform here
+   would pull the overlay offscreen too). */
+html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
+  transform: translateY(calc(-100% - 12px));
 }
 
 .nav--scrolled {
@@ -2365,5 +2374,282 @@ body::before {
 
   .about__claim {
     margin-top: clamp(36px, 9vw, 56px);
+  }
+}
+
+/* --------------------------------------------------------- process stack -- */
+
+/* Every knob for the stack lives here. Spacing is in vh because it is scroll,
+   not layout: it is how far the page travels between two cards landing. */
+.process {
+  /* Square side. The vh cap keeps a pinned card wholly on screen. */
+  --process-card: min(380px, 50vh);
+  --process-col: 400px;
+  /* Where every card pins. */
+  --process-top: 14vh;
+  /* Scroll between one card landing and the next. */
+  --process-step: 60vh;
+  /* Extra scroll the finished pile stays pinned after card 04 lands. 0: the
+     section moves on the moment it lands. Raise it for a pause. */
+  --process-hold: 0px;
+  /* Laid over the washi to lift each sheet a shade off the page: the same
+     warm-white wash as the contact form's fields. */
+  --process-sheet-wash: rgba(255, 253, 247, 0.5);
+
+  /* A short top: the gallery's own bottom padding already separates the two,
+     and the heading now starts right at the top of the grid. */
+  padding: clamp(24px, 3vw, 44px) clamp(16px, 4vw, 48px) clamp(64px, 9vw, 116px);
+  /* Tilted cards overhang their column on a phone. clip, not hidden: hidden
+     would make this a scroll container, and nothing inside would pin to the
+     viewport any more. */
+  overflow-x: clip;
+}
+
+.process__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--process-col);
+  column-gap: clamp(32px, 6vw, 96px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Pinned centred in the viewport, from its height as measured by JS
+   (--process-intro-h), so in the flow it can start right at the top of the
+   grid instead of floating half a screen down. The padding runs the box down
+   to the viewport's bottom edge once pinned, so it lets go at the same moment
+   the pile does (see the slots). Never higher than 80px: under the navbar. */
+.process__intro {
+  --process-intro-top: max(80px, calc(50vh - var(--process-intro-h, 100vh) / 2));
+  position: sticky;
+  top: var(--process-intro-top);
+  align-self: start;
+  padding-bottom: max(
+    0px,
+    calc(100vh - var(--process-intro-top) - var(--process-intro-h, 100vh))
+  );
+}
+
+.process__title {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.3rem, 4.2vw, 3.7rem);
+  font-weight: 300;
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+/* One question per line; balanced so a wrapped question splits evenly
+   instead of leaving "Non." stranded. */
+.process__line {
+  display: block;
+  text-wrap: balance;
+}
+
+.process__line + .process__line {
+  margin-top: 0.14em;
+}
+
+.process__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+.process__underline {
+  position: absolute;
+  left: -2%;
+  right: -5%;
+  bottom: -0.1em;
+  height: 0.13em;
+  pointer-events: none;
+}
+
+.process__sub {
+  margin: 28px 0 0;
+  max-width: 40ch;
+  /* No lone word on the last line. */
+  text-wrap: pretty;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--ink) 78%, transparent);
+}
+
+.process__actions {
+  margin-top: 36px;
+}
+
+/* Card 01 starts level with the heading and pins a little after it, so the
+   heading is already still while the first card lands. */
+.process__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The hold zone, sized by --process-hold. A sticky box never leaves its
+   parent's content box, so the list ends — and the pile lets go — the instant
+   card 04 pins. That is also the instant its tilt and float reach rest, so no
+   hold is needed; this only exists to add a pause on purpose. A pseudo-element
+   because an <ol> may only hold <li>s, and padding would not count: it is
+   outside the content box. */
+.process__list::after {
+  content: '';
+  display: block;
+  height: var(--process-hold);
+}
+
+/* Each slot pins at --process-top and runs down to the viewport's bottom
+   edge, so every slot — and the heading — lets go at the same scroll
+   position. The negative margin pulls each slot back up so consecutive
+   cards still land --process-step apart. Transparent to the pointer: a slot
+   is mostly empty box lying over the cards beneath it. */
+.process__slot {
+  position: sticky;
+  top: var(--process-top);
+  height: calc(100vh - var(--process-top));
+  pointer-events: none;
+}
+
+.process__slot + .process__slot {
+  margin-top: calc(var(--process-step) - (100vh - var(--process-top)));
+}
+
+/* Square, but allowed to grow: with aspect-ratio and no fixed height, text
+   that outgrows the square stretches the card instead of being clipped. The
+   inline --process-rest is the resting angle; JS takes over the transform
+   while motion is allowed. The card itself is transparent — its paper is the
+   Sheet SVG behind the text. */
+.process__card {
+  --process-pad: clamp(26px, 2.6vw, 34px);
+  position: relative;
+  /* Keeps the sheet's z-index: -1 inside the card instead of under the page. */
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--process-card), 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  padding: var(--process-pad);
+  transform: rotate(var(--process-rest, 0deg));
+  pointer-events: auto;
+}
+
+/* Overflow visible: the deckled edge and the shadow both reach past the box. */
+.process__sheet {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.process__sheet feDropShadow {
+  flood-color: var(--ink);
+}
+
+.process__sheet-wash {
+  fill: var(--process-sheet-wash);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .process__card {
+    will-change: transform;
+  }
+}
+
+.process__num {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.9rem, 4vw, 3.7rem);
+  font-weight: 300;
+  line-height: 1;
+  /* Cormorant defaults to old-style figures, where 01 reads as "OI". */
+  font-variant-numeric: lining-nums;
+  color: var(--ink);
+}
+
+.process__body {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.process__name {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(1.55rem, 2vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+/* The vermillon dash the site's links draw on hover, left drawn here. */
+.process__dash {
+  display: block;
+  width: 64px;
+  height: 6px;
+  margin-top: 12px;
+}
+
+.process__text {
+  margin: 12px 0 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--ink) 74%, transparent);
+}
+
+/* One column: the heading sits above the cards and scrolls away normally,
+   and the cards pin closer to the top (still under the navbar) and land
+   closer together. */
+@media (max-width: 820px) {
+  .process {
+    /* The 100vw term leaves room for the 9.5deg entry tilt: a card as wide
+       as the column would lose its corners to the screen edge coming in. */
+    --process-card: min(360px, 50vh, 100vw - 56px);
+    --process-top: max(84px, 11vh);
+    --process-step: 48vh;
+  }
+
+  .process__inner {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: clamp(36px, 8vw, 56px);
+  }
+
+  .process__intro {
+    position: static;
+    padding-bottom: 0;
+  }
+
+  .process__card {
+    --process-pad: 24px;
+  }
+
+  .process__num {
+    font-size: 2.6rem;
+  }
+
+  /* Only the minimum gap under the number: a card with room to spare still
+     pushes its text to the bottom, so this shows only on the fullest cards. */
+  .process__body {
+    padding-top: 12px;
+  }
+
+  .process__name {
+    font-size: 1.45rem;
+  }
+
+  .process__text {
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+}
+
+/* Small phones: a little less inner margin, so the text keeps its size and
+   the cards stay square down to 375px. */
+@media (max-width: 380px) {
+  .process__card {
+    --process-pad: 20px;
   }
 }
