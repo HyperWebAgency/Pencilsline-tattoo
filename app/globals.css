@@ -400,31 +400,6 @@ body::before {
   }
 }
 
-.hero__scroll {
-  position: absolute;
-  left: clamp(24px, 11.5vw, 220px); /* stays under the headline */
-  bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  z-index: 2;
-}
-
-.hero__scroll-stroke {
-  display: block;
-  width: 5px;
-  height: 46px;
-}
-
-.hero__scroll-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: rgba(23, 21, 20, 0.5);
-}
-
 /* ------------------------------------------------------------ responsive -- */
 
 @media (max-width: 760px) {
@@ -447,9 +422,6 @@ body::before {
   }
 
   /* No scroll cue on a phone — swiping is the one thing nobody needs telling. */
-  .hero__scroll {
-    display: none;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -476,7 +448,8 @@ body::before {
   place-items: center;
   background: var(--paper) url('/textures/paper.svg') repeat;
   background-size: 600px 600px;
-  transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease;
+  /* 0.55s, mirrored by the LIFT_MS constant in ContactIntro — change both. */
+  transition: transform 0.55s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.55s ease;
 }
 
 /* First paint, before sessionStorage is read: cover the page but stay blank so
@@ -504,7 +477,30 @@ body::before {
 .intro__studio,
 .intro__tail {
   opacity: 0;
-  animation: intro-rise 0.75s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+/* Gated on --playing so the sequence starts when React says so, not at first
+   paint: the JS hold timer starts at hydration, and if these ran earlier the
+   card would finish assembling and then just sit there waiting for it. */
+.intro--playing .intro__artist,
+.intro--playing .intro__studio,
+.intro--playing .intro__tail {
+  animation: intro-rise 0.62s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+
+/* The delays belong here, not on the base rules: the shorthand above resets
+   animation-delay, so a delay declared at lower specificity is wiped and all
+   three lines rise at once. */
+.intro--playing .intro__artist {
+  animation-delay: 0.06s;
+}
+
+.intro--playing .intro__studio {
+  animation-delay: 0.22s;
+}
+
+.intro--playing .intro__tail {
+  animation-delay: 0.52s;
 }
 
 .intro__artist {
@@ -512,7 +508,6 @@ body::before {
   letter-spacing: 0.46em;
   text-transform: uppercase;
   text-indent: 0.46em;
-  animation-delay: 0.1s;
 }
 
 .intro__studio {
@@ -520,7 +515,6 @@ body::before {
   font-weight: 700;
   letter-spacing: 0.06em;
   line-height: 1.05;
-  animation-delay: 0.28s;
 }
 
 .intro__tail {
@@ -529,7 +523,6 @@ body::before {
   text-transform: uppercase;
   text-indent: 0.58em;
   color: rgba(23, 21, 20, 0.66);
-  animation-delay: 0.72s;
 }
 
 /* The stroke sweeps in under the name, like a signature being underlined. */
@@ -539,7 +532,10 @@ body::before {
   height: 8px;
   margin: 10px 0 14px;
   clip-path: inset(0 100% 0 0);
-  animation: intro-sweep 0.62s cubic-bezier(0.6, 0, 0.3, 1) 0.52s forwards;
+}
+
+.intro--playing .intro__stroke {
+  animation: intro-sweep 0.52s cubic-bezier(0.6, 0, 0.3, 1) 0.4s forwards;
 }
 
 @keyframes intro-rise {
@@ -2217,5 +2213,157 @@ body::before {
 
   .trio__hint {
     font-size: 10px;
+  }
+}
+
+/* ------------------------------------------------------- à propos collage -- */
+
+.about {
+  --about-photo-w: clamp(120px, 16vw, 216px);
+  padding: clamp(56px, 8vw, 110px) clamp(16px, 4vw, 48px) clamp(64px, 9vw, 116px);
+}
+
+/* One grid row per photo, so each one owns its own vertical tier and the eye
+   descends in a Z: left, right, left. The photos are in normal flow — tiers
+   can never overlap, whatever the widths do. The text spans all three rows,
+   centred on the full height. */
+.about__stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--about-photo-w) minmax(0, 1fr) var(--about-photo-w);
+  row-gap: clamp(18px, 2.6vw, 36px);
+  column-gap: clamp(24px, 4vw, 56px);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.about__body {
+  grid-row: 1 / span 3;
+  grid-column: 2;
+  align-self: center;
+}
+
+.about__mini img {
+  object-fit: cover;
+}
+
+/* No box of its own: on desktop the three small photos position themselves
+   against the stage; the row only materialises on phones. */
+.about__minis {
+  display: contents;
+}
+
+/* align-self start, not stretch: the aside must hug its figure so the bloom's
+   percentage offsets keep meaning corners of the photo. The relative nudges
+   push each photo past the stage edge into the section padding (4vw, wider
+   than the 3vw reach) without disturbing the grid. */
+.about__aside {
+  position: relative;
+  z-index: 2;
+  align-self: start;
+  width: 100%;
+}
+
+.about__aside--tl {
+  grid-row: 1;
+  grid-column: 1;
+  left: clamp(-56px, -3vw, -8px);
+}
+
+.about__aside--br {
+  grid-row: 2;
+  grid-column: 3;
+  right: clamp(-56px, -3vw, -8px);
+}
+
+.about__aside--ml {
+  grid-row: 3;
+  grid-column: 1;
+  left: clamp(-56px, -3vw, -8px);
+}
+
+.about__mini {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 34px rgba(23, 21, 20, 0.16);
+}
+
+.about__bloom {
+  position: absolute;
+  /* A step larger than the old starburst box: the flower plus bud only fill
+     about two thirds of the viewBox, so equal boxes read smaller. */
+  width: clamp(36px, 4vw, 62px);
+  height: auto;
+  pointer-events: none;
+}
+
+.about__aside--tl .about__bloom {
+  right: -16%;
+  bottom: -10%;
+}
+
+.about__aside--br .about__bloom {
+  left: -16%;
+  top: -8%;
+}
+
+.about__claim {
+  margin: 0 auto;
+  text-align: center;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: clamp(1.4rem, 3.8vw, 2.9rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.about__claim-line {
+  display: block;
+}
+
+.about__text {
+  margin: clamp(20px, 3vw, 30px) auto 0;
+  max-width: 60ch;
+  text-align: center;
+  font-size: 0.98rem;
+  line-height: 1.75;
+  color: rgba(23, 21, 20, 0.78);
+}
+
+/* Tablet: the collage narrows before it breaks — the photos shrink first. */
+@media (max-width: 900px) {
+  .about {
+    --about-photo-w: clamp(104px, 14vw, 160px);
+  }
+}
+
+/* Phone: no negative space left to float in — photos and text simply stack. */
+@media (max-width: 640px) {
+  .about__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .about__aside {
+    /* align-self start belongs to the grid; here it would pin the photos to
+       the flex column's left edge. */
+    align-self: center;
+    inset: auto;
+    width: min(58vw, 240px);
+  }
+
+  .about__body {
+    width: 100%;
+  }
+
+  .about__claim {
+    margin-top: clamp(36px, 9vw, 56px);
   }
 }

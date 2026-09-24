@@ -11,6 +11,19 @@ import InkStroke from './InkStroke';
  * doesn't replay it, is skippable with a click or any key, and is skipped
  * entirely under prefers-reduced-motion.
  */
+/**
+ * The card's last line lands at ~1.14s (tail: 0.52s delay + 0.62s rise), so
+ * this is that plus a short beat to read it — not a stall.
+ *
+ * This only holds because the CSS animations are gated on .intro--playing,
+ * which is added in the same commit that starts this timer. Left ungated they
+ * began at first paint while the timer began at hydration, so the two drifted
+ * apart and the card sat there longer the slower the device.
+ */
+const HOLD_MS = 1400;
+/** Must match the .intro transition duration in globals.css. */
+const LIFT_MS = 550;
+
 export default function ContactIntro({ artist = 'Alexandra', studio = 'Pencilsline', tail = 'Tattoo' }) {
   // `null` = undecided (first paint, before the motion preference is known).
   const [phase, setPhase] = useState(null);
@@ -26,8 +39,8 @@ export default function ContactIntro({ artist = 'Alexandra', studio = 'Pencilsli
     setPhase('playing');
     document.body.style.overflow = 'hidden';
 
-    const lift = setTimeout(() => setPhase('lifting'), 2100);
-    const end = setTimeout(() => setPhase('done'), 2900);
+    const lift = setTimeout(() => setPhase('lifting'), HOLD_MS);
+    const end = setTimeout(() => setPhase('done'), HOLD_MS + LIFT_MS);
 
     return () => {
       clearTimeout(lift);
@@ -48,7 +61,7 @@ export default function ContactIntro({ artist = 'Alexandra', studio = 'Pencilsli
       bound = true;
       window.addEventListener('pointerdown', skip);
       window.addEventListener('keydown', skip);
-    }, 600);
+    }, 450);
 
     return () => {
       clearTimeout(arm);
@@ -62,7 +75,7 @@ export default function ContactIntro({ artist = 'Alexandra', studio = 'Pencilsli
   useEffect(() => {
     if (phase === 'done') document.body.style.overflow = '';
     if (phase === 'lifting') {
-      const t = setTimeout(() => setPhase('done'), 800);
+      const t = setTimeout(() => setPhase('done'), LIFT_MS);
       return () => clearTimeout(t);
     }
     return undefined;
@@ -72,7 +85,9 @@ export default function ContactIntro({ artist = 'Alexandra', studio = 'Pencilsli
 
   return (
     <div
-      className={`intro${phase === 'lifting' ? ' intro--lifting' : ''}${phase === null ? ' intro--hold' : ''}`}
+      className={`intro${phase === 'lifting' ? ' intro--lifting' : ''}${
+        phase === null ? ' intro--hold' : ' intro--playing'
+      }`}
       role="presentation"
       aria-hidden="true"
     >

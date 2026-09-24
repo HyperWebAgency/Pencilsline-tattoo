@@ -246,7 +246,15 @@ export default function PortfolioCarousel({
                     fill
                     sizes={SLIDE_SIZES}
                     draggable={false}
-                    loading={Math.abs(pos) <= 1 ? 'eager' : 'lazy'}
+                    loading="lazy"
+                    /* Low priority on every slide: this carousel is always
+                       below the fold, so none of it should compete with the
+                       hero's fonts and CSS for bandwidth. Chrome fetches
+                       lazy images that are within ~1250px of the viewport
+                       regardless, and the carousel sits just inside that — so
+                       the priority hint is what actually keeps it out of the
+                       way. */
+                    fetchPriority="low"
                   />
                   {/* Only the centre slide opens a photo, so only it says so.
                       aria-hidden because the button's own label already tells a

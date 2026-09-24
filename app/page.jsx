@@ -1,3 +1,4 @@
+import AboutAlexandra from '@/components/AboutAlexandra';
 import CursorTrail from '@/components/CursorTrail';
 import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
@@ -102,18 +103,13 @@ export default async function Page() {
 
           <GoogleRating variant="hero" />
         </div>
-
-        <div className="hero__scroll" aria-hidden="true">
-          <span className="hero__scroll-stroke">
-            <InkStroke vertical length={46} thickness={2.6} seed={23} />
-          </span>
-          <span className="hero__scroll-label">défiler</span>
-        </div>
       </section>
 
       <VideoTrio />
 
       <PortfolioCarousel images={photos} />
+
+      <AboutAlexandra />
 
       <CursorTrail />
     </main>

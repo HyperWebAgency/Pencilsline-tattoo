@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import AdminShortcut from '@/components/AdminShortcut'
 import GalleryGrid from '@/components/GalleryGrid'
 import InkStroke from '@/components/InkStroke'
 import SealStamp from '@/components/SealStamp'
+import { getSiteUrl } from '@/lib/site-url'
 import { createSupabasePublicClient } from '@/lib/supabase/server'
 import {
   BUCKET,
@@ -19,6 +21,27 @@ export const revalidate = 3600
 export const metadata = {
   title: `Réalisations — ${STUDIO_NAME}, ${STUDIO_CITY}`,
   description: `Tatouages graphiques, brush et abstraits réalisés par ${STUDIO_ARTIST} — ${STUDIO_NAME}, ${STUDIO_CITY}.`,
+}
+
+/**
+ * Mirrors the visible trail so Google can show it in results. Built from the
+ * live origin rather than the intended domain — pointing a breadcrumb at a host
+ * serving a different site is worse than having no breadcrumb.
+ */
+function buildBreadcrumbSchema(site) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: site },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Réalisations',
+        item: `${site}/portfolio`,
+      },
+    ],
+  }
 }
 
 export default async function PortfolioPage() {
@@ -45,6 +68,18 @@ export default async function PortfolioPage() {
   return (
     <main className="pfolio">
       <header className="pfolio__head">
+        <nav className="breadcrumb" aria-label="Fil d'Ariane">
+          <ol className="breadcrumb__list">
+            <li className="breadcrumb__item">
+              <Link className="breadcrumb__link" href="/">
+                Accueil
+              </Link>
+            </li>
+            <li className="breadcrumb__item" aria-current="page">
+              Réalisations
+            </li>
+          </ol>
+        </nav>
         <p className="pfolio__kicker">
           <span className="seal-dot" aria-hidden="true" />
           Portfolio — {STUDIO_CITY}
@@ -88,6 +123,14 @@ export default async function PortfolioPage() {
       </footer>
 
       <AdminShortcut />
+
+      <script
+        type="application/ld+json"
+        // Static object we control — no user input reaches this.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(buildBreadcrumbSchema(getSiteUrl())),
+        }}
+      />
     </main>
   )
 }
