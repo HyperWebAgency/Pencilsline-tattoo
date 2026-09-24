@@ -1,4 +1,5 @@
 import CursorTrail from '@/components/CursorTrail';
+import Faq from '@/components/Faq';
 import GoogleRating from '@/components/GoogleRating';
 import HeroBranches from '@/components/HeroBranches';
 import InkStroke from '@/components/InkStroke';
@@ -110,6 +111,8 @@ export default async function Page() {
       <PortfolioCarousel images={photos} />
 
       <ProcessSteps />
+
+      <Faq />
 
       <CursorTrail />
     </main>
