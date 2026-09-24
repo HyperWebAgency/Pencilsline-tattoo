@@ -107,6 +107,34 @@ export default function Footer() {
       <p className="foot__legal">
         © {new Date().getFullYear()} {STUDIO_NAME} — {STUDIO_ADDRESS.city}
       </p>
+
+      {/* The name once more, the full width of the page, like a signature
+          under everything. Decorative: the studio's name is already read out
+          above, so screen readers skip it. */}
+      <div className="foot__mark" aria-hidden="true">
+        {/* The site's one brush filter, as a slight ink bleed on the letters. */}
+        <svg className="foot__mark-filter" focusable="false">
+          <filter id="foot-mark-bleed">
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.06"
+              numOctaves="3"
+              seed="13"
+              result="noise"
+            />
+            <feDisplacementMap
+              in="SourceGraphic"
+              in2="noise"
+              scale="3"
+              xChannelSelector="R"
+              yChannelSelector="G"
+            />
+          </filter>
+        </svg>
+        <p className="foot__mark-text">
+          Pencilsline <span className="foot__mark-word">Tattoo</span>
+        </p>
+      </div>
     </footer>
   )
 }

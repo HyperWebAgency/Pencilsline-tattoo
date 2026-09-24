@@ -1888,6 +1888,46 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(23, 21, 20, 0.4);
 }
 
+/* The full-width name under the footer. A size container, so the type can be
+   sized in cqw against the footer's own content width, not the viewport. */
+.foot__mark {
+  container-type: inline-size;
+  margin-top: clamp(28px, 4vw, 52px);
+}
+
+/* Holds the filter only. Zero-size rather than display: none, which would
+   switch the filter off. */
+.foot__mark-filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* "Pencilsline Tattoo" is 6.69em wide in light Cormorant, so 14.9cqw runs it
+   edge to edge. The ink is laid as a wash, pale at the top and full at the
+   foot, like ink settling into the paper. */
+.foot__mark-text {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 14.9cqw;
+  font-weight: 300;
+  line-height: 0.92;
+  white-space: nowrap;
+  color: transparent;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ink) 34%, transparent) 8%,
+    var(--ink) 88%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: url(#foot-mark-bleed);
+}
+
+.foot__mark-word {
+  font-style: italic;
+}
+
 /* Affordance on the centre slide — it is the only one that opens a photo.
    Always legible on touch, where there is no hover to reveal it; on a pointer
    it lifts on hover. The scrim keeps it readable over a light tattoo photo. */
