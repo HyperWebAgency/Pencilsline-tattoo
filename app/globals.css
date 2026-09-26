@@ -1979,6 +1979,51 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   accent-color: var(--seal);
 }
 
+.admin__step--spaced {
+  margin-top: 40px;
+}
+
+/* Gallery photos not in the carousel, to pick from: small tiles, each with
+   its own Ajouter button underneath. */
+.pick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pick-grid__item {
+  display: grid;
+  gap: 6px;
+}
+
+.pick-grid__thumb {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+}
+
+.pick-grid__item button {
+  padding: 7px 10px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  background: rgba(255, 253, 247, 0.6);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pick-grid__item button:hover:not(:disabled) {
+  border-color: var(--seal);
+  color: var(--seal);
+}
+
+.pick-grid__item button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 /* Phone: the actions drop under the photo instead of squeezing the text. */
 @media (max-width: 560px) {
   .photo-list__item {

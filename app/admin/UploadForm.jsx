@@ -2,9 +2,9 @@
 
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { ALLOWED_MIME, MAX_PHOTOS, MAX_UPLOAD_BYTES } from '@/lib/supabase/config'
+import { ALLOWED_MIME, MAX_GALLERY_PHOTOS, MAX_UPLOAD_BYTES } from '@/lib/supabase/config'
 
-/** `count` is how many photos exist now; the portfolio stops at MAX_PHOTOS. */
+/** `count` is how many photos the gallery holds; it stops at MAX_GALLERY_PHOTOS. */
 export default function UploadForm({ count }) {
   const router = useRouter()
   const inputRef = useRef(null)
@@ -73,11 +73,11 @@ export default function UploadForm({ count }) {
   }
 
   // At the limit, say why there is no form and what to do instead.
-  if (count >= MAX_PHOTOS) {
+  if (count >= MAX_GALLERY_PHOTOS) {
     return (
       <div className="upload upload--full">
         <p>
-          <strong>Limite atteinte : {count} photos sur {MAX_PHOTOS}.</strong>
+          <strong>La galerie est pleine : {count} photos sur {MAX_GALLERY_PHOTOS}.</strong>
         </p>
         <p className="upload__hint">
           Pour ajouter une nouvelle photo, supprimez d&apos;abord une photo dans la
@@ -87,13 +87,14 @@ export default function UploadForm({ count }) {
     )
   }
 
-  const left = MAX_PHOTOS - count
+  const left = MAX_GALLERY_PHOTOS - count
 
   return (
     <form className="upload" onSubmit={handleSubmit}>
       <p className="upload__hint">
-        Encore {left} photo{left > 1 ? 's' : ''} possible{left > 1 ? 's' : ''} ({count} sur{' '}
-        {MAX_PHOTOS}).
+        Encore {left} photo{left > 1 ? 's' : ''} possible{left > 1 ? 's' : ''} dans la galerie
+        ({count} sur {MAX_GALLERY_PHOTOS}). Une nouvelle photo va dans la galerie ; pour
+        la montrer aussi sur l&apos;accueil, ajoutez-la ensuite dans l&apos;onglet Accueil.
       </p>
       <div
         className={`upload__dropzone${dragging ? ' upload__dropzone--active' : ''}`}

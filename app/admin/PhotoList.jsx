@@ -38,7 +38,9 @@ export default function PhotoList({ photos }) {
 
   async function remove(photo) {
     const confirmed = window.confirm(
-      `Supprimer définitivement cette photo ?\n\n${photo.description || photo.alt_text}`
+      `Supprimer définitivement cette photo ?${
+        photo.show_on_home ? ' Elle sera aussi retirée du carrousel de l’accueil.' : ''
+      }\n\n${photo.description || photo.alt_text}`
     )
     if (!confirmed) return
 
@@ -85,13 +87,10 @@ export default function PhotoList({ photos }) {
             <div className="photo-list__meta">
               <p className="photo-list__description">{photo.description}</p>
               <p className="photo-list__alt">{photo.alt_text}</p>
-              {/* show_on_home (migration 0003): a photo can stay in the
-                  portfolio while being kept out of the home carousel. */}
-              <p className="photo-list__badge">
-                {photo.show_on_home === false
-                  ? 'Page Réalisations seulement'
-                  : 'Accueil + page Réalisations'}
-              </p>
+              {/* The carousel is picked in the Accueil tab; say which are in it. */}
+              {photo.show_on_home ? (
+                <p className="photo-list__badge">Aussi dans le carrousel de l&apos;accueil</p>
+              ) : null}
             </div>
 
             <div className="photo-list__actions">

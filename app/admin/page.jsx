@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getReviewCount } from '@/lib/settings'
-import { MAX_PHOTOS } from '@/lib/supabase/config'
+import { MAX_GALLERY_PHOTOS, MAX_HOME_PHOTOS } from '@/lib/supabase/config'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import HomeCarousel from './HomeCarousel'
 import UploadForm from './UploadForm'
 import PhotoList from './PhotoList'
 import ReviewCountForm from './ReviewCountForm'
@@ -24,7 +25,8 @@ export const metadata = {
  * the back button returns to the previous tab.
  */
 const SECTIONS = [
-  { id: 'photos', label: 'Photos' },
+  { id: 'galerie', label: 'Galerie' },
+  { id: 'accueil', label: 'Accueil' },
   { id: 'videos', label: 'Vidéos' },
   { id: 'avis', label: 'Avis Google' },
 ]
@@ -52,12 +54,12 @@ export default async function AdminPage({ searchParams }) {
   }
 
   const { section: asked } = await searchParams
-  const section = SECTIONS.some((s) => s.id === asked) ? asked : 'photos'
+  const section = SECTIONS.some((s) => s.id === asked) ? asked : 'galerie'
 
   const [{ data: photos }, { data: videos }, reviewCount] = await Promise.all([
     supabase
       .from('photos')
-      .select('id, storage_path, alt_text, description, display_order, show_on_home')
+      .select('id, storage_path, alt_text, description, display_order, show_on_home, home_order')
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: true }),
     supabase
@@ -69,7 +71,8 @@ export default async function AdminPage({ searchParams }) {
   ])
 
   const counts = {
-    photos: `${photos?.length ?? 0}/${MAX_PHOTOS}`,
+    galerie: `${photos?.length ?? 0}/${MAX_GALLERY_PHOTOS}`,
+    accueil: `${(photos ?? []).filter((p) => p.show_on_home).length}/${MAX_HOME_PHOTOS}`,
     videos: videos?.length ?? 0,
     avis: reviewCount,
   }
@@ -101,24 +104,36 @@ export default async function AdminPage({ searchParams }) {
         ))}
       </nav>
 
-      {section === 'photos' && (
-        <section className="admin__panel" aria-labelledby="admin-photos">
-          <h2 id="admin-photos">Photos de vos réalisations</h2>
+      {section === 'galerie' && (
+        <section className="admin__panel" aria-labelledby="admin-gallery">
+          <h2 id="admin-gallery">Galerie — page Réalisations</h2>
           <p className="admin__where">
-            Elles apparaissent dans le carrousel « Réalisations » de l&apos;accueil
-            et sur la page Réalisations, dans l&apos;ordre de la liste. Au maximum{' '}
-            {MAX_PHOTOS} photos : pour en changer une, supprimez-la puis ajoutez la
-            nouvelle.
+            Toutes vos photos, montrées sur la page Réalisations dans l&apos;ordre de
+            la liste. Jusqu&apos;à {MAX_GALLERY_PHOTOS} photos. Le carrousel de
+            l&apos;accueil en montre une sélection, choisie dans l&apos;onglet Accueil.
           </p>
 
           <Step n={1}>Ajouter une photo</Step>
           <UploadForm count={photos?.length ?? 0} />
 
-          <Step n={2}>Vos photos, dans l&apos;ordre du site</Step>
+          <Step n={2}>Vos photos, dans l&apos;ordre de la galerie</Step>
           <p className="admin__hint">
-            ↑ et ↓ changent l&apos;ordre : la photo n° 1 est montrée en premier.
+            ↑ et ↓ changent l&apos;ordre de la galerie : la photo n° 1 est montrée en
+            premier. « Supprimer » l&apos;efface du site entier.
           </p>
           <PhotoList photos={photos ?? []} />
+        </section>
+      )}
+
+      {section === 'accueil' && (
+        <section className="admin__panel" aria-labelledby="admin-home">
+          <h2 id="admin-home">Accueil — carrousel « Réalisations »</h2>
+          <p className="admin__where">
+            Le carrousel en haut de l&apos;accueil montre une sélection de photos de
+            votre galerie, au maximum {MAX_HOME_PHOTOS}, dans son propre ordre.
+            Changer le carrousel ne touche pas à la galerie.
+          </p>
+          <HomeCarousel photos={photos ?? []} />
         </section>
       )}
 

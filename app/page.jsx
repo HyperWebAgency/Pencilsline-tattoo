@@ -31,9 +31,9 @@ function Splatter() {
  * Photos for the home carousel, managed by Alexandra from /admin — never
  * hardcoded here.
  *
- * show_on_home is the only difference from the /portfolio query: a photo can be
- * dropped from this carousel while staying in the portfolio grid and in the
- * polaroid deal that plays on the way there.
+ * The carousel is its own selection of the gallery's photos (show_on_home, up
+ * to 12) in its own order (home_order), both set in /admin. A photo left out
+ * of it still shows in the portfolio grid and in the polaroid deal.
  */
 async function getPhotos() {
   const supabase = createSupabasePublicClient();
@@ -42,7 +42,7 @@ async function getPhotos() {
     .from('photos')
     .select('storage_path, alt_text')
     .eq('show_on_home', true)
-    .order('display_order', { ascending: true })
+    .order('home_order', { ascending: true })
     .order('created_at', { ascending: true });
 
   if (error) {

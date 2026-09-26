@@ -7,7 +7,7 @@ import {
 import {
   ALLOWED_MIME,
   BUCKET,
-  MAX_PHOTOS,
+  MAX_GALLERY_PHOTOS,
   MAX_UPLOAD_BYTES,
   buildAltText,
   buildStoragePath,
@@ -64,10 +64,10 @@ export async function POST(request) {
   const admin = createSupabaseAdminClient()
 
   const { count } = await admin.from('photos').select('*', { count: 'exact', head: true })
-  if ((count ?? 0) >= MAX_PHOTOS) {
+  if ((count ?? 0) >= MAX_GALLERY_PHOTOS) {
     return NextResponse.json(
       {
-        error: `Limite de ${MAX_PHOTOS} photos atteinte. Supprimez-en une pour en ajouter une autre.`,
+        error: `La galerie est pleine (${MAX_GALLERY_PHOTOS} photos). Supprimez-en une pour en ajouter une autre.`,
       },
       { status: 400 }
     )
@@ -98,6 +98,8 @@ export async function POST(request) {
       alt_text: buildAltText(description),
       description,
       display_order: (lastPhoto?.display_order ?? -1) + 1,
+      // Gallery only: the home carousel is picked separately, in /admin.
+      show_on_home: false,
     })
     .select()
     .single()
