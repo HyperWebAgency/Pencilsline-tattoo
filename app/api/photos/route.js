@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
+import sharp from 'sharp'
 import {
   createSupabaseAdminClient,
   createSupabaseServerClient,
@@ -9,9 +10,34 @@ import {
   BUCKET,
   MAX_GALLERY_PHOTOS,
   MAX_UPLOAD_BYTES,
+  PHOTO_MAX_EDGE,
+  PHOTO_WEBP_QUALITY,
   buildAltText,
   buildStoragePath,
 } from '@/lib/supabase/config'
+
+/**
+ * Every photo is stored as WebP. The admin form already sends one from most
+ * browsers; Safari can't encode WebP and sends a JPEG, converted here. rotate()
+ * applies any EXIF orientation, and sharp drops the metadata (GPS included).
+ */
+async function toWebp(file) {
+  if (file.type === 'image/webp') return file
+
+  const webp = await sharp(Buffer.from(await file.arrayBuffer()))
+    .rotate()
+    .resize({
+      width: PHOTO_MAX_EDGE,
+      height: PHOTO_MAX_EDGE,
+      fit: 'inside',
+      withoutEnlargement: true,
+    })
+    .webp({ quality: Math.round(PHOTO_WEBP_QUALITY * 100) })
+    .toBuffer()
+
+  const base = file.name.replace(/\.[^.]*$/, '') || 'photo'
+  return new File([webp], `${base}.webp`, { type: 'image/webp' })
+}
 
 /**
  * Confirms the caller is the signed-in artist.
@@ -73,11 +99,21 @@ export async function POST(request) {
     )
   }
 
-  const storagePath = buildStoragePath(description, file.name)
+  let photoFile
+  try {
+    photoFile = await toWebp(file)
+  } catch {
+    return NextResponse.json(
+      { error: 'Impossible de lire cette photo. Enregistrez-la en JPG, puis réessayez.' },
+      { status: 400 }
+    )
+  }
+
+  const storagePath = buildStoragePath(description, photoFile.name)
 
   const { error: uploadError } = await admin.storage
     .from(BUCKET)
-    .upload(storagePath, file, { contentType: file.type, upsert: false })
+    .upload(storagePath, photoFile, { contentType: photoFile.type, upsert: false })
 
   if (uploadError) {
     return NextResponse.json({ error: uploadError.message }, { status: 500 })

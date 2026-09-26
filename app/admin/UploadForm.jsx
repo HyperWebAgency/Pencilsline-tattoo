@@ -2,39 +2,133 @@
 
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { ALLOWED_MIME, MAX_GALLERY_PHOTOS, MAX_UPLOAD_BYTES } from '@/lib/supabase/config'
+import {
+  ALLOWED_MIME,
+  MAX_GALLERY_PHOTOS,
+  MAX_ORIGINAL_BYTES,
+  PHOTO_MAX_EDGE,
+  PHOTO_WEBP_QUALITY,
+} from '@/lib/supabase/config'
+
+/** Under the 4.5 MB a Vercel function accepts, so a photo can still go whole. */
+const SEND_AS_IS_BYTES = 4 * 1024 * 1024
+
+const toBlob = (canvas, type, quality) =>
+  new Promise((resolve) => canvas.toBlob(resolve, type, quality))
+
+/** 380 Ko, 4,2 Mo: French units, kept on one line. */
+function formatSize(bytes) {
+  if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} Ko`
+  const mb = (bytes / 1024 / 1024).toLocaleString('fr-FR', { maximumFractionDigits: 1 })
+  return `${mb} Mo`
+}
+
+/**
+ * Shrinks the photo to PHOTO_MAX_EDGE and encodes it as WebP, here in the
+ * browser: a photo straight from a phone is often past what a Vercel function
+ * accepts. Safari can't encode WebP (it silently hands back a PNG), so there it
+ * becomes a JPEG, which the API converts. Redrawing also drops the EXIF block,
+ * GPS position included. Rejects if the browser can't decode the file.
+ */
+async function shrinkPhoto(file) {
+  const url = URL.createObjectURL(file)
+  try {
+    const img = new Image()
+    img.src = url
+    await img.decode()
+
+    const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(img.naturalWidth, img.naturalHeight))
+    const width = Math.max(1, Math.round(img.naturalWidth * scale))
+    const height = Math.max(1, Math.round(img.naturalHeight * scale))
+
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext('2d')
+    ctx.imageSmoothingQuality = 'high'
+    ctx.drawImage(img, 0, 0, width, height)
+
+    let blob = await toBlob(canvas, 'image/webp', PHOTO_WEBP_QUALITY)
+    if (blob?.type !== 'image/webp') {
+      // JPEG has no transparency: white behind it, not black.
+      ctx.globalCompositeOperation = 'destination-over'
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(0, 0, width, height)
+      blob = await toBlob(canvas, 'image/jpeg', 0.92)
+    }
+    if (!blob) throw new Error('Encodage impossible.')
+
+    const base = file.name.replace(/\.[^.]*$/, '') || 'photo'
+    const ext = blob.type === 'image/webp' ? 'webp' : 'jpg'
+    return { file: new File([blob], `${base}.${ext}`, { type: blob.type }), width, height }
+  } finally {
+    URL.revokeObjectURL(url)
+  }
+}
 
 /** `count` is how many photos the gallery holds; it stops at MAX_GALLERY_PHOTOS. */
 export default function UploadForm({ count }) {
   const router = useRouter()
   const inputRef = useRef(null)
+  const pickRef = useRef(0) // the latest pick wins if she picks again mid-way
   const [file, setFile] = useState(null)
   const [preview, setPreview] = useState('')
+  const [note, setNote] = useState('') // what happened to her photo
   const [description, setDescription] = useState('')
   const [error, setError] = useState('')
+  const [preparing, setPreparing] = useState(false)
   const [pending, setPending] = useState(false)
   const [dragging, setDragging] = useState(false)
 
-  function acceptFile(candidate) {
+  async function acceptFile(candidate) {
     if (!candidate) return
 
     if (!ALLOWED_MIME.includes(candidate.type)) {
       setError('Format non supporté. Utilisez JPG, PNG, WebP ou AVIF.')
       return
     }
-    if (candidate.size > MAX_UPLOAD_BYTES) {
-      setError('Fichier trop volumineux (10 Mo maximum).')
+    if (candidate.size > MAX_ORIGINAL_BYTES) {
+      setError(`Photo trop lourde (${formatSize(candidate.size)}, 30 Mo maximum).`)
       return
     }
 
+    const pick = ++pickRef.current
     setError('')
-    setFile(candidate)
-    setPreview(URL.createObjectURL(candidate))
+    setFile(null)
+    setPreview('')
+    setNote('Préparation de la photo…')
+    setPreparing(true)
+
+    let shrunk = null
+    try {
+      shrunk = await shrinkPhoto(candidate)
+    } catch {}
+    if (pick !== pickRef.current) return
+    setPreparing(false)
+
+    if (shrunk) {
+      const size = `${shrunk.width} × ${shrunk.height} px`
+      setFile(shrunk.file)
+      setPreview(URL.createObjectURL(shrunk.file))
+      setNote(
+        shrunk.file.type === 'image/webp'
+          ? `Prête : ${size} · ${formatSize(candidate.size)} → ${formatSize(shrunk.file.size)}, publiée en WebP.`
+          : `Prête : ${size}, convertie en WebP à l’envoi.`
+      )
+    } else if (candidate.size <= SEND_AS_IS_BYTES) {
+      // This browser can't read it, but the server can.
+      setFile(candidate)
+      setNote('Pas d’aperçu dans ce navigateur : la photo sera convertie en WebP à l’envoi.')
+    } else {
+      setNote('')
+      setError('Impossible de préparer cette photo. Enregistrez-la en JPG, puis réessayez.')
+    }
   }
 
   function reset() {
     setFile(null)
     setPreview('')
+    setNote('')
     setDescription('')
     if (inputRef.current) inputRef.current.value = ''
   }
@@ -58,14 +152,24 @@ export default function UploadForm({ count }) {
     body.append('file', file)
     body.append('description', description)
 
-    const res = await fetch('/api/photos', { method: 'POST', body })
-    const payload = await res.json()
-
-    setPending(false)
-
-    if (!res.ok) {
-      setError(payload.error || "Échec de l'envoi.")
+    try {
+      const res = await fetch('/api/photos', { method: 'POST', body })
+      // A refusal from Vercel itself (413, too large) is not JSON.
+      const payload = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(
+          payload.error ||
+            (res.status === 413
+              ? 'Photo trop lourde pour l’envoi. Essayez avec une photo plus petite.'
+              : "Échec de l'envoi.")
+        )
+        return
+      }
+    } catch {
+      setError('Connexion interrompue pendant l’envoi. Réessayez.')
       return
+    } finally {
+      setPending(false)
     }
 
     reset()
@@ -115,8 +219,13 @@ export default function UploadForm({ count }) {
           // next/image is for the published portfolio.
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Aperçu" className="upload__preview" />
+        ) : file ? (
+          <p>{file.name}</p>
         ) : (
-          <p>Glissez une photo ici, ou touchez pour choisir</p>
+          <p>
+            Glissez une photo ici, ou touchez pour choisir (JPG ou PNG : elle est
+            convertie en WebP automatiquement)
+          </p>
         )}
 
         <input
@@ -127,6 +236,12 @@ export default function UploadForm({ count }) {
           onChange={(e) => acceptFile(e.target.files?.[0])}
         />
       </div>
+
+      {note ? (
+        <p className="upload__status" role="status">
+          {note}
+        </p>
+      ) : null}
 
       <label htmlFor="description">
         Description <span className="upload__required">(obligatoire)</span>
@@ -146,7 +261,7 @@ export default function UploadForm({ count }) {
 
       {error ? <p className="upload__error">{error}</p> : null}
 
-      <button type="submit" disabled={pending}>
+      <button type="submit" disabled={pending || preparing}>
         {pending ? 'Envoi…' : 'Publier la photo'}
       </button>
     </form>
