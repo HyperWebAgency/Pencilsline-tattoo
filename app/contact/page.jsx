@@ -2,6 +2,7 @@ import Link from 'next/link'
 import BookingForm from '@/components/BookingForm'
 import ContactIntro from '@/components/ContactIntro'
 import InkStroke from '@/components/InkStroke'
+import { getReviewCount } from '@/lib/settings'
 import { getSiteUrl } from '@/lib/site-url'
 import {
   BOOKING_WARNING,
@@ -21,7 +22,6 @@ import {
   STUDIO_NAME,
   STUDIO_PHONE,
   STUDIO_PHONE_E164,
-  STUDIO_REVIEW_COUNT,
   VENUE_NAME,
 } from '@/lib/supabase/config'
 
@@ -90,7 +90,9 @@ function buildBreadcrumbSchema(site) {
   }
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const reviewCount = await getReviewCount()
+
   const breadcrumbSchema = buildBreadcrumbSchema(getSiteUrl())
 
   return (
@@ -223,7 +225,7 @@ export default function ContactPage() {
                 </li>
                 <li>
                   <a className="contact__link" href={STUDIO_GOOGLE_URL} target="_blank" rel="noreferrer">
-                    Google — {STUDIO_REVIEW_COUNT} avis
+                    Google — {reviewCount} avis
                   </a>
                 </li>
               </ul>

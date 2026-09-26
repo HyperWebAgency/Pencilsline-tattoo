@@ -1,7 +1,9 @@
 import { redirect } from 'next/navigation'
+import { getReviewCount } from '@/lib/settings'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import UploadForm from './UploadForm'
 import PhotoList from './PhotoList'
+import ReviewCountForm from './ReviewCountForm'
 
 // Admin must always reflect true current state and be permission-checked
 // per request. Never cached.
@@ -31,6 +33,8 @@ export default async function AdminPage() {
     .order('display_order', { ascending: true })
     .order('created_at', { ascending: true })
 
+  const reviewCount = await getReviewCount()
+
   return (
     <main className="admin">
       <header className="admin__header">
@@ -45,6 +49,11 @@ export default async function AdminPage() {
 
       <UploadForm />
       <PhotoList photos={photos ?? []} />
+
+      <section className="admin__section" aria-labelledby="admin-reviews">
+        <h2 id="admin-reviews">Avis Google</h2>
+        <ReviewCountForm initialCount={reviewCount} />
+      </section>
     </main>
   )
 }

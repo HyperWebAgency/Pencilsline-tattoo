@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import GoogleRating from './GoogleRating'
 import InkStroke from './InkStroke'
+import { getReviewCount } from '@/lib/settings'
 import {
   STUDIO_ADDRESS,
   STUDIO_ARTIST,
@@ -12,14 +13,14 @@ import {
   STUDIO_NAME,
   STUDIO_PHONE,
   STUDIO_PHONE_E164,
-  STUDIO_REVIEW_COUNT,
   VENUE_NAME,
 } from '@/lib/supabase/config'
 
-const SOCIALS = [
+/** The Google entry carries the review count Alexandra sets from /admin. */
+const socials = (reviewCount) => [
   { href: STUDIO_INSTAGRAM, label: 'Instagram', detail: STUDIO_INSTAGRAM_HANDLE },
   { href: STUDIO_FACEBOOK, label: 'Facebook', detail: 'Pencilsline Tattoo' },
-  { href: STUDIO_GOOGLE_URL, label: 'Google', detail: `${STUDIO_REVIEW_COUNT} avis` },
+  { href: STUDIO_GOOGLE_URL, label: 'Google', detail: `${reviewCount} avis` },
 ]
 
 const PAGES = [
@@ -36,7 +37,9 @@ const PAGES = [
  * aggregateRating: those reviews live on Google, and marking up someone else's
  * reviews as your own structured data is against Google's own guidelines.
  */
-export default function Footer() {
+export default async function Footer() {
+  const reviewCount = await getReviewCount()
+
   return (
     <footer className="foot">
       <div className="foot__rule" aria-hidden="true">
@@ -89,7 +92,7 @@ export default function Footer() {
           <GoogleRating />
 
           <ul className="foot__socials">
-            {SOCIALS.map((s, i) => (
+            {socials(reviewCount).map((s, i) => (
               <li key={s.label}>
                 <a className="brush-link" href={s.href} target="_blank" rel="noreferrer">
                   {s.label}

@@ -1,8 +1,5 @@
-import {
-  STUDIO_GOOGLE_URL,
-  STUDIO_RATING,
-  STUDIO_REVIEW_COUNT,
-} from '@/lib/supabase/config'
+import { getReviewCount } from '@/lib/settings'
+import { STUDIO_GOOGLE_URL, STUDIO_RATING } from '@/lib/supabase/config'
 
 /** Five filled seal-red stars. Decorative — the score beside them carries it. */
 function Stars() {
@@ -23,22 +20,24 @@ function Stars() {
 /**
  * The Google Business Profile rating, linked to the profile it came from.
  *
- * Shared by the hero and the footer so the two can never disagree. The numbers
- * live in config and are read by hand — see the note there on why this is not
- * also emitted as JSON-LD aggregateRating.
+ * Shared by the hero and the footer so the two can never disagree. The review
+ * count is set by Alexandra from /admin; the rating lives in config — see the
+ * note there on why neither is emitted as JSON-LD aggregateRating.
  */
-export default function GoogleRating({ variant = '' }) {
+export default async function GoogleRating({ variant = '' }) {
+  const reviewCount = await getReviewCount()
+
   return (
     <a
       className={`grate${variant ? ` grate--${variant}` : ''}`}
       href={STUDIO_GOOGLE_URL}
       target="_blank"
       rel="noreferrer"
-      aria-label={`${STUDIO_RATING} sur 5 — ${STUDIO_REVIEW_COUNT} avis Google, voir le profil`}
+      aria-label={`${STUDIO_RATING} sur 5 — ${reviewCount} avis Google, voir le profil`}
     >
       <Stars />
       <span className="grate__score">{STUDIO_RATING}</span>
-      <span className="grate__count">{STUDIO_REVIEW_COUNT} avis Google</span>
+      <span className="grate__count">{reviewCount} avis Google</span>
     </a>
   )
 }
