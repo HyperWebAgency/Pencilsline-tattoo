@@ -10,6 +10,7 @@ import SealStamp from '@/components/SealStamp';
 import VideoTrio from '@/components/VideoTrio';
 import { BUCKET, STUDIO_ARTIST, STUDIO_NAME } from '@/lib/supabase/config';
 import { createSupabasePublicClient } from '@/lib/supabase/server';
+import { getVideos } from '@/lib/videos';
 
 // Same strategy as /portfolio: static HTML rebuilt hourly, and the upload route
 // revalidates on demand so a new photo shows up within seconds.
@@ -56,7 +57,7 @@ async function getPhotos() {
 }
 
 export default async function Page() {
-  const photos = await getPhotos();
+  const [photos, videos] = await Promise.all([getPhotos(), getVideos()]);
 
   return (
     <main>
@@ -106,7 +107,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <VideoTrio />
+      <VideoTrio videos={videos} />
 
       <PortfolioCarousel images={photos} />
 

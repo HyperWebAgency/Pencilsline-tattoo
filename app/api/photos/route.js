@@ -7,6 +7,7 @@ import {
 import {
   ALLOWED_MIME,
   BUCKET,
+  MAX_PHOTOS,
   MAX_UPLOAD_BYTES,
   buildAltText,
   buildStoragePath,
@@ -61,6 +62,17 @@ export async function POST(request) {
   }
 
   const admin = createSupabaseAdminClient()
+
+  const { count } = await admin.from('photos').select('*', { count: 'exact', head: true })
+  if ((count ?? 0) >= MAX_PHOTOS) {
+    return NextResponse.json(
+      {
+        error: `Limite de ${MAX_PHOTOS} photos atteinte. Supprimez-en une pour en ajouter une autre.`,
+      },
+      { status: 400 }
+    )
+  }
+
   const storagePath = buildStoragePath(description, file.name)
 
   const { error: uploadError } = await admin.storage
@@ -96,7 +108,9 @@ export async function POST(request) {
     return NextResponse.json({ error: insertError.message }, { status: 500 })
   }
 
-  revalidatePath('/portfolio')
+  // Photos show on / and /portfolio, and the layout's transition deck is on
+  // every page, so refresh them all, not just the gallery.
+  revalidatePath('/', 'layout')
 
   return NextResponse.json({ photo }, { status: 201 })
 }
@@ -138,7 +152,9 @@ export async function DELETE(request) {
     return NextResponse.json({ error: deleteError.message }, { status: 500 })
   }
 
-  revalidatePath('/portfolio')
+  // Photos show on / and /portfolio, and the layout's transition deck is on
+  // every page, so refresh them all, not just the gallery.
+  revalidatePath('/', 'layout')
 
   return NextResponse.json({ ok: true })
 }

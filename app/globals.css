@@ -1659,17 +1659,6 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   height: auto;
 }
 
-.admin__section h2 {
-  margin: 0 0 16px;
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: clamp(1.5rem, 3vw, 1.9rem);
-  font-weight: 300;
-}
-
-.admin__section {
-  margin-top: 48px;
-}
-
 .admin__done {
   margin: 0;
   font-size: 0.92rem;
@@ -1743,6 +1732,268 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 .photo-list__delete {
   color: var(--seal);
   border-color: rgba(121, 16, 16, 0.4);
+}
+
+.photo-list__actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Position in the site's order, so "n° 1" in the help text has a match. */
+.photo-list__pos {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Where the item shows on the site. */
+.photo-list__badge {
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 2px 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  background: rgba(23, 21, 20, 0.07);
+}
+
+/* Clips are portrait 9:16, not the photos' 4:5. */
+.photo-list__thumb--video {
+  width: 64px;
+  height: 114px;
+  background: var(--ink);
+}
+
+/* ------------------------------------------------ admin layout and tabs -- */
+
+.admin__lead {
+  margin: 10px 0 0;
+  max-width: 46ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(23, 21, 20, 0.7);
+}
+
+.admin__account {
+  display: grid;
+  justify-items: end;
+  gap: 3px;
+  text-align: right;
+  font-size: 0.85rem;
+}
+
+.admin__account-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.5);
+}
+
+.admin__account-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 6px;
+}
+
+.admin__account-links form {
+  margin: 0;
+}
+
+.admin__view-site {
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+/* A quiet link, not the red submit style every other admin button gets. */
+.admin button.admin__signout {
+  padding: 0;
+  background: none;
+  color: rgba(23, 21, 20, 0.6);
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: underline;
+}
+
+.admin button.admin__signout:hover {
+  background: none;
+  color: var(--seal);
+}
+
+.admin button[type='submit']:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* One tab per thing she can change. Plain links, underlined in seal red when
+   current; they scroll sideways rather than wrap on a narrow phone. */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 34px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(23, 21, 20, 0.15);
+}
+
+.admin-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  margin-bottom: -1px;
+  padding: 12px 16px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  color: rgba(23, 21, 20, 0.6);
+  border-bottom: 2px solid transparent;
+}
+
+.admin-tabs__tab:hover {
+  color: var(--ink);
+}
+
+.admin-tabs__tab[aria-current='page'] {
+  color: var(--ink);
+  border-bottom-color: var(--seal);
+}
+
+.admin-tabs__count {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(23, 21, 20, 0.08);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
+.admin__panel h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(1.6rem, 3.4vw, 2.1rem);
+  font-weight: 300;
+}
+
+/* "Where this shows on the site", first thing in every tab. */
+.admin__where {
+  margin: 0 0 32px;
+  max-width: 62ch;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(23, 21, 20, 0.72);
+}
+
+.admin__step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+.admin__step span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--seal);
+  color: var(--paper);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin__hint {
+  margin: -4px 0 14px;
+  font-size: 12.5px;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.admin__empty {
+  margin: 0;
+  padding: 18px;
+  font-size: 0.92rem;
+  color: rgba(23, 21, 20, 0.65);
+  border: 1px dashed rgba(23, 21, 20, 0.25);
+}
+
+.upload label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* The drop area had no style of its own: make it read as the thing to tap. */
+.upload__dropzone {
+  display: grid;
+  place-items: center;
+  min-height: 140px;
+  padding: 18px;
+  text-align: center;
+  font-size: 0.92rem;
+  color: rgba(23, 21, 20, 0.7);
+  background: rgba(255, 253, 247, 0.55);
+  border: 1.5px dashed rgba(23, 21, 20, 0.3);
+  cursor: pointer;
+  transition: border-color 0.18s ease;
+}
+
+.upload__dropzone:hover,
+.upload__dropzone--active {
+  border-color: var(--seal);
+}
+
+.upload__dropzone p {
+  margin: 0;
+}
+
+.upload--full {
+  border-left-color: rgba(23, 21, 20, 0.35);
+}
+
+.upload--full p {
+  margin: 0;
+}
+
+.upload__status {
+  display: grid;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.upload__progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--seal);
+}
+
+/* Phone: the actions drop under the photo instead of squeezing the text. */
+@media (max-width: 560px) {
+  .photo-list__item {
+    flex-wrap: wrap;
+  }
+
+  .photo-list__actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .admin__account {
+    justify-items: start;
+    text-align: left;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2149,11 +2400,13 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 
 .trio__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  /* Bottom-aligned, so the taller middle cell rises out of the row. */
+  /* --trio-cols is the number of clips, up to three (set inline); a fourth
+     wraps. Fewer than three keep a third of the row each, centred, so one
+     clip does not blow up to the full width. */
+  grid-template-columns: repeat(var(--trio-cols, 3), minmax(0, 1fr));
   align-items: end;
   gap: clamp(10px, 2vw, 26px);
-  max-width: 1120px;
+  max-width: calc(1120px * var(--trio-cols, 3) / 3);
   margin: 0 auto;
   padding: 0;
   list-style: none;
@@ -2303,8 +2556,9 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(243, 239, 229, 0.94);
 }
 
-/* Phones show the centre clip only: three columns on a 390px screen left each
-   one about 115px wide, too small to read as anything. Alone, it gets room. */
+/* Phones show the lead clip only (the first in /admin): three columns on a
+   390px screen left each one about 115px wide, too small to read as anything.
+   Alone, it gets room. */
 @media (max-width: 640px) {
   .trio__cell:not(.trio__cell--lead) {
     display: none;

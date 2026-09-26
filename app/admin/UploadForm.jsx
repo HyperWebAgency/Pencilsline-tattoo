@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
-import { ALLOWED_MIME, MAX_UPLOAD_BYTES } from '@/lib/supabase/config'
+import { ALLOWED_MIME, MAX_PHOTOS, MAX_UPLOAD_BYTES } from '@/lib/supabase/config'
 
-export default function UploadForm() {
+/** `count` is how many photos exist now; the portfolio stops at MAX_PHOTOS. */
+export default function UploadForm({ count }) {
   const router = useRouter()
   const inputRef = useRef(null)
   const [file, setFile] = useState(null)
@@ -71,8 +72,29 @@ export default function UploadForm() {
     router.refresh()
   }
 
+  // At the limit, say why there is no form and what to do instead.
+  if (count >= MAX_PHOTOS) {
+    return (
+      <div className="upload upload--full">
+        <p>
+          <strong>Limite atteinte : {count} photos sur {MAX_PHOTOS}.</strong>
+        </p>
+        <p className="upload__hint">
+          Pour ajouter une nouvelle photo, supprimez d&apos;abord une photo dans la
+          liste ci-dessous. Le formulaire d&apos;ajout réapparaîtra ici.
+        </p>
+      </div>
+    )
+  }
+
+  const left = MAX_PHOTOS - count
+
   return (
     <form className="upload" onSubmit={handleSubmit}>
+      <p className="upload__hint">
+        Encore {left} photo{left > 1 ? 's' : ''} possible{left > 1 ? 's' : ''} ({count} sur{' '}
+        {MAX_PHOTOS}).
+      </p>
       <div
         className={`upload__dropzone${dragging ? ' upload__dropzone--active' : ''}`}
         onDragOver={(e) => {

@@ -2,25 +2,23 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-/** The middle one leads: it carries the prompt, and is the only one on phones. */
-const CLIPS = [
-  { src: '/videos/atelier-1', label: "Tatouage en cours à l'encre de Chine" },
-  { src: '/videos/atelier-2', label: "Alexandra dessine le motif à l'atelier" },
-  { src: '/videos/atelier-3', label: 'Détail du tracé sur la peau' },
-];
-
 /**
- * Three clips below the hero, revealed on scroll, each played on click.
+ * The clips below the hero, as Alexandra arranges them in /admin (see
+ * lib/videos.js), revealed on scroll and each played on click. Up to three sit
+ * side by side; more wrap onto the next row. The first one leads: it carries
+ * the prompt, and it is the only one shown on a phone.
  *
  * No animation library: the project has none, and this needs one
  * IntersectionObserver — the same hand-rolled approach as CursorTrail and
  * TransitionProvider. Lenis only drives scrolling, it does not do reveals.
  *
- * preload="none" plus a poster means the page carries three small stills and
- * nothing else; a clip is fetched the moment someone asks for it. Starting one
+ * preload="none" plus a poster means the page carries a few small stills and
+ * nothing else; a clip is fetched the moment someone asks for it. A clip whose
+ * still could not be made at upload preloads its metadata instead, so the
+ * browser shows its opening frame rather than a black box. Starting one
  * pauses the others, so two soundtracks never overlap.
  */
-export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
+export default function VideoTrio({ videos = [], heading = "L'atelier en mouvement" }) {
   const sectionRef = useRef(null);
   const videoRefs = useRef([]);
   const [revealed, setRevealed] = useState(false);
@@ -70,35 +68,39 @@ export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
     });
   };
 
+  // All removed from /admin: no row, rather than an empty band of paper.
+  if (!videos.length) return null;
+
   return (
     <section
       className={`trio${revealed ? ' is-revealed' : ''}`}
       ref={sectionRef}
       aria-label={heading}
     >
-      <ul className="trio__grid">
-        {CLIPS.map((clip, i) => (
+      <ul className="trio__grid" style={{ '--trio-cols': Math.min(videos.length, 3) }}>
+        {videos.map((clip, i) => (
           <li
-            key={clip.src}
-            className={`trio__cell${i === 1 ? ' trio__cell--lead' : ''}`}
-            style={{ '--trio-delay': `${i * 120}ms` }}
+            key={clip.id}
+            className={`trio__cell${i === 0 ? ' trio__cell--lead' : ''}`}
+            style={{ '--trio-delay': `${(i % 3) * 120}ms` }}
           >
             <video
               ref={(el) => {
                 videoRefs.current[i] = el;
               }}
               className="trio__video"
-              poster={`${clip.src}-poster.jpg`}
-              preload="none"
+              poster={clip.poster ?? undefined}
+              preload={clip.poster ? 'none' : 'metadata'}
               playsInline
               controls={playing === i}
               onEnded={() => setPlaying(null)}
               onPause={() => setPlaying((cur) => (cur === i ? null : cur))}
             >
               {/* Always rendered: preload="none" is what withholds the bytes,
-                  and sources injected later would need an explicit load(). */}
-              <source src={`${clip.src}.webm`} type="video/webm" />
-              <source src={`${clip.src}.mp4`} type="video/mp4" />
+                  and sources injected later would need an explicit load().
+                  #t=0.1 makes a poster-less clip show a real frame, not the
+                  often-black first one. */}
+              <source src={clip.poster ? clip.src : `${clip.src}#t=0.1`} type={clip.type} />
             </video>
 
             {playing !== i && (
@@ -113,10 +115,10 @@ export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
                     <path d="M9 6.5 L17.5 12 L9 17.5 Z" fill="currentColor" />
                   </svg>
                 </span>
-                {/* Only on the centre clip: one prompt is enough for the row,
+                {/* Only on the lead clip: one prompt is enough for the row,
                     and on a phone it is the only one shown. aria-hidden because
                     the button's own label already says what it does. */}
-                {i === 1 && (
+                {i === 0 && (
                   <span className="trio__hint" aria-hidden="true">
                     Cliquer pour voir la vidéo
                   </span>

@@ -15,7 +15,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 })
   }
 
-  const { ids } = await request.json()
+  const { ids } = await request.json().catch(() => ({}))
   if (!Array.isArray(ids) || ids.length === 0) {
     return NextResponse.json({ error: 'Ordre invalide.' }, { status: 400 })
   }
@@ -25,7 +25,7 @@ export async function POST(request) {
   // Position in the array is the new display_order.
   const results = await Promise.all(
     ids.map((id, index) =>
-      admin.from('photos').update({ display_order: index }).eq('id', id)
+      admin.from('videos').update({ display_order: index }).eq('id', id)
     )
   )
 
@@ -34,9 +34,7 @@ export async function POST(request) {
     return NextResponse.json({ error: failed.error.message }, { status: 500 })
   }
 
-  // Photos show on / and /portfolio, and the layout's transition deck is on
-  // every page, so refresh them all, not just the gallery.
-  revalidatePath('/', 'layout')
+  revalidatePath('/')
 
   return NextResponse.json({ ok: true })
 }

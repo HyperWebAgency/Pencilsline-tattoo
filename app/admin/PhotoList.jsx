@@ -67,9 +67,13 @@ export default function PhotoList({ photos }) {
     <>
       {error ? <p className="admin__error">{error}</p> : null}
 
-      <ul className="photo-list">
+      <ol className="photo-list">
         {photos.map((photo, index) => (
           <li key={photo.id} className="photo-list__item">
+            <span className="photo-list__pos" aria-hidden="true">
+              {index + 1}
+            </span>
+
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={publicUrl(photo.storage_path)}
@@ -81,6 +85,13 @@ export default function PhotoList({ photos }) {
             <div className="photo-list__meta">
               <p className="photo-list__description">{photo.description}</p>
               <p className="photo-list__alt">{photo.alt_text}</p>
+              {/* show_on_home (migration 0003): a photo can stay in the
+                  portfolio while being kept out of the home carousel. */}
+              <p className="photo-list__badge">
+                {photo.show_on_home === false
+                  ? 'Page Réalisations seulement'
+                  : 'Accueil + page Réalisations'}
+              </p>
             </div>
 
             <div className="photo-list__actions">
@@ -90,6 +101,7 @@ export default function PhotoList({ photos }) {
                 onClick={() => move(index, -1)}
                 disabled={index === 0 || busy === photo.id}
                 aria-label="Monter"
+                title="Monter"
               >
                 ↑
               </button>
@@ -98,6 +110,7 @@ export default function PhotoList({ photos }) {
                 onClick={() => move(index, 1)}
                 disabled={index === photos.length - 1 || busy === photo.id}
                 aria-label="Descendre"
+                title="Descendre"
               >
                 ↓
               </button>
@@ -112,7 +125,7 @@ export default function PhotoList({ photos }) {
             </div>
           </li>
         ))}
-      </ul>
+      </ol>
     </>
   )
 }
