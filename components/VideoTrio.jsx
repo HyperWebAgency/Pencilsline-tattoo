@@ -36,6 +36,11 @@ export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
       return undefined;
     }
 
+    // On a phone the hero stops short so the top of the clip already shows on
+    // arrival. It has to reveal from its first pixel there, or that peek would
+    // be an empty band of paper.
+    const phone = window.matchMedia('(max-width: 640px)').matches;
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -43,7 +48,7 @@ export default function VideoTrio({ heading = "L'atelier en mouvement" }) {
           io.disconnect();
         }
       },
-      { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+      phone ? { threshold: 0 } : { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
     );
 
     io.observe(el);

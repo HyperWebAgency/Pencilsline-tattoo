@@ -10,7 +10,9 @@ import { useEffect, useRef, useState } from 'react';
  * the head trails the cursor instead of snapping onto it. The chain is drawn as
  * one continuous quadratic path whose lineWidth tapers to a point at the tail.
  *
- * Renders nothing when prefers-reduced-motion is set.
+ * Renders nothing when prefers-reduced-motion is set, or without a mouse: on a
+ * touch screen there is no cursor to follow, so all it could show is the idle
+ * loop, which reads as a stray brush stroke across the text.
  */
 export default function CursorTrail({
   points = 40,
@@ -23,18 +25,25 @@ export default function CursorTrail({
   className,
 }) {
   const canvasRef = useRef(null);
-  const [reduced, setReduced] = useState(false);
+  // Off until the effect below has checked: rendering first and removing it
+  // after hydration would flash the canvas on phones.
+  const [active, setActive] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => setReduced(mq.matches);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mouse = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => setActive(mouse.matches && !reduced.matches);
     sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
+    reduced.addEventListener('change', sync);
+    mouse.addEventListener('change', sync);
+    return () => {
+      reduced.removeEventListener('change', sync);
+      mouse.removeEventListener('change', sync);
+    };
   }, []);
 
   useEffect(() => {
-    if (reduced) return undefined;
+    if (!active) return undefined;
 
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
@@ -166,9 +175,9 @@ export default function CursorTrail({
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('click', onClick);
     };
-  }, [reduced, points, spring, friction, widthFactor, color, idle]);
+  }, [active, points, spring, friction, widthFactor, color, idle]);
 
-  if (reduced) return null;
+  if (!active) return null;
 
   return (
     <canvas
