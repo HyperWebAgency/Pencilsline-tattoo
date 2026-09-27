@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getReviewCount } from '@/lib/settings'
-import { MAX_GALLERY_PHOTOS, MAX_HOME_PHOTOS } from '@/lib/supabase/config'
+import { MAX_GALLERY_PHOTOS, MAX_HOME_PHOTOS, MAX_REVIEWS } from '@/lib/supabase/config'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import HomeCarousel from './HomeCarousel'
 import UploadForm from './UploadForm'
 import PhotoList from './PhotoList'
 import ReviewCountForm from './ReviewCountForm'
+import ReviewForm from './ReviewForm'
+import ReviewList from './ReviewList'
 import VideoList from './VideoList'
 import VideoUploadForm from './VideoUploadForm'
 
@@ -56,7 +58,7 @@ export default async function AdminPage({ searchParams }) {
   const { section: asked } = await searchParams
   const section = SECTIONS.some((s) => s.id === asked) ? asked : 'galerie'
 
-  const [{ data: photos }, { data: videos }, reviewCount] = await Promise.all([
+  const [{ data: photos }, { data: videos }, { data: reviews }, reviewCount] = await Promise.all([
     supabase
       .from('photos')
       .select('id, storage_path, alt_text, description, display_order, show_on_home, home_order')
@@ -67,6 +69,11 @@ export default async function AdminPage({ searchParams }) {
       .select('id, storage_path, poster_path, label, display_order')
       .order('display_order', { ascending: true })
       .order('created_at', { ascending: true }),
+    supabase
+      .from('reviews')
+      .select('id, name, text, photo_path, display_order')
+      .order('display_order', { ascending: true })
+      .order('created_at', { ascending: true }),
     getReviewCount(),
   ])
 
@@ -74,7 +81,7 @@ export default async function AdminPage({ searchParams }) {
     galerie: `${photos?.length ?? 0}/${MAX_GALLERY_PHOTOS}`,
     accueil: `${(photos ?? []).filter((p) => p.show_on_home).length}/${MAX_HOME_PHOTOS}`,
     videos: videos?.length ?? 0,
-    avis: reviewCount,
+    avis: `${reviews?.length ?? 0}/${MAX_REVIEWS}`,
   }
 
   return (
@@ -83,7 +90,7 @@ export default async function AdminPage({ searchParams }) {
         <div>
           <h1>Espace administration</h1>
           <p className="admin__lead">
-            Ici, vous changez les photos, les vidéos et le nombre d&apos;avis du
+            Ici, vous changez les photos, les vidéos et les avis Google du
             site. Chaque changement est en ligne en quelques secondes.
           </p>
         </div>
@@ -161,8 +168,32 @@ export default async function AdminPage({ searchParams }) {
         <section className="admin__panel" aria-labelledby="admin-reviews">
           <h2 id="admin-reviews">Avis Google</h2>
           <p className="admin__where">
-            Le nombre d&apos;avis affiché à côté des étoiles : en haut de
-            l&apos;accueil, dans le pied de page et sur la page Contact.
+            Les avis de la section « Ce qu&apos;ils en disent » de l&apos;accueil,
+            jusqu&apos;à {MAX_REVIEWS}, toujours avec 5 étoiles. Plus bas, le nombre
+            d&apos;avis affiché à côté des étoiles.
+          </p>
+
+          <Step n={1}>Vos avis, dans l&apos;ordre du site</Step>
+          <p className="admin__hint">
+            ↑ et ↓ changent l&apos;ordre : l&apos;avis n° 1 passe en premier.
+            « Modifier » change le nom, l&apos;avis ou la photo.
+          </p>
+          <ReviewList reviews={reviews ?? []} />
+
+          <Step n={2}>Ajouter un avis</Step>
+          {(reviews?.length ?? 0) >= MAX_REVIEWS ? (
+            <p className="admin__hint">
+              Il y a déjà {MAX_REVIEWS} avis, le maximum. Supprimez-en un ci-dessus
+              pour en ajouter un autre.
+            </p>
+          ) : (
+            <ReviewForm />
+          )}
+
+          <Step n={3}>Nombre d&apos;avis Google</Step>
+          <p className="admin__hint">
+            Affiché à côté des étoiles : en haut de l&apos;accueil, dans la section
+            des avis, dans le pied de page et sur la page Contact.
           </p>
           <ReviewCountForm initialCount={reviewCount} />
         </section>
