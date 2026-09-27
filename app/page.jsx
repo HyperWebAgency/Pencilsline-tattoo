@@ -1,6 +1,7 @@
 import CursorTrail from '@/components/CursorTrail';
 import Faq from '@/components/Faq';
 import GoogleRating from '@/components/GoogleRating';
+import GoogleReviews from '@/components/GoogleReviews';
 import HeroBranches from '@/components/HeroBranches';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
@@ -86,10 +87,11 @@ export default async function Page() {
             </span>
           </h1>
 
-          <p className="hero__sub">
-            Tatouage graphique, brush et abstrait. L&apos;esprit de
-            l&apos;encre de Chine, une influence japonaise.
-          </p>
+          {/* An h2, not a <p>: it carries "tatouage" and "Montpellier" for search. */}
+          <h2 className="hero__sub">
+            Tatouage à Montpellier, fineline, graphique, brush et abstrait.
+            L&apos;esprit de l&apos;encre de Chine, avec une influence japonaise.
+          </h2>
 
           <div className="hero__actions">
             <SealStamp href="/contact" seed={5}>
@@ -110,6 +112,8 @@ export default async function Page() {
       <VideoTrio videos={videos} />
 
       <PortfolioCarousel images={photos} />
+
+      <GoogleReviews />
 
       <ProcessSteps />
 

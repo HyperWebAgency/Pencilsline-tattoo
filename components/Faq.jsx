@@ -19,29 +19,30 @@ const fr = (text) =>
 
 /**
  * Every answer comes from Alexandra's own words (her current site, her booking
- * post) or from the studio details in config — nothing here is a guess. The
+ * post, her "Informations" and "Règlement des prestations" sheets) or from the
+ * studio details in config — nothing here is a guess. The
  * same list feeds the visible accordion and the FAQPage JSON-LD.
  */
 const QUESTIONS = [
   {
     q: 'Combien coûte un tatouage à Montpellier chez Pencilsline ?',
-    a: "Chaque pièce est unique, son tarif aussi : il dépend du temps de travail, du niveau de détail et de la symbolique du dessin. La zone, la taille, la peau ou la complexité du motif peuvent le faire évoluer. Envoie-moi ton projet et je te fais un devis.",
+    a: "Chaque pièce est unique, son tarif aussi : il dépend du temps de travail, du niveau de détail et de la symbolique du dessin, et sur un projet plus travaillé, le travail artistique est pris en compte. La zone, la taille, la peau ou la complexité du motif peuvent le faire évoluer. Sur un projet en plusieurs séances, le tarif est horaire et la séance commence dès la pose du stencil. Je ne fais pas de crédit. Envoie-moi ton projet et je te fais un devis.",
   },
   {
     q: 'Comment prendre rendez-vous pour un tatouage à Montpellier ?',
-    a: `Écris-moi depuis la page Contact avec ton projet, la zone à tatouer, la taille approximative en centimètres et tes inspirations : plus ta demande est précise, plus je te réponds vite. Tu peux aussi passer au ${VENUE_NAME} pour en parler directement.`,
+    a: `Le premier échange se fait par message ou au salon. Écris-moi depuis la page Contact avec ton projet, la zone à tatouer, la taille approximative en centimètres et tes inspirations, ou passe au ${VENUE_NAME} : je note tes idées sur une fiche qui reprend les mêmes informations. Je réponds aux messages chaque matin ; si tu n'as pas de retour après quelques jours, n'hésite pas à me relancer.`,
   },
   {
     q: 'Faut-il verser un acompte ?',
-    a: 'Oui : des arrhes de 50 € bloquent ta date. Elles sont déduites du prix le jour du tatouage, sauf en cas de désistement.',
+    a: "Oui : sans acompte, aucun rendez-vous n'est fixé. L'acompte bloque ta date ; il est déduit du prix le jour du tatouage, ou à la fin de la dernière séance pour un projet en plusieurs fois. Il n'est pas remboursable, mais en cas d'empêchement, préviens-moi à l'avance : je reste compréhensive et je décale ton rendez-vous.",
   },
   {
     q: 'Quand est-ce que je découvre mon dessin ?',
-    a: "Je dessine ta pièce la semaine qui précède ton rendez-vous, puis je te l'envoie pour que tu la valides ou qu'on l'ajuste ensemble avant la séance.",
+    a: "Je dessine ta pièce quelques jours avant ton rendez-vous, et seulement une fois la date réservée : je ne fais pas de dessin sans réservation. Je te l'envoie dès qu'il est terminé ; fais-moi ton retour pour qu'on apporte les modifications nécessaires. Les modifications importantes ne se font pas le jour du rendez-vous.",
   },
   {
     q: 'Quels styles de tatouage proposes-tu à Montpellier ?',
-    a: "Du tatouage graphique, brush et abstrait, souvent d'inspiration japonaise, dans l'esprit de l'encre de Chine. Mon style mêle le graphisme, le semi-réalisme et le geste du pinceau.",
+    a: "Les dessins se font dans mon style : du tatouage graphique, fineline, brush et abstrait, souvent d'inspiration japonaise, dans l'esprit de l'encre de Chine, avec une importance particulière donnée au travail de la ligne. Je réalise des petits, moyens et plus gros projets, mais je ne fais ni réalisme ni copie : une inspiration reste une base de travail. Pour une demande simple (cœur, phrase, symbole…), je peux réaliser ce que tu souhaites. Regarde bien mon travail avant de m'écrire.",
   },
   {
     q: 'Est-ce que je peux me faire tatouer un flash ?',

@@ -101,7 +101,7 @@ export default function AboutAlexandra() {
             <figure className="about__mini">
               <Image
                 src="/about/alexandra-tatoueuse-brush-japonais-lemontattoo-castelnau-le-lez.webp"
-                alt="Portrait d'Alexandra, tatoueuse spécialisée dans le brush japonais, chez Lemon Tattoo à Castelnau-le-Lez"
+                alt="Portrait d'Alexandra, tatoueuse spécialisée dans le brush japonais et le fineline, chez Lemon Tattoo à Castelnau-le-Lez"
                 fill
                 sizes="(max-width: 640px) 28vw, 200px"
               />
@@ -112,8 +112,8 @@ export default function AboutAlexandra() {
           <div className="about__aside about__aside--ml">
             <figure className="about__mini">
               <Image
-                src="/about/photo-of-alexandra-while-working.webp"
-                alt="Alexandra, tatoueuse, pendant une séance de tatouage graphique à l'atelier de Castelnau-le-Lez, près de Montpellier"
+                src="/about/tatoueuse-montpellier-alexandra-en-seance.webp"
+                alt="Alexandra, tatoueuse fineline et graphique, pendant une séance de tatouage à l'atelier de Castelnau-le-Lez, près de Montpellier"
                 fill
                 sizes="(max-width: 640px) 28vw, 216px"
               />
@@ -123,7 +123,7 @@ export default function AboutAlexandra() {
           <div className="about__aside about__aside--br">
             <figure className="about__mini">
               <Image
-                src="/about/image-in-alexandra-presentation.webp"
+                src="/about/tatouage-montpellier-dragon-encre-de-chine-bras.webp"
                 alt="Tatouage brush d'inspiration chinoise réalisé par Alexandra : dragon à l'encre de Chine sur le bras"
                 fill
                 sizes="(max-width: 640px) 28vw, 216px"
@@ -140,9 +140,9 @@ export default function AboutAlexandra() {
           </h2>
 
           <p className="about__text">
-            Spécialisée dans le tatouage d&apos;inspiration japonaise et chinoise,
-            je travaille l&apos;encre comme au pinceau : traits libres, lavis,
-            mouvement. Chaque projet commence par une conversation — tu
+            Spécialisée dans le tatouage fineline et d&apos;inspiration japonaise
+            et chinoise, je travaille l&apos;encre comme au pinceau : traits fins,
+            traits libres, lavis, mouvement. Chaque projet commence par une conversation — tu
             m&apos;apportes ton idée, tes envies, tes références — puis je la
             traduis en un dessin que nous ajustons ensemble jusqu&apos;à la pièce
             finale. Je ne tatoue qu&apos;une personne à la fois, pour que chaque

@@ -277,7 +277,12 @@ export default function ProcessSteps() {
   }, []);
 
   return (
-    <section className="process" aria-labelledby="process-title" ref={sectionRef}>
+    <section
+      className="process"
+      id="univers"
+      aria-labelledby="process-title"
+      ref={sectionRef}
+    >
       <div className="process__inner">
         <div className="process__intro">
           {/* Narrow no-break spaces before "?", as French typography wants,
@@ -300,7 +305,7 @@ export default function ProcessSteps() {
           <p className="process__sub">
             Mon univers tourne autour de la ligne, du mouvement et du geste du
             pinceau, dans l&apos;esprit de l&apos;encre de Chine. Graphique,
-            brush ou abstrait, souvent d&apos;inspiration japonaise&nbsp;:
+            fineline, brush ou abstrait, souvent d&apos;inspiration japonaise&nbsp;:
             chaque tatouage est une pièce unique, composée pour ton corps.
           </p>
           <div className="process__actions">

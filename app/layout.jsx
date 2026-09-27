@@ -47,9 +47,9 @@ const introFace = localFont({
   display: 'swap',
 });
 
-const TITLE = 'Pencilsline — Tatouage graphique à Montpellier';
+const TITLE = 'Pencilsline — Tatouage fineline et graphique à Montpellier';
 const DESCRIPTION =
-  "Tatouage graphique, brush et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
+  "Tatouage graphique, fineline, brush et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
 
 export const metadata = {
   // Required for the share card: og:image must be an absolute URL, and this is

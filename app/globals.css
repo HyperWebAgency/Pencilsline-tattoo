@@ -247,9 +247,13 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   background-size: 600px 600px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 6px;
-  padding: 0 34px;
+  /* Hung from the top, just under the close cross, rather than centred: on a
+     tall phone centring put the links in the lower half. Same offset as the
+     hero text, less the links' own 12px padding. The socials take the bottom. */
+  padding: clamp(72px, 11svh + 18px, 120px) 34px max(28px, env(safe-area-inset-bottom));
+  /* A phone on its side is too short for all of it: scroll, don't clip. */
+  overflow-y: auto;
 }
 
 .nav__overlay nav {
@@ -269,6 +273,54 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 .nav__overlay .stamp {
   align-self: flex-start;
   margin-top: 30px;
+}
+
+.nav__social {
+  margin-top: auto;
+  padding-top: 32px;
+}
+
+.nav__social-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.nav__social ul {
+  display: flex;
+  gap: 8px;
+  /* The 44px tap targets overhang the icons; pull the first one back so its
+     glyph lines up with the links above. */
+  margin: 0 0 0 -10px;
+  padding: 0;
+  list-style: none;
+}
+
+.nav__social a {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+.nav__social a:hover,
+.nav__social a:focus-visible {
+  color: var(--seal-bright);
+}
+
+.nav__social svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* ------------------------------------------------------------------ hero -- */
@@ -360,6 +412,8 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   font-family: var(--font-serif), Georgia, serif;
   font-style: italic;
   font-size: clamp(1.24rem, 2vw, 1.56rem);
+  /* An h2, so it would default to bold; it reads as the subtitle it was. */
+  font-weight: 400;
   line-height: 1.5;
   color: rgba(23, 21, 20, 0.78);
 }
@@ -1839,8 +1893,14 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   display: flex;
   gap: 4px;
   margin: 0 0 34px;
+  /* Sideways only. overflow-x alone turns overflow-y to auto too, and with
+     tabs hanging 1px below to cover a border, browsers with classic
+     scrollbars drew a vertical one beside the last tab. */
   overflow-x: auto;
-  border-bottom: 1px solid rgba(23, 21, 20, 0.15);
+  overflow-y: hidden;
+  /* The rule is an inset shadow rather than a border: it sits inside the box,
+     under the tabs, so the current tab's underline covers it from within. */
+  box-shadow: inset 0 -1px 0 rgba(23, 21, 20, 0.15);
 }
 
 .admin-tabs__tab {
@@ -1848,7 +1908,6 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   align-items: center;
   gap: 8px;
   flex: none;
-  margin-bottom: -1px;
   padding: 12px 16px;
   font-size: 11.5px;
   font-weight: 600;
@@ -2227,6 +2286,284 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(23, 21, 20, 0.55);
 }
 
+/* --------------------------------------------------------------- reviews -- */
+
+/* Google reviews, copied from her profile. The heading follows the FAQ's; the
+   row of cards runs edge to edge, since it crawls past. */
+.reviews {
+  --reviews-gap: clamp(14px, 2vw, 22px);
+  padding: clamp(56px, 8vw, 110px) 0 clamp(40px, 6vw, 80px);
+}
+
+/* 1200px of content plus the padding, as in the process and FAQ sections,
+   so the three headings share one left edge. */
+.reviews__intro,
+.reviews__foot {
+  box-sizing: content-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+.reviews__kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 22px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.reviews__title {
+  margin: 0 0 20px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.3rem, 4.2vw, 3.7rem);
+  font-weight: 300;
+  line-height: 1.08;
+  color: var(--ink);
+}
+
+.reviews__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+.reviews__underline {
+  position: absolute;
+  left: -2%;
+  right: -5%;
+  bottom: -0.1em;
+  height: 0.13em;
+  pointer-events: none;
+}
+
+/* Vertical padding so the cards' shadows are not cut off by the overflow. The
+   edges fade, so cards drift in and out rather than being sliced. */
+.reviews__viewport {
+  margin-top: clamp(20px, 3vw, 36px);
+  padding: 18px 0 34px;
+  overflow: hidden;
+}
+
+.reviews__viewport.is-looping {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+}
+
+.reviews__track {
+  display: flex;
+  align-items: flex-start;
+  width: max-content;
+}
+
+/* Too few to loop: the cards sit still, lined up under the heading, and a
+   row wider than the screen (two cards on a phone) swipes, card by card. */
+.reviews__viewport:not(.is-looping) {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: clamp(16px, 4vw, 48px);
+  scrollbar-width: none;
+}
+
+.reviews__viewport:not(.is-looping) .review {
+  scroll-snap-align: start;
+}
+
+.reviews__viewport:not(.is-looping) .reviews__track {
+  box-sizing: content-box;
+  width: auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+/* Sliding left by exactly one of the two identical copies, then starting
+   over, is invisible: the second copy is where the first began. The trailing
+   padding matches the gap, so the spacing holds across the seam too. */
+.reviews__viewport.is-looping .reviews__track {
+  animation: reviews-crawl var(--reviews-duration, 60s) linear infinite;
+}
+
+/* is-paused comes from ReviewCarousel: a review is open, or the keyboard is
+   inside. On a touch screen the tapped card keeps :hover, so a tap pauses it.
+   Both selectors must outrank the is-looping rule above, whose animation
+   shorthand would otherwise reset the play state to running. */
+.reviews__viewport:hover .reviews__track,
+.reviews__viewport .reviews__track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes reviews-crawl {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.reviews__group {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--reviews-gap);
+  margin: 0;
+  padding: 0 var(--reviews-gap) 0 0;
+  list-style: none;
+}
+
+/* Sized to its cards, so its end padding counts in the scroll and the last
+   card stops a gutter short of the screen edge rather than flush with it. */
+.reviews__viewport:not(.is-looping) .reviews__group {
+  width: max-content;
+  padding-right: clamp(16px, 4vw, 48px);
+}
+
+.review {
+  width: clamp(270px, 80vw, 350px);
+  padding: 22px 22px 20px;
+  border: 1px solid rgba(23, 21, 20, 0.08);
+  border-radius: 12px;
+  /* The contact form's warm-white wash, so a card lifts off the washi. */
+  background: rgba(255, 253, 247, 0.6);
+  box-shadow: 0 12px 30px rgba(23, 21, 20, 0.08);
+}
+
+.review__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.review__avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.review__avatar--initial {
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 20px;
+}
+
+.review__who {
+  flex: 1;
+  min-width: 0;
+}
+
+.review__name {
+  margin: 0 0 4px;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ink);
+}
+
+.review__stars {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--seal-bright);
+}
+
+.review__stars svg {
+  width: 14px;
+  height: 14px;
+}
+
+.review__stars svg.is-empty {
+  color: rgba(23, 21, 20, 0.16);
+}
+
+.review__g {
+  flex: none;
+  align-self: flex-start;
+  width: 20px;
+  height: 20px;
+}
+
+/* Five lines, then « Lire la suite ». */
+.review__text {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  /* Keeps a review's paragraph breaks (\n\n in lib/reviews.js). */
+  white-space: pre-line;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.review.is-open .review__text {
+  display: block;
+  overflow: visible;
+  -webkit-line-clamp: unset;
+  line-clamp: none;
+}
+
+.review__more {
+  margin-top: 10px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--seal);
+  transition: color 0.2s ease;
+}
+
+.review__more:hover,
+.review__more:focus-visible {
+  color: var(--seal-bright);
+}
+
+.review__more:focus-visible {
+  outline: 2px solid var(--seal-bright);
+  outline-offset: 3px;
+}
+
+.reviews__foot {
+  margin-top: clamp(8px, 1.5vw, 16px);
+}
+
+/* Reduced motion: nothing crawls. Each review shows once, in a row that
+   scrolls by hand. */
+@media (prefers-reduced-motion: reduce) {
+  .reviews__viewport.is-looping {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .reviews__viewport.is-looping .reviews__track {
+    animation: none;
+    padding: 0 clamp(16px, 4vw, 48px);
+  }
+
+  .reviews__group li[aria-hidden] {
+    display: none;
+  }
+
+  .review__more {
+    transition: none;
+  }
+}
+
 /* ---------------------------------------------------------------- footer -- */
 
 .foot {
@@ -2405,117 +2742,6 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 @media (prefers-reduced-motion: reduce) {
   .pf__hint {
     transition: none;
-  }
-}
-
-/* -------------------------------------------------------- notice modal -- */
-
-.notice-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-  background: rgba(23, 21, 20, 0.42);
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  animation: notice-in 0.22s ease both;
-}
-
-.notice-modal__card {
-  position: relative;
-  width: min(430px, 100%);
-  padding: 40px 34px 30px;
-  background: var(--paper) url('/textures/paper.svg') repeat;
-  background-size: 600px 600px;
-  box-shadow: 0 26px 70px rgba(23, 21, 20, 0.3);
-  outline: none;
-  animation: notice-rise 0.26s cubic-bezier(0.22, 0.68, 0.24, 1) both;
-}
-
-/* The seal mark, top-left of the card. */
-.notice-modal__seal {
-  position: absolute;
-  top: 22px;
-  left: 34px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--seal-bright);
-}
-
-.notice-modal__title {
-  margin: 0 0 14px;
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 27px;
-  font-weight: 300;
-  line-height: 1.15;
-  color: var(--ink);
-}
-
-.notice-modal__body p {
-  margin: 0 0 12px;
-  font-size: 14.5px;
-  line-height: 1.7;
-  color: rgba(23, 21, 20, 0.76);
-}
-
-.notice-modal__body em {
-  font-family: var(--font-serif), Georgia, serif;
-  font-size: 16px;
-}
-
-.notice-modal__body strong {
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.notice-modal__btn {
-  position: relative;
-  margin-top: 14px;
-  padding: 6px 0;
-  font-family: inherit;
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.notice-modal__dash {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 6px;
-  pointer-events: none;
-  clip-path: inset(0 0 0 0);
-}
-
-.notice-modal__btn:hover,
-.notice-modal__btn:focus-visible {
-  color: var(--seal-bright);
-}
-
-@keyframes notice-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes notice-rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .notice-modal,
-  .notice-modal__card {
-    animation: none;
   }
 }
 
@@ -2900,6 +3126,10 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   /* Short at both ends: the gallery above and the FAQ below bring their own
      padding, and the heading starts right at the top of the grid. */
   padding: clamp(24px, 3vw, 44px) clamp(16px, 4vw, 48px);
+  /* The navbar's Univers link lands here (#univers). Stopping this far short
+     of the top keeps the heading clear of the fixed navbar on a phone, where
+     it scrolls; on desktop it is pinned, centred, by then anyway. */
+  scroll-margin-top: 72px;
   /* Tilted cards overhang their column on a phone. clip, not hidden: hidden
      would make this a scroll container, and nothing inside would pin to the
      viewport any more. */

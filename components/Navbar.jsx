@@ -1,22 +1,48 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import InkStroke from './InkStroke';
-import NoticeDialog from './NoticeDialog';
 import SealStamp from './SealStamp';
 import { useGalleryTransition } from './TransitionProvider';
+import {
+  STUDIO_FACEBOOK,
+  STUDIO_INSTAGRAM,
+  STUDIO_INSTAGRAM_HANDLE,
+} from '@/lib/supabase/config';
 
 const GALLERY = '/portfolio';
-/** Univers has no section to scroll to yet — say so instead of going nowhere. */
-const UNBUILT = '#univers';
 
 const HOME = { href: '/', label: 'Accueil' };
 
 const LINKS = [
   { href: '/portfolio', label: 'Réalisations' },
+  // « Faire pareil que les autres ? Non. » on the home page (ProcessSteps).
   { href: '#univers', label: 'Univers' },
   { href: '/contact', label: 'Contact' },
+];
+
+/**
+ * For the mobile menu. Line icons in the weight of the type, not the brands'
+ * filled logos: the only solid colour on the site is the seal.
+ */
+const SOCIALS = [
+  {
+    href: STUDIO_INSTAGRAM,
+    label: `Instagram (${STUDIO_INSTAGRAM_HANDLE})`,
+    icon: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="4" />
+        <circle cx="17.25" cy="6.75" r="0.9" fill="currentColor" stroke="none" />
+      </>
+    ),
+  },
+  {
+    href: STUDIO_FACEBOOK,
+    label: 'Facebook (Pencilsline Tattoo)',
+    icon: <path d="M15.5 3H13a4 4 0 0 0-4 4v3H6.5v3.5H9V21h3.5v-7.5H15l.5-3.5h-3V7.5a1 1 0 0 1 1-1h2z" />,
+  },
 ];
 
 /**
@@ -40,8 +66,6 @@ function linksFor(pathname) {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [notice, setNotice] = useState(false);
-  const noticeOpener = useRef(null);
   const pathname = usePathname();
   const router = useRouter();
   const transition = useGalleryTransition();
@@ -67,14 +91,6 @@ export default function Navbar() {
    * si le jeu est vide, donc le href reste la vraie destination.
    */
   const onNavClick = (event, href) => {
-    if (href.endsWith(UNBUILT)) {
-      event.preventDefault();
-      noticeOpener.current = event.currentTarget;
-      setOpen(false);
-      setNotice(true);
-      return;
-    }
-
     if (href !== GALLERY || pathname === GALLERY) return;
     if (!transition || transition.active) return;
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
@@ -132,7 +148,9 @@ export default function Navbar() {
       </button>
 
       {open && (
-        <div className="nav__overlay">
+        // data-lenis-prevent: on a short screen the menu scrolls on its own,
+        // which Lenis would otherwise swallow as page scroll.
+        <div className="nav__overlay" data-lenis-prevent>
           <nav aria-label="Navigation mobile">
             {links.map((l) => (
               <a
@@ -151,31 +169,29 @@ export default function Navbar() {
           <SealStamp href="/contact" seed={9}>
             Prendre rendez-vous
           </SealStamp>
+
+          <div className="nav__social">
+            <p className="nav__social-label" id="nav-social-label">
+              Me suivre
+            </p>
+            <ul aria-labelledby="nav-social-label">
+              {SOCIALS.map((s) => (
+                <li key={s.href}>
+                  <a href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}>
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                      {s.icon}
+                    </svg>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
 
       <div className="nav__rule" aria-hidden="true">
         <InkStroke length={900} thickness={1.7} seed={77} rough={1.2} />
       </div>
-
-      {notice && (
-        <NoticeDialog
-          title="Section en construction"
-          onClose={() => {
-            setNotice(false);
-            noticeOpener.current?.focus();
-          }}
-        >
-          <p>
-            La section <em>Univers</em> n&apos;est pas encore en ligne : elle
-            reste à construire.
-          </p>
-          <p>
-            En attendant, les <strong>Réalisations</strong> montrent le travail,
-            et la page <strong>Contact</strong> permet de prendre rendez-vous.
-          </p>
-        </NoticeDialog>
-      )}
     </header>
   );
 }

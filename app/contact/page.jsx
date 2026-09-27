@@ -27,7 +27,7 @@ import {
 
 export const metadata = {
   title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_ADDRESS.city}`,
-  description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, brush et abstrait à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
+  description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, fineline, brush et abstrait à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
 }
 
 const fullAddress = `${STUDIO_ADDRESS.street}, ${STUDIO_ADDRESS.postalCode} ${STUDIO_ADDRESS.city}`
@@ -44,7 +44,7 @@ const schema = {
     jobTitle: 'Tatoueuse',
     sameAs: [STUDIO_INSTAGRAM, STUDIO_FACEBOOK, STUDIO_GOOGLE_URL],
   },
-  description: `Tatouage graphique, brush et abstrait par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
+  description: `Tatouage graphique, fineline, brush et abstrait par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: STUDIO_ADDRESS.street,
