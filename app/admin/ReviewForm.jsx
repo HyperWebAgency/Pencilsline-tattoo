@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useId, useRef, useState } from 'react'
 import { ALLOWED_MIME, MAX_ORIGINAL_BYTES } from '@/lib/supabase/config'
-import { SEND_AS_IS_BYTES, formatSize, shrinkPhoto } from './shrinkPhoto'
+import { SEND_AS_IS_BYTES, formatSize, shrinkPhoto } from '@/lib/shrinkPhoto'
 
 /**
  * Adds a review, or edits one when `review` is given (then `photoUrl` is its

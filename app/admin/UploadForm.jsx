@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { ALLOWED_MIME, MAX_GALLERY_PHOTOS, MAX_ORIGINAL_BYTES } from '@/lib/supabase/config'
-import { SEND_AS_IS_BYTES, formatSize, shrinkPhoto } from './shrinkPhoto'
+import { SEND_AS_IS_BYTES, formatSize, shrinkPhoto } from '@/lib/shrinkPhoto'
 
 /** `count` is how many photos the gallery holds; it stops at MAX_GALLERY_PHOTOS. */
 export default function UploadForm({ count }) {
