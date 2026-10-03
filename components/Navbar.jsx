@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import InkStroke from './InkStroke';
+import PencilslineLogo from './PencilslineLogo';
 import SealStamp from './SealStamp';
 import { useGalleryTransition } from './TransitionProvider';
 import {
@@ -113,6 +114,12 @@ export default function Navbar() {
     // the overlay shrank to the height of the bar. The menu covers the page
     // anyway, and it now looks the same whatever the scroll position.
     <header className={`nav${scrolled && !open ? ' nav--scrolled' : ''}`}>
+      {/* The mark laid flat, top left. It stays when the phone menu opens: the
+          overlay sits below the header row. */}
+      <a className="nav__brand" href="/" aria-label="Pencilsline Tattoo, accueil">
+        <PencilslineLogo layout="horizontal" seed={8} />
+      </a>
+
       <nav className="nav__links" aria-label="Navigation principale">
         {links.map((l, i) => (
           <a

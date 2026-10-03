@@ -95,6 +95,14 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   gap: clamp(18px, 2.8vw, 36px);
 }
 
+/* The horizontal mark, top left; margin-right: auto sends the links and the
+   burger to the right. Sized by height, the width follows its viewBox. */
+.nav__brand {
+  display: block;
+  height: clamp(24px, 2.3vw, 31px);
+  margin-right: auto;
+}
+
 /* Link with a brush dash that draws in on hover. Used in nav and hero. */
 .brush-link {
   position: relative;
