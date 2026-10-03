@@ -150,7 +150,8 @@ export default async function AdminPage({ searchParams }) {
           <p className="admin__where">
             Elles apparaissent sous le titre de l&apos;accueil. Sur ordinateur,
             jusqu&apos;à trois côte à côte (au-delà, elles passent à la ligne) ; sur
-            téléphone, seule la vidéo n° 1 est montrée.
+            téléphone, seule la vidéo n° 1 est proposée, par un bouton lecture sur
+            votre photo en haut de l&apos;accueil.
           </p>
 
           <Step n={1}>Ajouter une vidéo</Step>

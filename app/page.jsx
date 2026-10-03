@@ -1,8 +1,10 @@
+import Image from 'next/image';
 import CursorTrail from '@/components/CursorTrail';
 import Faq from '@/components/Faq';
 import GoogleRating from '@/components/GoogleRating';
 import GoogleReviews from '@/components/GoogleReviews';
 import HeroBranches from '@/components/HeroBranches';
+import HeroVideo from '@/components/HeroVideo';
 import InkStroke from '@/components/InkStroke';
 import PencilslineLogo from '@/components/PencilslineLogo';
 import PortfolioCarousel from '@/components/PortfolioCarousel';
@@ -64,6 +66,29 @@ export default async function Page() {
     <main>
       <section className="hero">
         <HeroBranches />
+
+        {/* The photo and, on a phone, the play button laid over it. Without a
+            box of its own above a phone (display: contents), so the photo
+            still positions itself against the hero there. */}
+        <div className="hero__figure">
+          {/* Alexandra at work, standing on the hero's bottom edge, the client's
+              arm running off the right. Beside the text on a landscape screen,
+              under it on an upright tablet and on a phone (see .hero__photo). */}
+          <Image
+            className="hero__photo"
+            src="/hero/tatoueuse-fineline-montpellier-alexandra-en-seance.webp"
+            alt="Alexandra, tatoueuse fineline et brush à Montpellier, en train de tatouer l'avant-bras d'un client chez Pencilsline Tattoo"
+            width={1243}
+            height={1266}
+            sizes="(max-width: 640px) 100vw, (max-aspect-ratio: 4/5) 80vw, (min-width: 960px) 60vw, 1vw"
+            loading="eager"
+            fetchPriority="high"
+          />
+
+          {/* Phone only: the video row is not shown there; this opens its
+              first clip instead. */}
+          {videos[0] ? <HeroVideo video={videos[0]} /> : null}
+        </div>
 
         {/* The mark is a vertical hanko, so it reads as a hanging shop banner
             in the corner rather than as a bar-style logo. */}

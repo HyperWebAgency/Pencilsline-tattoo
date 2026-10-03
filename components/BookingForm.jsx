@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import SealStamp from './SealStamp';
 import { SEND_AS_IS_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
@@ -28,6 +29,7 @@ const carriesFiles = (e) => Array.from(e.dataTransfer?.types || []).includes('Fi
  * Vercel function accepts.
  */
 export default function BookingForm() {
+  const router = useRouter();
   const [values, setValues] = useState(EMPTY);
   const [state, setState] = useState({ status: 'idle', error: null });
   const [images, setImages] = useState([]); // { id, name, file, preview }
@@ -188,10 +190,11 @@ export default function BookingForm() {
         setState({ status: 'error', error: detail || 'Envoi impossible pour le moment.' });
         return;
       }
-      setValues(EMPTY);
       images.forEach((image) => image.preview && URL.revokeObjectURL(image.preview));
-      setImages([]);
+      // Off to the thank-you page. The form stays disabled meanwhile, so a
+      // second click can't send the request twice.
       setState({ status: 'sent', error: null });
+      router.push('/merci');
     } catch {
       setState({ status: 'error', error: 'Vérifiez votre connexion et réessayez.' });
     } finally {
@@ -199,21 +202,7 @@ export default function BookingForm() {
     }
   };
 
-  if (state.status === 'sent') {
-    return (
-      <div className="form__done" role="status">
-        <p className="form__done-title">Demande envoyée.</p>
-        <p className="form__done-text">
-          Merci — je reviens vers vous par e-mail, généralement sous quelques jours.
-        </p>
-        <button type="button" className="form__again" onClick={() => setState({ status: 'idle', error: null })}>
-          Envoyer une autre demande
-        </button>
-      </div>
-    );
-  }
-
-  const busy = state.status === 'sending';
+  const busy = state.status === 'sending' || state.status === 'sent';
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate>

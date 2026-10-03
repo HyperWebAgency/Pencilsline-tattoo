@@ -6,7 +6,8 @@ import { useEffect, useRef, useState } from 'react';
  * The clips below the hero, as Alexandra arranges them in /admin (see
  * lib/videos.js), revealed on scroll and each played on click. Up to three sit
  * side by side; more wrap onto the next row. The first one leads: it carries
- * the prompt, and it is the only one shown on a phone.
+ * the prompt. Phones don't show the row: the play button on Alexandra's photo
+ * in the hero opens that first clip there (HeroVideo).
  *
  * No animation library: the project has none, and this needs one
  * IntersectionObserver — the same hand-rolled approach as CursorTrail and
@@ -34,11 +35,6 @@ export default function VideoTrio({ videos = [], heading = "L'atelier en mouveme
       return undefined;
     }
 
-    // On a phone the hero stops short so the top of the clip already shows on
-    // arrival. It has to reveal from its first pixel there, or that peek would
-    // be an empty band of paper.
-    const phone = window.matchMedia('(max-width: 640px)').matches;
-
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -46,7 +42,7 @@ export default function VideoTrio({ videos = [], heading = "L'atelier en mouveme
           io.disconnect();
         }
       },
-      phone ? { threshold: 0 } : { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
+      { threshold: 0.2, rootMargin: '0px 0px -10% 0px' }
     );
 
     io.observe(el);
@@ -115,9 +111,9 @@ export default function VideoTrio({ videos = [], heading = "L'atelier en mouveme
                     <path d="M9 6.5 L17.5 12 L9 17.5 Z" fill="currentColor" />
                   </svg>
                 </span>
-                {/* Only on the lead clip: one prompt is enough for the row,
-                    and on a phone it is the only one shown. aria-hidden because
-                    the button's own label already says what it does. */}
+                {/* Only on the lead clip: one prompt is enough for the row.
+                    aria-hidden because the button's own label already says
+                    what it does. */}
                 {i === 0 && (
                   <span className="trio__hint" aria-hidden="true">
                     Cliquer pour voir la vidéo

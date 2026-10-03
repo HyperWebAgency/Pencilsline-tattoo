@@ -64,8 +64,11 @@ export default function HeroBranches() {
       </div>
 
       {!narrow && (
+        // hero-branch--br: the photo takes this corner from 960px up, and
+        // globals.css hides the branch there (see .hero__photo).
         <div
           aria-hidden="true"
+          className="hero-branch--br"
           style={{ ...shell, bottom: -50, right: -60, width: 'clamp(240px, 30vw, 420px)' }}
         >
           <InkBranch
