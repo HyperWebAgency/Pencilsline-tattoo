@@ -9,6 +9,7 @@ import {
   INSPIRATION_MAX_EDGE,
   MAX_INSPIRATIONS,
   MAX_ORIGINAL_BYTES,
+  STUDIO_EMAIL,
 } from '@/lib/supabase/config';
 
 const EMPTY = { name: '', email: '', phone: '', project: '', placement: '', size_cm: '' };
@@ -17,6 +18,23 @@ const ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
 /** True for a drag that carries files, not a dragged link or bit of text. */
 const carriesFiles = (e) => Array.from(e.dataTransfer?.types || []).includes('Files');
+
+/** Digits and the leading +: what the phone formatting keeps track of. */
+const SIGNIFICANT = /[\d+]/;
+
+/**
+ * Two digits at a time, easier to read back for the client and for Alexandra:
+ * 06 12 34 56 78, or +33 6 12 34 56 78. A number from another country keeps
+ * the spacing it was typed with, as its grouping isn't in pairs.
+ */
+function formatPhone(raw) {
+  const digits = raw.replace(/\D/g, '');
+  const pairs = (s) => s.replace(/(\d{2})(?=\d)/g, '$1 ');
+  if (!raw.trimStart().startsWith('+')) return pairs(digits);
+  if (!digits.startsWith('33')) return raw.replace(/[^\d\s+().-]/g, '');
+  const rest = digits.slice(2);
+  return ['+33', rest.slice(0, 1), pairs(rest.slice(1))].filter(Boolean).join(' ');
+}
 
 /**
  * Booking request form. Submits straight to Formspree, which emails the artist —
@@ -37,6 +55,7 @@ export default function BookingForm() {
   const [step, setStep] = useState(''); // what the button says while sending
   const [dragging, setDragging] = useState(false); // files over the images field
   const inputRef = useRef(null);
+  const phoneRef = useRef(null);
 
   // An image dropped just beside the field would otherwise open in the tab and
   // throw away everything typed so far. The field's own drop still works.
@@ -51,6 +70,33 @@ export default function BookingForm() {
   }, []);
 
   const set = (field) => (e) => setValues((v) => ({ ...v, [field]: e.target.value }));
+
+  /**
+   * Formats the number as it is typed, keeping the caret after the same digit
+   * it followed, so editing in the middle doesn't throw it to the end.
+   */
+  const onPhoneChange = (e) => {
+    let raw = e.target.value;
+    let caret = e.target.selectionStart ?? raw.length;
+
+    // Backspace on one of the spaces the formatting adds would only see it
+    // put straight back: take the digit before it instead.
+    if (e.nativeEvent.inputType === 'deleteContentBackward' && formatPhone(raw) === values.phone) {
+      const before = raw.slice(0, caret).replace(/[\d+](?=[^\d+]*$)/, '');
+      raw = before + raw.slice(caret);
+      caret = before.length;
+    }
+
+    const kept = raw.slice(0, caret).split('').filter((c) => SIGNIFICANT.test(c)).length;
+    const phone = formatPhone(raw);
+    let pos = 0;
+    for (let seen = 0; pos < phone.length && seen < kept; pos++) {
+      if (SIGNIFICANT.test(phone[pos])) seen++;
+    }
+
+    setValues((v) => ({ ...v, phone }));
+    requestAnimationFrame(() => phoneRef.current?.setSelectionRange(pos, pos));
+  };
 
   const addImages = async (list) => {
     const picked = Array.from(list || []);
@@ -69,8 +115,9 @@ export default function BookingForm() {
       }
       return true;
     });
+    // Past the limit, the extra images are left out: the note under the field
+    // then says how many fit and where to send the rest.
     const room = MAX_INSPIRATIONS - images.length - preparing;
-    if (usable.length > room) error = `${MAX_INSPIRATIONS} images maximum.`;
     const batch = usable.slice(0, Math.max(0, room));
     setState({ status: error ? 'error' : 'idle', error });
     if (!batch.length) return;
@@ -203,6 +250,8 @@ export default function BookingForm() {
   };
 
   const busy = state.status === 'sending' || state.status === 'sent';
+  const full = images.length + preparing >= MAX_INSPIRATIONS;
+  const mailSubject = `Images pour ma demande de rendez-vous${values.name.trim() ? ` — ${values.name.trim()}` : ''}`;
 
   return (
     <form className="form" onSubmit={onSubmit} noValidate>
@@ -247,12 +296,14 @@ export default function BookingForm() {
         <label className="field">
           <span className="field__label">Téléphone</span>
           <input
+            ref={phoneRef}
             className="field__input"
             type="tel"
             value={values.phone}
-            onChange={set('phone')}
+            onChange={onPhoneChange}
             maxLength={40}
             autoComplete="tel"
+            placeholder="06 12 34 56 78"
           />
         </label>
 
@@ -298,12 +349,12 @@ export default function BookingForm() {
       <div
         className={`field form__drop${dragging ? ' is-dragging' : ''}`}
         onDragEnter={(e) => {
-          if (!carriesFiles(e) || busy) return;
+          if (!carriesFiles(e) || busy || full) return;
           e.preventDefault();
           setDragging(true);
         }}
         onDragOver={(e) => {
-          if (!carriesFiles(e) || busy) return;
+          if (!carriesFiles(e) || busy || full) return;
           e.preventDefault();
           e.dataTransfer.dropEffect = 'copy';
         }}
@@ -347,7 +398,7 @@ export default function BookingForm() {
               …
             </div>
           ))}
-          {images.length + preparing < MAX_INSPIRATIONS && (
+          {!full && (
             <label className="form__file-add">
               <input
                 ref={inputRef}
@@ -363,19 +414,29 @@ export default function BookingForm() {
             </label>
           )}
         </div>
-        <span className="form__files-hint">
-          {dragging ? (
-            'Déposez vos images ici.'
-          ) : preparing ? (
-            'Préparation des images…'
-          ) : (
-            <>
-              Une inspiration, un croquis, l’emplacement… Jusqu’à {MAX_INSPIRATIONS} images
-              (JPG, PNG ou WebP), facultatif.
-              <span className="form__drop-tip"> Glissez-les ici ou utilisez «&nbsp;Ajouter&nbsp;».</span>
-            </>
-          )}
-        </span>
+        {images.length >= MAX_INSPIRATIONS ? (
+          <p className="form__files-hint form__files-hint--full" role="status">
+            {MAX_INSPIRATIONS} images maximum. Pour en envoyer plus, écrivez-moi par
+            e-mail&nbsp;:{' '}
+            <a href={`mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject)}`}>
+              {STUDIO_EMAIL}
+            </a>
+          </p>
+        ) : (
+          <span className="form__files-hint">
+            {dragging ? (
+              'Déposez vos images ici.'
+            ) : preparing ? (
+              'Préparation des images…'
+            ) : (
+              <>
+                Une inspiration, un croquis, l’emplacement… Jusqu’à {MAX_INSPIRATIONS} images
+                (JPG, PNG ou WebP), facultatif.
+                <span className="form__drop-tip"> Glissez-les ici ou utilisez «&nbsp;Ajouter&nbsp;».</span>
+              </>
+            )}
+          </span>
+        )}
       </div>
 
       {state.error && (

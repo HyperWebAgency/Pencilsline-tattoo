@@ -1331,6 +1331,19 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(23, 21, 20, 0.55);
 }
 
+/* At the limit: darker, as it now says something to act on, with the
+   address to send the rest to. */
+.form__files-hint--full {
+  margin-bottom: 0;
+  color: var(--ink);
+}
+
+.form__files-hint--full a {
+  color: var(--seal);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* The images field takes dropped files. A dashed frame shows where while
    some are dragged over it; the negative margin keeps its contents lined up
    with the other fields. */
