@@ -17,7 +17,7 @@ const STEPS = [
   {
     title: 'Le dessin',
     rest: 4,
-    text: "Je dessine la pièce pour toi et pour cet emplacement, jamais d'après un catalogue. Tu découvres le croquis avant la séance, et on l'ajuste ensemble jusqu'à ce qu'il te ressemble.",
+    text: "Je dessine la pièce pour toi et pour cet emplacement, jamais d'après un catalogue. Tu découvres le croquis quelques jours avant la séance, et on l'ajuste ensemble jusqu'à ce qu'il te ressemble.",
   },
   {
     title: 'Le jour de la séance',
