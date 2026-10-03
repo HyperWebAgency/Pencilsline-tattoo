@@ -1033,6 +1033,33 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(23, 21, 20, 0.55);
 }
 
+/* The images field takes dropped files. A dashed frame shows where while
+   some are dragged over it; the negative margin keeps its contents lined up
+   with the other fields. */
+.form__drop {
+  margin: 6px -10px 18px;
+  padding: 10px;
+  border: 1.5px dashed transparent;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.form__drop.is-dragging {
+  border-color: var(--seal);
+  background: rgba(121, 16, 16, 0.04);
+}
+
+.form__drop.is-dragging .form__file-add {
+  border-color: var(--seal);
+  color: var(--seal);
+}
+
+/* Dragging files is a mouse thing: no tip on a touch screen. */
+@media (hover: none) {
+  .form__drop-tip {
+    display: none;
+  }
+}
+
 .form__actions {
   display: flex;
   align-items: center;

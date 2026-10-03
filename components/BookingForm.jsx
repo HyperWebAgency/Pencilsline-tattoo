@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import SealStamp from './SealStamp';
 import { SEND_AS_IS_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
 import {
@@ -13,6 +13,9 @@ import {
 const EMPTY = { name: '', email: '', phone: '', project: '', placement: '', size_cm: '' };
 
 const ENDPOINT = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+
+/** True for a drag that carries files, not a dragged link or bit of text. */
+const carriesFiles = (e) => Array.from(e.dataTransfer?.types || []).includes('Files');
 
 /**
  * Booking request form. Submits straight to Formspree, which emails the artist —
@@ -30,7 +33,20 @@ export default function BookingForm() {
   const [images, setImages] = useState([]); // { id, name, file, preview }
   const [preparing, setPreparing] = useState(0); // images still being shrunk
   const [step, setStep] = useState(''); // what the button says while sending
+  const [dragging, setDragging] = useState(false); // files over the images field
   const inputRef = useRef(null);
+
+  // An image dropped just beside the field would otherwise open in the tab and
+  // throw away everything typed so far. The field's own drop still works.
+  useEffect(() => {
+    const ignore = (e) => carriesFiles(e) && e.preventDefault();
+    window.addEventListener('dragover', ignore);
+    window.addEventListener('drop', ignore);
+    return () => {
+      window.removeEventListener('dragover', ignore);
+      window.removeEventListener('drop', ignore);
+    };
+  }, []);
 
   const set = (field) => (e) => setValues((v) => ({ ...v, [field]: e.target.value }));
 
@@ -289,7 +305,30 @@ export default function BookingForm() {
         <span className="field__hint">{values.project.length}/4000</span>
       </label>
 
-      <div className="field">
+      {/* Also takes images dragged in from the desktop or another window. */}
+      <div
+        className={`field form__drop${dragging ? ' is-dragging' : ''}`}
+        onDragEnter={(e) => {
+          if (!carriesFiles(e) || busy) return;
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragOver={(e) => {
+          if (!carriesFiles(e) || busy) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+        }}
+        onDragLeave={(e) => {
+          // Moving between the tiles inside fires this too; only leaving counts.
+          if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false);
+        }}
+        onDrop={(e) => {
+          if (!carriesFiles(e)) return;
+          e.preventDefault();
+          setDragging(false);
+          if (!busy) addImages(e.dataTransfer.files);
+        }}
+      >
         <span className="field__label" id="inspirations-label">
           Images d&apos;inspiration
         </span>
@@ -336,9 +375,17 @@ export default function BookingForm() {
           )}
         </div>
         <span className="form__files-hint">
-          {preparing
-            ? 'Préparation des images…'
-            : `Une inspiration, un croquis, l’emplacement… Jusqu’à ${MAX_INSPIRATIONS} images (JPG, PNG ou WebP), facultatif.`}
+          {dragging ? (
+            'Déposez vos images ici.'
+          ) : preparing ? (
+            'Préparation des images…'
+          ) : (
+            <>
+              Une inspiration, un croquis, l’emplacement… Jusqu’à {MAX_INSPIRATIONS} images
+              (JPG, PNG ou WebP), facultatif.
+              <span className="form__drop-tip"> Glissez-les ici ou utilisez «&nbsp;Ajouter&nbsp;».</span>
+            </>
+          )}
         </span>
       </div>
 
