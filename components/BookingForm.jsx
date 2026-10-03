@@ -54,6 +54,10 @@ export default function BookingForm() {
   const [preparing, setPreparing] = useState(0); // images still being shrunk
   const [step, setStep] = useState(''); // what the button says while sending
   const [dragging, setDragging] = useState(false); // files over the images field
+  // Name, e-mail and project come first; the rest of the form follows once the
+  // e-mail is 5 characters in, so the start looks short. It stays once shown,
+  // so shortening the e-mail never hides what was already filled in.
+  const [showMore, setShowMore] = useState(false);
   const inputRef = useRef(null);
   const phoneRef = useRef(null);
 
@@ -284,48 +288,13 @@ export default function BookingForm() {
             className="field__input"
             type="email"
             value={values.email}
-            onChange={set('email')}
+            onChange={(e) => {
+              set('email')(e);
+              if (e.target.value.trim().length >= 5) setShowMore(true);
+            }}
             required
             maxLength={200}
             autoComplete="email"
-          />
-        </label>
-      </div>
-
-      <div className="form__row">
-        <label className="field">
-          <span className="field__label">Téléphone</span>
-          <input
-            ref={phoneRef}
-            className="field__input"
-            type="tel"
-            value={values.phone}
-            onChange={onPhoneChange}
-            maxLength={40}
-            autoComplete="tel"
-            placeholder="06 12 34 56 78"
-          />
-        </label>
-
-        <label className="field">
-          <span className="field__label">Emplacement</span>
-          <input
-            className="field__input"
-            value={values.placement}
-            onChange={set('placement')}
-            maxLength={120}
-            placeholder="avant-bras, dos…"
-          />
-        </label>
-
-        <label className="field">
-          <span className="field__label">Taille</span>
-          <input
-            className="field__input"
-            value={values.size_cm}
-            onChange={set('size_cm')}
-            maxLength={60}
-            placeholder="15 cm"
           />
         </label>
       </div>
@@ -345,99 +314,142 @@ export default function BookingForm() {
         <span className="field__hint">{values.project.length}/4000</span>
       </label>
 
-      {/* Also takes images dragged in from the desktop or another window. */}
-      <div
-        className={`field form__drop${dragging ? ' is-dragging' : ''}`}
-        onDragEnter={(e) => {
-          if (!carriesFiles(e) || busy || full) return;
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragOver={(e) => {
-          if (!carriesFiles(e) || busy || full) return;
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy';
-        }}
-        onDragLeave={(e) => {
-          // Moving between the tiles inside fires this too; only leaving counts.
-          if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false);
-        }}
-        onDrop={(e) => {
-          if (!carriesFiles(e)) return;
-          e.preventDefault();
-          setDragging(false);
-          if (!busy) addImages(e.dataTransfer.files);
-        }}
-      >
-        <span className="field__label" id="inspirations-label">
-          Images d&apos;inspiration
-        </span>
-        <div className="form__files" role="group" aria-labelledby="inspirations-label">
-          {images.map((image) => (
-            <div className="form__file" key={image.id}>
-              {image.preview ? (
-                // A local preview: plain img is right here.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={image.preview} alt="" />
-              ) : (
-                <span className="form__file-name">{image.name}</span>
-              )}
-              <button
-                type="button"
-                className="form__file-remove"
-                onClick={() => removeImage(image.id)}
-                disabled={busy}
-                aria-label={`Retirer l’image ${image.name}`}
-              >
-                ×
-              </button>
-            </div>
-          ))}
-          {Array.from({ length: preparing }, (_, i) => (
-            <div className="form__file form__file--loading" key={`loading-${i}`} aria-hidden="true">
-              …
-            </div>
-          ))}
-          {!full && (
-            <label className="form__file-add">
+      {/* The rest of the form, once the e-mail is under way (see showMore). */}
+      {showMore && (
+        <div className="form__more">
+          <div className="form__row">
+            <label className="field">
+              <span className="field__label">Téléphone</span>
               <input
-                ref={inputRef}
-                className="form__file-input"
-                type="file"
-                accept={ALLOWED_MIME.join(',')}
-                multiple
-                disabled={busy}
-                onChange={(e) => addImages(e.target.files)}
+                ref={phoneRef}
+                className="field__input"
+                type="tel"
+                value={values.phone}
+                onChange={onPhoneChange}
+                maxLength={40}
+                autoComplete="tel"
+                placeholder="06 12 34 56 78"
               />
-              <span aria-hidden="true">+</span>
-              Ajouter
             </label>
-          )}
-        </div>
-        {images.length >= MAX_INSPIRATIONS ? (
-          <p className="form__files-hint form__files-hint--full" role="status">
-            {MAX_INSPIRATIONS} images maximum. Pour en envoyer plus, écrivez-moi par
-            e-mail&nbsp;:{' '}
-            <a href={`mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject)}`}>
-              {STUDIO_EMAIL}
-            </a>
-          </p>
-        ) : (
-          <span className="form__files-hint">
-            {dragging ? (
-              'Déposez vos images ici.'
-            ) : preparing ? (
-              'Préparation des images…'
+
+            <label className="field">
+              <span className="field__label">Emplacement</span>
+              <input
+                className="field__input"
+                value={values.placement}
+                onChange={set('placement')}
+                maxLength={120}
+                placeholder="avant-bras, dos…"
+              />
+            </label>
+
+            <label className="field">
+              <span className="field__label">Taille</span>
+              <input
+                className="field__input"
+                value={values.size_cm}
+                onChange={set('size_cm')}
+                maxLength={60}
+                placeholder="15 cm"
+              />
+            </label>
+          </div>
+
+          {/* Also takes images dragged in from the desktop or another window. */}
+          <div
+            className={`field form__drop${dragging ? ' is-dragging' : ''}`}
+            onDragEnter={(e) => {
+              if (!carriesFiles(e) || busy || full) return;
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragOver={(e) => {
+              if (!carriesFiles(e) || busy || full) return;
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'copy';
+            }}
+            onDragLeave={(e) => {
+              // Moving between the tiles inside fires this too; only leaving counts.
+              if (!e.currentTarget.contains(e.relatedTarget)) setDragging(false);
+            }}
+            onDrop={(e) => {
+              if (!carriesFiles(e)) return;
+              e.preventDefault();
+              setDragging(false);
+              if (!busy) addImages(e.dataTransfer.files);
+            }}
+          >
+            <span className="field__label" id="inspirations-label">
+              Images d&apos;inspiration
+            </span>
+            <div className="form__files" role="group" aria-labelledby="inspirations-label">
+              {images.map((image) => (
+                <div className="form__file" key={image.id}>
+                  {image.preview ? (
+                    // A local preview: plain img is right here.
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={image.preview} alt="" />
+                  ) : (
+                    <span className="form__file-name">{image.name}</span>
+                  )}
+                  <button
+                    type="button"
+                    className="form__file-remove"
+                    onClick={() => removeImage(image.id)}
+                    disabled={busy}
+                    aria-label={`Retirer l’image ${image.name}`}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+              {Array.from({ length: preparing }, (_, i) => (
+                <div className="form__file form__file--loading" key={`loading-${i}`} aria-hidden="true">
+                  …
+                </div>
+              ))}
+              {!full && (
+                <label className="form__file-add">
+                  <input
+                    ref={inputRef}
+                    className="form__file-input"
+                    type="file"
+                    accept={ALLOWED_MIME.join(',')}
+                    multiple
+                    disabled={busy}
+                    onChange={(e) => addImages(e.target.files)}
+                  />
+                  <span aria-hidden="true">+</span>
+                  Ajouter
+                </label>
+              )}
+            </div>
+            {images.length >= MAX_INSPIRATIONS ? (
+              <p className="form__files-hint form__files-hint--full" role="status">
+                {MAX_INSPIRATIONS} images maximum. Pour en envoyer plus, écrivez-moi par
+                e-mail&nbsp;:{' '}
+                <a href={`mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(mailSubject)}`}>
+                  {STUDIO_EMAIL}
+                </a>
+              </p>
             ) : (
-              <>
-                Une inspiration, un croquis, l’emplacement… Jusqu’à {MAX_INSPIRATIONS} images
-                (JPG, PNG ou WebP), facultatif.
-                <span className="form__drop-tip"> Glissez-les ici ou utilisez «&nbsp;Ajouter&nbsp;».</span>
-              </>
+              <span className="form__files-hint">
+                {dragging ? (
+                  'Déposez vos images ici.'
+                ) : preparing ? (
+                  'Préparation des images…'
+                ) : (
+                  <>
+                    Une inspiration, un croquis, l’emplacement… Jusqu’à {MAX_INSPIRATIONS} images
+                    (JPG, PNG ou WebP), facultatif.
+                    <span className="form__drop-tip"> Glissez-les ici ou utilisez «&nbsp;Ajouter&nbsp;».</span>
+                  </>
+                )}
+              </span>
             )}
-          </span>
-        )}
-      </div>
+          </div>
+        </div>
+      )}
 
       {state.error && (
         <p className="form__error" role="alert">

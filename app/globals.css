@@ -1175,6 +1175,29 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   gap: 18px;
 }
 
+/* The rest of the form, shown once the e-mail is 5 characters in. It eases
+   in, as it appears in answer to typing, rather than jumping into place. */
+.form__more {
+  animation: form-more-in 0.45s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+@keyframes form-more-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form__more {
+    animation: none;
+  }
+}
+
 .field {
   display: block;
   margin-bottom: 18px;
