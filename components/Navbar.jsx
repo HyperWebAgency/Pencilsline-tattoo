@@ -108,7 +108,11 @@ export default function Navbar() {
   }, [open]);
 
   return (
-    <header className={`nav${scrolled ? ' nav--scrolled' : ''}`}>
+    // Not scrolled-styled while the menu is open: its backdrop-filter, like a
+    // transform, makes the header the containing block of fixed children, so
+    // the overlay shrank to the height of the bar. The menu covers the page
+    // anyway, and it now looks the same whatever the scroll position.
+    <header className={`nav${scrolled && !open ? ' nav--scrolled' : ''}`}>
       <nav className="nav__links" aria-label="Navigation principale">
         {links.map((l, i) => (
           <a
