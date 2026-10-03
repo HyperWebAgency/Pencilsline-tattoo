@@ -50,6 +50,8 @@ const Chevron = ({ dir }) => (
 export default function PortfolioCarousel({
   images = [],
   heading = 'Réalisations',
+  // Says what and where for search: tattooing, in Montpellier.
+  intro = 'Tatouage graphique, fineline, brush et abstrait\u00a0: une sélection de pièces réalisées à Montpellier, chacune dessinée pour une seule personne.',
   id = 'realisations',
   galleryHref = '/portfolio',
 }) {
@@ -160,6 +162,7 @@ export default function PortfolioCarousel({
       <h2 className="pf__title" id={`pf-title-${uid}`}>
         {heading}
       </h2>
+      {intro ? <p className="pf__sub">{intro}</p> : null}
 
       <div className="pf__dots" role="tablist" aria-label="Choisir une réalisation">
         {items.map((_, i) => (
