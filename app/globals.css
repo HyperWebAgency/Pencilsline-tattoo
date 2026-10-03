@@ -96,11 +96,55 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 }
 
 /* The horizontal mark, top left; margin-right: auto sends the links and the
-   burger to the right. Sized by height, the width follows its viewBox. */
+   burger to the right. Sized by height, the width follows its viewBox. Hidden
+   until the page scrolls and the nav gets its paper backing (nav--branded):
+   at the top, the hero has its own mark, and its branch fills that corner. */
 .nav__brand {
   display: block;
   height: clamp(24px, 2.3vw, 31px);
   margin-right: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.nav--branded .nav__brand {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Instagram and Facebook beside the links, the mobile menu's line icons at
+   the size of the link text. */
+.nav__icons {
+  display: flex;
+  align-items: center;
+  margin: 0 calc(-1 * clamp(8px, 1.4vw, 18px));
+  padding: 0;
+  list-style: none;
+}
+
+.nav__icons a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+.nav__icons a:hover,
+.nav__icons a:focus-visible {
+  color: var(--seal-bright);
+}
+
+.nav__icons svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 /* Link with a brush dash that draws in on hover. Used in nav and hero. */
@@ -500,7 +544,10 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
 
 /* ------------------------------------------------------------ responsive -- */
 
-@media (max-width: 760px) {
+/* The burger takes over below 900px: the logo, the links, the social icons
+   and the RDV stamp need about 750px in a row, and a 768px tablet ran TATTOO
+   into Réalisations and broke the stamp onto two lines. */
+@media (max-width: 900px) {
   .nav__links {
     display: none;
   }

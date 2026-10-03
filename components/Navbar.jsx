@@ -46,6 +46,23 @@ const SOCIALS = [
   },
 ];
 
+/** Instagram and Facebook, in the navbar and in the mobile menu alike. */
+function SocialIcons(props) {
+  return (
+    <ul {...props}>
+      {SOCIALS.map((s) => (
+        <li key={s.href}>
+          <a href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              {s.icon}
+            </svg>
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * Away from the home page, lead with Accueil so there is always a way back,
  * and send in-page anchors home rather than nowhere: a bare "#univers" on
@@ -108,12 +125,20 @@ export default function Navbar() {
     };
   }, [open]);
 
-  return (
+  const classes = [
+    'nav',
     // Not scrolled-styled while the menu is open: its backdrop-filter, like a
     // transform, makes the header the containing block of fixed children, so
     // the overlay shrank to the height of the bar. The menu covers the page
     // anyway, and it now looks the same whatever the scroll position.
-    <header className={`nav${scrolled && !open ? ' nav--scrolled' : ''}`}>
+    scrolled && !open && 'nav--scrolled',
+    // The logo comes in with the paper backing, on scroll, and stays over the
+    // menu if it is opened from there.
+    scrolled && 'nav--branded',
+  ];
+
+  return (
+    <header className={classes.filter(Boolean).join(' ')}>
       {/* The mark laid flat, top left. It stays when the phone menu opens: the
           overlay sits below the header row. */}
       <a className="nav__brand" href="/" aria-label="Pencilsline Tattoo, accueil">
@@ -135,6 +160,7 @@ export default function Navbar() {
             </span>
           </a>
         ))}
+        <SocialIcons className="nav__icons" aria-label="Réseaux sociaux" />
         <SealStamp href="/contact" seed={9} small>
           Prendre RDV
         </SealStamp>
@@ -185,17 +211,7 @@ export default function Navbar() {
             <p className="nav__social-label" id="nav-social-label">
               Me suivre
             </p>
-            <ul aria-labelledby="nav-social-label">
-              {SOCIALS.map((s) => (
-                <li key={s.href}>
-                  <a href={s.href} target="_blank" rel="noreferrer" aria-label={s.label}>
-                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      {s.icon}
-                    </svg>
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <SocialIcons aria-labelledby="nav-social-label" />
           </div>
         </div>
       )}
