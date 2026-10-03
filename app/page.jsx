@@ -130,7 +130,7 @@ export default async function Page() {
             </a>
           </div>
 
-          <GoogleRating variant="hero" />
+          <GoogleRating variant="hero" faces />
         </div>
       </section>
 

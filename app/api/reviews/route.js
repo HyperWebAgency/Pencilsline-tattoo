@@ -44,9 +44,16 @@ function readPhoto(form) {
 }
 
 /**
+ * Below this image entropy a picture is one of Google's letter avatars (a
+ * plain disc with an initial), not a photo: those measured about 4.3, photos
+ * 7.1 to 7.3. The hero's row of faces leaves them out (migration 0009).
+ */
+const LETTER_AVATAR_ENTROPY = 6
+
+/**
  * The profile picture as a centred WebP square, stored under a fresh name.
  * rotate() applies any EXIF orientation; sharp drops the metadata. Returns the
- * storage path, or null if sharp can't read the file.
+ * storage path and whether it is a letter avatar, or an error.
  */
 async function storePhoto(admin, photo) {
   let webp
@@ -60,11 +67,14 @@ async function storePhoto(admin, photo) {
     return { error: 'Impossible de lire cette photo. Enregistrez-la en JPG, puis réessayez.' }
   }
 
+  const { entropy } = await sharp(webp).stats()
   const path = `${crypto.randomUUID()}.webp`
   const { error } = await admin.storage
     .from(REVIEW_BUCKET)
     .upload(path, webp, { contentType: 'image/webp', upsert: false })
-  return error ? { error: error.message, status: 500 } : { path }
+  return error
+    ? { error: error.message, status: 500 }
+    : { path, letterAvatar: entropy < LETTER_AVATAR_ENTROPY }
 }
 
 /** Adds a review at the end of the row. */
@@ -101,6 +111,7 @@ export async function POST(request) {
     name: fields.name,
     text: fields.text,
     photo_path: stored.path,
+    letter_avatar: stored.letterAvatar,
     display_order: (last?.display_order ?? -1) + 1,
   })
 
@@ -140,6 +151,7 @@ export async function PATCH(request) {
     const stored = await storePhoto(admin, photo)
     if (stored.error) return fail(stored.error, stored.status)
     changes.photo_path = stored.path
+    changes.letter_avatar = stored.letterAvatar
   }
 
   const { error: updateError } = await admin.from('reviews').update(changes).eq('id', id)

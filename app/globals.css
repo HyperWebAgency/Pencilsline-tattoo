@@ -2793,6 +2793,63 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   color: rgba(23, 21, 20, 0.55);
 }
 
+/* Wrappers for the two-line layout beside the faces; anywhere else they
+   don't generate boxes, so stars, score and count sit in one line. */
+.grate__body,
+.grate__line {
+  display: contents;
+}
+
+/* With faces: three reviewers' pictures overlapping by a third, like a row of
+   coins, each ringed in paper so the overlaps read; beside them the stars and
+   score, and the review count under them. Narrower than the one-line form,
+   so it fits beside the text column on a phone too, a little smaller. */
+.grate--faces {
+  align-items: center;
+  gap: 14px;
+}
+
+.grate--faces .grate__body {
+  display: grid;
+  justify-items: start;
+  gap: 4px;
+}
+
+.grate--faces .grate__line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.grate__faces {
+  display: inline-flex;
+  flex: none;
+  --face: 44px;
+}
+
+.grate__faces img {
+  width: var(--face);
+  height: var(--face);
+  border: 2.5px solid var(--paper);
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(23, 21, 20, 0.08);
+}
+
+.grate__faces img + img {
+  margin-left: calc(var(--face) * -0.32);
+}
+
+@media (max-width: 640px) {
+  .grate__faces {
+    --face: 38px;
+  }
+
+  .grate--faces {
+    gap: 12px;
+  }
+}
+
 /* --------------------------------------------------------------- reviews -- */
 
 /* Google reviews, copied from her profile. The heading follows the FAQ's; the
