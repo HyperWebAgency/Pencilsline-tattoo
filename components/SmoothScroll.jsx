@@ -3,17 +3,21 @@
 import Lenis from 'lenis';
 import 'lenis/dist/lenis.css';
 import { useEffect } from 'react';
+import { isLite, onLite, watchFrames } from '@/lib/lite';
 
 /**
  * Lenis smooth scrolling, mounted once in the root layout.
  *
  * Scroll is user-driven, so this is not decor moving on its own — it only
  * changes how the page follows the wheel. Skipped entirely under
- * prefers-reduced-motion, where easing is the wrong answer.
+ * prefers-reduced-motion, where easing is the wrong answer, and in lite mode,
+ * where it is the dearest thing on the page: it re-scrolls from JavaScript on
+ * every frame. Mounted on every page, it also runs the frame watch that
+ * decides lite mode (lib/lite.js).
  */
 export default function SmoothScroll() {
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLite()) {
       return undefined;
     }
 
@@ -29,7 +33,21 @@ export default function SmoothScroll() {
       autoRaf: true,
     });
 
-    return () => lenis.destroy();
+    let running = true;
+    const stopLenis = () => {
+      if (running) lenis.destroy();
+      running = false;
+    };
+
+    // Switched to lite mid-visit: back to native scrolling on the spot.
+    const offLite = onLite(stopLenis);
+    const stopWatch = watchFrames();
+
+    return () => {
+      offLite();
+      stopWatch();
+      stopLenis();
+    };
   }, []);
 
   return null;

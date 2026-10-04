@@ -117,9 +117,10 @@ function Review({ review, index, long, open, echo, onToggle }) {
  * side by side, the track sliding left by exactly one copy and starting over.
  * CSS runs it (see .reviews__track), so it costs no JavaScript per frame.
  *
- * It pauses under the pointer, while the keyboard is inside it, and while a
- * review is open — nobody can read a card that is moving away. Under
- * prefers-reduced-motion it does not move at all and scrolls by hand instead.
+ * It pauses under the pointer, while the keyboard is inside it, while a
+ * review is open — nobody can read a card that is moving away — and while it
+ * is off screen. Under prefers-reduced-motion, or in lite mode (lib/lite.js),
+ * it does not move at all and scrolls by hand instead.
  *
  * Long reviews are clamped to five lines, with « Lire la suite ». Whether a
  * review is long is measured, not guessed from its length: the card's width
@@ -132,6 +133,21 @@ export default function ReviewCarousel({ reviews }) {
   // Keyboard focus only. A clicked « Réduire » keeps focus too, and pausing
   // on any focus held the row still until the next click somewhere else.
   const [keyboard, setKeyboard] = useState(false);
+  // Off screen, a crawl nobody can see would still cost the compositor every
+  // frame for as long as the page stays open. Starts paused: the row is below
+  // the fold on arrival, and the observer reports at once anyway.
+  const [offscreen, setOffscreen] = useState(true);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !('IntersectionObserver' in window)) {
+      setOffscreen(false);
+      return undefined;
+    }
+    const io = new IntersectionObserver(([entry]) => setOffscreen(!entry.isIntersecting));
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
 
   const loop = reviews.length >= LOOP_FROM;
   const repeats = loop ? Math.ceil(MIN_CARDS / reviews.length) : 1;
@@ -170,7 +186,7 @@ export default function ReviewCarousel({ reviews }) {
       }}
     >
       <div
-        className={`reviews__track${open || keyboard ? ' is-paused' : ''}`}
+        className={`reviews__track${open || keyboard || offscreen ? ' is-paused' : ''}`}
         style={{ '--reviews-duration': `${cards.length * SECONDS_PER_CARD}s` }}
       >
         {copies.map((copy) => (

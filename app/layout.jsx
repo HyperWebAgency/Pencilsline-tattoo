@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
+import { LITE_BOOT } from '@/lib/lite';
 import TransitionProvider from '@/components/TransitionProvider';
 import { getTransitionDeck } from '@/lib/photos';
 import { getSiteUrl } from '@/lib/site-url';
@@ -83,7 +84,13 @@ export default async function RootLayout({ children }) {
     <html
       lang="fr"
       className={`${serif.variable} ${sans.variable} ${sealFace.variable} ${introFace.variable}`}
+      // LITE_BOOT may set data-lite before React gets here (see lib/lite.js).
+      suppressHydrationWarning
     >
+      <head>
+        {/* Before first paint, so a weak device never starts the heavy motion. */}
+        <script dangerouslySetInnerHTML={{ __html: LITE_BOOT }} />
+      </head>
       <body>
         <SmoothScroll />
         <TransitionProvider photos={deck}>

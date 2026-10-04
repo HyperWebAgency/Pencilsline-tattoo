@@ -74,6 +74,14 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   backdrop-filter: blur(9px);
 }
 
+/* Lite mode (lib/lite.js): re-blurring what scrolls under the bar costs a
+   weak graphics chip on every frame. Near-opaque paper reads the same. */
+html[data-lite] .nav--scrolled {
+  background-color: rgba(243, 239, 229, 0.96);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 .nav__rule {
   position: absolute;
   left: 0;
@@ -3128,6 +3136,23 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   }
 }
 
+/* Lite mode (lib/lite.js): the same still row, for a device that can't keep
+   the crawl smooth. */
+html[data-lite] .reviews__viewport.is-looping {
+  overflow-x: auto;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+html[data-lite] .reviews__viewport.is-looping .reviews__track {
+  animation: none;
+  padding: 0 clamp(16px, 4vw, 48px);
+}
+
+html[data-lite] .reviews__group li[aria-hidden] {
+  display: none;
+}
+
 /* ----------------------------------------------------------------- merci -- */
 
 /* Where the contact form lands. One centred column: « Merci » written in ink,
@@ -3188,7 +3213,8 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   stroke-dashoffset: 1.01;
 }
 
-.merci-ink.is-still .merci-ink__line {
+.merci-ink.is-still .merci-ink__line,
+html[data-lite] .merci-ink__line {
   stroke-dashoffset: 0;
 }
 
@@ -3929,6 +3955,11 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   .process__card {
     will-change: transform;
   }
+}
+
+/* Lite mode (lib/lite.js): the cards rest, so no layers held for them. */
+html[data-lite] .process__card {
+  will-change: auto;
 }
 
 .process__num {

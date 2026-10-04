@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { isLite } from '@/lib/lite';
 
 /*
  * "Merci" as the pen travels it, stroke by stroke in writing order: the M,
@@ -43,8 +44,8 @@ const HIDDEN = 1.01;
 /**
  * Writes « Merci » letter by letter: each stroke's line is revealed along the
  * pen's path at a steady pace, pausing where the pen lifts between strokes
- * that don't join. Plays once. Under prefers-reduced-motion the word is
- * simply there.
+ * that don't join. Plays once. Under prefers-reduced-motion, or in lite
+ * mode, the word is simply there.
  *
  * The line starts hidden in CSS (pathLength="1" makes the dash maths
  * length-free), so the word never flashes complete before it is written;
@@ -55,7 +56,8 @@ export default function InkMerci() {
   const [still, setStill] = useState(false);
 
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // Lite mode (lib/lite.js): re-filtering the ink every frame is too dear.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || isLite()) {
       setStill(true);
       return undefined;
     }

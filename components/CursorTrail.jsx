@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { LITE_EVENT, isLite } from '@/lib/lite';
 
 /**
  * Full-viewport canvas cursor trail.
@@ -10,9 +11,10 @@ import { useEffect, useRef, useState } from 'react';
  * the head trails the cursor instead of snapping onto it. The chain is drawn as
  * one continuous quadratic path whose lineWidth tapers to a point at the tail.
  *
- * Renders nothing when prefers-reduced-motion is set, or without a mouse: on a
- * touch screen there is no cursor to follow, so all it could show is the idle
- * loop, which reads as a stray brush stroke across the text.
+ * Renders nothing when prefers-reduced-motion is set, in lite mode (see
+ * lib/lite.js), or without a mouse: on a touch screen there is no cursor to
+ * follow, so all it could show is the idle loop, which reads as a stray brush
+ * stroke across the text. The idle loop also ends at the first scroll.
  */
 export default function CursorTrail({
   points = 40,
@@ -32,13 +34,15 @@ export default function CursorTrail({
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     const mouse = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const sync = () => setActive(mouse.matches && !reduced.matches);
+    const sync = () => setActive(mouse.matches && !reduced.matches && !isLite());
     sync();
     reduced.addEventListener('change', sync);
     mouse.addEventListener('change', sync);
+    window.addEventListener(LITE_EVENT, sync);
     return () => {
       reduced.removeEventListener('change', sync);
       mouse.removeEventListener('change', sync);
+      window.removeEventListener(LITE_EVENT, sync);
     };
   }, []);
 
@@ -163,10 +167,17 @@ export default function CursorTrail({
     resize();
     frame = window.requestAnimationFrame(render);
 
+    // Someone scrolling is reading: the idle loop would wander over the text,
+    // and repaint a canvas the size of the screen every frame to do it.
+    const onScroll = () => {
+      moved = true;
+    };
+
     window.addEventListener('resize', resize);
     window.addEventListener('mousemove', onMouseMove, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('click', onClick);
+    window.addEventListener('scroll', onScroll, { passive: true, once: true });
 
     return () => {
       window.cancelAnimationFrame(frame);
@@ -174,6 +185,7 @@ export default function CursorTrail({
       window.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('touchmove', onTouchMove);
       window.removeEventListener('click', onClick);
+      window.removeEventListener('scroll', onScroll);
     };
   }, [active, points, spring, friction, widthFactor, color, idle]);
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef } from 'react';
 import InkStroke from './InkStroke';
+import { isLite, onLite } from '@/lib/lite';
 import SealStamp from './SealStamp';
 
 /**
@@ -200,8 +201,11 @@ export default function ProcessSteps() {
       }
     };
 
+    // Reduced motion or lite mode (lib/lite.js): the cards rest at their angle.
+    const still = () => reduced.matches || isLite();
+
     const kick = () => {
-      if (!frame && visible && !reduced.matches) frame = requestAnimationFrame(tick);
+      if (!frame && visible && !still()) frame = requestAnimationFrame(tick);
     };
 
     const stop = () => {
@@ -222,9 +226,10 @@ export default function ProcessSteps() {
       syncNav();
     };
 
-    // Reduced motion: no loop at all, and the CSS resting angle shows through.
+    // Reduced motion or lite: no loop at all, and the CSS resting angle shows
+    // through. Lite is one way, so it only ever lands in the first branch.
     const onMotionPref = () => {
-      if (reduced.matches) {
+      if (still()) {
         stop();
         cards.forEach((card) => {
           card.style.transform = '';
@@ -263,8 +268,10 @@ export default function ProcessSteps() {
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
     reduced.addEventListener('change', onMotionPref);
+    const offLite = onLite(onMotionPref);
 
     return () => {
+      offLite();
       stop();
       io.disconnect();
       introSize.disconnect();

@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import PolaroidCard from './PolaroidCard';
+import { isLite } from '@/lib/lite';
 
 /** Une carte de plus toutes les 130 ms, pause table pleine, puis les portes. */
 const CARD_MS = 130;
@@ -76,8 +77,10 @@ export default function TransitionProvider({ children, photos = [] }) {
     // par le layout : la donne marche donc depuis n'importe quelle page.
     const deck = images.length ? images : photos;
 
+    // En mode allégé (lib/lite.js), pas de donne non plus : une dizaine de
+    // polaroids en vol, c'est ce qu'un appareil lent rend le plus mal.
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced || deck.length === 0) {
+    if (reduced || isLite() || deck.length === 0) {
       router.push(href);
       return;
     }
