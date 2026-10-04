@@ -67,6 +67,15 @@ export default function VideoTrio({ videos = [], heading = "L'atelier en mouveme
   // All removed from /admin: no row, rather than an empty band of paper.
   if (!videos.length) return null;
 
+  // The lead is the first clip in Alexandra's order, since that is the one
+  // the hero's play button opens on a phone. In a row of three it still
+  // belongs in the middle, where it sat before the clips came from /admin, so
+  // it swaps places with the second here: in the markup, not just on screen,
+  // so tab and screen-reader order follow what is seen. i stays the clip's
+  // place in her order; the position in this list is its column.
+  const row = videos.map((clip, i) => ({ clip, i }));
+  if (row.length >= 3) [row[0], row[1]] = [row[1], row[0]];
+
   return (
     <section
       className={`trio${revealed ? ' is-revealed' : ''}`}
@@ -74,11 +83,11 @@ export default function VideoTrio({ videos = [], heading = "L'atelier en mouveme
       aria-label={heading}
     >
       <ul className="trio__grid" style={{ '--trio-cols': Math.min(videos.length, 3) }}>
-        {videos.map((clip, i) => (
+        {row.map(({ clip, i }, at) => (
           <li
             key={clip.id}
             className={`trio__cell${i === 0 ? ' trio__cell--lead' : ''}`}
-            style={{ '--trio-delay': `${(i % 3) * 120}ms` }}
+            style={{ '--trio-delay': `${(at % 3) * 120}ms` }}
           >
             <video
               ref={(el) => {
