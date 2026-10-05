@@ -32,8 +32,11 @@ const sections = [
           <Link href="/contact">Contact</Link>&nbsp;:
         </p>
         <ul>
-          <li>votre nom, votre adresse e-mail et la description de votre projet (obligatoires)&nbsp;;</li>
-          <li>votre téléphone, l’emplacement et la taille souhaités (facultatifs)&nbsp;;</li>
+          <li>
+            votre nom, votre adresse e-mail, votre téléphone et la description de votre projet
+            (obligatoires)&nbsp;;
+          </li>
+          <li>l’emplacement et la taille souhaités (facultatifs)&nbsp;;</li>
           <li>
             jusqu’à {MAX_INSPIRATIONS} images d’inspiration (facultatives). Avant d’être
             enregistrées, elles sont converties et vidées de leurs métadonnées, position GPS

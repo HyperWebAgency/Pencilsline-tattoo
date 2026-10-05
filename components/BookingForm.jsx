@@ -38,6 +38,19 @@ function formatPhone(raw) {
 }
 
 /**
+ * What is wrong with the number, or null. A French one has ten digits
+ * (06 12 34 56 78); one written with its country code, + and 8 to 15.
+ */
+function phoneError(phone) {
+  const digits = phone.replace(/\D/g, '');
+  if (!digits) return 'Votre numéro de téléphone est requis.';
+  const complete = phone.trim().startsWith('+')
+    ? digits.length >= 8 && digits.length <= 15
+    : digits.length === 10;
+  return complete ? null : 'Numéro de téléphone incomplet.';
+}
+
+/**
  * Booking request form. Submits straight to Formspree, which emails the artist —
  * no database, no inbox to maintain. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT to the
  * form URL (https://formspree.io/f/xxxxxxxx).
@@ -202,6 +215,13 @@ export default function BookingForm() {
       setState({ status: 'error', error: 'Adresse e-mail invalide.' });
       return;
     }
+    const phoneProblem = phoneError(values.phone);
+    if (phoneProblem) {
+      // Normally on screen by now, but bring it up in case it isn't.
+      setShowMore(true);
+      setState({ status: 'error', error: phoneProblem });
+      return;
+    }
     if (values.project.trim().length < 10) {
       setState({ status: 'error', error: 'Merci de décrire votre projet en quelques mots.' });
       return;
@@ -307,13 +327,14 @@ export default function BookingForm() {
         <div className="form__more">
           <div className="form__row">
             <label className="field">
-              <span className="field__label">Téléphone</span>
+              <span className="field__label">Téléphone *</span>
               <input
                 ref={phoneRef}
                 className="field__input"
                 type="tel"
                 value={values.phone}
                 onChange={onPhoneChange}
+                required
                 maxLength={40}
                 autoComplete="tel"
                 placeholder="06 12 34 56 78"
