@@ -48,7 +48,7 @@ const introFace = localFont({
   display: 'swap',
 });
 
-const TITLE = 'Pencilsline — Tatouage fineline et graphique à Montpellier';
+const TITLE = 'Tatouage à Montpellier, fineline, graphique, brush et abstrait';
 const DESCRIPTION =
   "Tatouage graphique, fineline, brush et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
 
