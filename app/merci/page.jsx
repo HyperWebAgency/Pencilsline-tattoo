@@ -40,9 +40,8 @@ export default function MerciPage() {
       </p>
 
       <p className="merci__text">
-        Gardez un œil sur vos e-mails, et pensez à jeter un coup d&apos;œil aux
-        spams&nbsp;: je vous réponds par là, ou je vous appelle si vous
-        m&apos;avez laissé votre numéro.
+        Je vous recontacte par téléphone ou par e-mail. Pensez à vérifier vos
+        spams&nbsp;: ma réponse s&apos;y glisse parfois.
       </p>
 
       <p className="merci__text">
