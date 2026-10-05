@@ -51,7 +51,7 @@ export default function PortfolioCarousel({
   images = [],
   heading = 'Réalisations',
   // Says what and where for search: tattooing, in Montpellier.
-  intro = 'Tatouage graphique, fineline, brush et abstrait\u00a0: une sélection de pièces réalisées à Montpellier, chacune dessinée pour une seule personne.',
+  intro = 'Tatouage graphique, fineline, brush et abstrait d’inspiration japonaise\u00a0: une sélection de pièces réalisées à Montpellier, chacune dessinée pour une seule personne.',
   id = 'realisations',
   galleryHref = '/portfolio',
 }) {
