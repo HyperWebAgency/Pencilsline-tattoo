@@ -3407,8 +3407,8 @@ html[data-lite] .merci-ink__line {
 }
 
 /* "Pencilsline Tattoo" is 6.69em wide in light Cormorant, so 14.9cqw runs it
-   edge to edge. The ink is laid as a wash, pale at the top and full at the
-   foot, like ink settling into the paper. */
+   edge to edge. The seal red is laid as a wash, pale at the top and full at
+   the foot, like ink settling into the paper. */
 .foot__mark-text {
   margin: 0;
   font-family: var(--font-serif), Georgia, serif;
@@ -3419,8 +3419,8 @@ html[data-lite] .merci-ink__line {
   color: transparent;
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--ink) 34%, transparent) 8%,
-    var(--ink) 88%
+    color-mix(in srgb, var(--seal) 34%, transparent) 8%,
+    var(--seal) 88%
   );
   -webkit-background-clip: text;
   background-clip: text;
