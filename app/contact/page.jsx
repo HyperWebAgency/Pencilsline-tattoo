@@ -26,8 +26,10 @@ import {
 } from '@/lib/supabase/config'
 
 export const metadata = {
-  title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_ADDRESS.city}`,
-  description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, fineline, brush et abstrait à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
+  // Montpellier, not the shop's town: the site is out to rank there. The real
+  // address stays in the page and its schema.
+  title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_CITY}`,
+  description: `Prendre rendez-vous avec ${STUDIO_ARTIST}, tatoueuse à ${STUDIO_CITY} : tatouage graphique, fineline, brush et abstrait d'inspiration japonaise. Décrivez votre projet, je vous réponds par e-mail.`,
   alternates: { canonical: '/contact' },
 }
 
