@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import GoogleRating from './GoogleRating'
 import InkStroke from './InkStroke'
+import { LEGAL_PAGES } from '@/lib/legal'
 import { getReviewCount } from '@/lib/settings'
 import {
   STUDIO_ADDRESS,
@@ -107,9 +108,13 @@ export default async function Footer() {
         </section>
       </div>
 
-      <p className="foot__legal">
-        © {new Date().getFullYear()} {STUDIO_NAME} — {STUDIO_ADDRESS.city}
-      </p>
+      <nav className="foot__legal" aria-label="Informations légales">
+        {LEGAL_PAGES.map((page) => (
+          <Link key={page.href} href={page.href}>
+            {page.label}
+          </Link>
+        ))}
+      </nav>
 
       {/* The name once more, the full width of the page, like a signature
           under everything. Decorative: the studio's name is already read out

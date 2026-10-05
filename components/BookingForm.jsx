@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import SealStamp from './SealStamp';
@@ -469,6 +470,12 @@ export default function BookingForm() {
         </SealStamp>
         <span className="form__note">* champs obligatoires</span>
       </div>
+
+      {/* The RGPD wants people told what their data is for where it is taken. */}
+      <p className="form__privacy">
+        Vos informations servent uniquement à répondre à votre demande et à préparer votre
+        rendez-vous. <Link href="/confidentialite">Politique de confidentialité</Link>
+      </p>
     </form>
   );
 }
