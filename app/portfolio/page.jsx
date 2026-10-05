@@ -21,6 +21,7 @@ export const revalidate = 3600
 export const metadata = {
   title: `Réalisations — ${STUDIO_NAME}, ${STUDIO_CITY}`,
   description: `Tatouages graphiques, fineline, brush et abstraits réalisés par ${STUDIO_ARTIST} — ${STUDIO_NAME}, ${STUDIO_CITY}.`,
+  alternates: { canonical: '/portfolio' },
 }
 
 /**

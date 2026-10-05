@@ -21,6 +21,7 @@ import {
 export const metadata = {
   title: `Mentions légales — ${STUDIO_NAME}`,
   description: `Éditrice, hébergeur et propriété intellectuelle du site ${STUDIO_NAME}, tatoueuse à Montpellier.`,
+  alternates: { canonical: '/mentions-legales' },
 }
 
 const sections = [

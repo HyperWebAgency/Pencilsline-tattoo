@@ -19,6 +19,13 @@ import { getVideos } from '@/lib/videos';
 // revalidates on demand so a new photo shows up within seconds.
 export const revalidate = 3600;
 
+// Each page names its own address (resolved against metadataBase: the www
+// domain in production), so Google indexes that rather than the copy that
+// pencilsline-tattoo.vercel.app also serves.
+export const metadata = {
+  alternates: { canonical: '/' },
+};
+
 /** A few flecks thrown off the headline's final stroke. */
 function Splatter() {
   return (

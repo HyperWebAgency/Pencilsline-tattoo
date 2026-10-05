@@ -6,6 +6,7 @@ import { MAX_INSPIRATIONS, STUDIO_EMAIL, STUDIO_NAME } from '@/lib/supabase/conf
 export const metadata = {
   title: `Politique de confidentialité — ${STUDIO_NAME}`,
   description: `Les données collectées par le site ${STUDIO_NAME}, leur usage, leur durée de conservation et vos droits.`,
+  alternates: { canonical: '/confidentialite' },
 }
 
 const mail = <a href={`mailto:${STUDIO_EMAIL}`}>{STUDIO_EMAIL}</a>

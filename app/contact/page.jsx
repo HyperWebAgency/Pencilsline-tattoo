@@ -28,6 +28,7 @@ import {
 export const metadata = {
   title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_ADDRESS.city}`,
   description: `Prendre rendez-vous avec ${STUDIO_ARTIST} — tatouage graphique, fineline, brush et abstrait à ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}. Décrivez votre projet, je vous réponds par e-mail.`,
+  alternates: { canonical: '/contact' },
 }
 
 const fullAddress = `${STUDIO_ADDRESS.street}, ${STUDIO_ADDRESS.postalCode} ${STUDIO_ADDRESS.city}`

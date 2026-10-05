@@ -6,6 +6,7 @@ import { STUDIO_EMAIL, STUDIO_NAME } from '@/lib/supabase/config'
 export const metadata = {
   title: `Conditions générales de vente — ${STUDIO_NAME}`,
   description: `Réservation, acompte, santé et contre-indications, soins : les conditions des tatouages réalisés par ${STUDIO_NAME} près de Montpellier.`,
+  alternates: { canonical: '/cgv' },
 }
 
 const mail = <a href={`mailto:${STUDIO_EMAIL}`}>{STUDIO_EMAIL}</a>
