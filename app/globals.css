@@ -4558,3 +4558,135 @@ html[data-lite] .process__card {
     line-height: 1.8;
   }
 }
+
+/* ------------------------------------------------------------------- 404 -- */
+
+/* Any address the site doesn't know, mostly old links. Built like /merci: one
+   centred column, with a faint « 404 » left on the paper behind the title like
+   a trace of ink. Nothing here moves on its own. */
+.lost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 86svh;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: clamp(110px, 15vh, 170px) clamp(24px, 6vw, 60px) clamp(60px, 9vh, 110px);
+  text-align: center;
+}
+
+/* The numeral and the title stacked in one grid cell: the 404 sets the
+   height, the title crosses its middle. Its own stacking context keeps the
+   numeral on the paper, under the title. */
+.lost__stage {
+  display: grid;
+  place-items: center;
+  isolation: isolate;
+  margin-top: clamp(12px, 2.4vh, 22px);
+}
+
+.lost__stage > * {
+  grid-area: 1 / 1;
+}
+
+/* Zero-size rather than display: none, which would switch the filter off. */
+.lost__filter {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Light Cormorant washed into the paper: paler at the top, a touch denser at
+   the foot, like ink that settled before it dried. */
+.lost__numeral {
+  z-index: -1;
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(10rem, 40vw, 17rem);
+  font-weight: 300;
+  font-variant-numeric: lining-nums;
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: transparent;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--ink) 5%, transparent) 15%,
+    color-mix(in srgb, var(--ink) 12%, transparent) 85%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: url(#lost-bleed);
+  user-select: none;
+  pointer-events: none;
+}
+
+.lost__kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--ink) 62%, transparent);
+}
+
+.lost__title {
+  margin: 0;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.6rem, 6.4vw, 4.4rem);
+  font-weight: 300;
+  line-height: 1.05;
+  color: var(--ink);
+}
+
+.lost__word {
+  position: relative;
+  display: inline-block;
+  font-style: italic;
+}
+
+/* The brush runs dry before the end of the word's line: on a blank page, the
+   stroke fades out instead of finishing. */
+.lost__underline {
+  position: absolute;
+  left: -3%;
+  right: -6%;
+  bottom: -0.12em;
+  height: 0.13em;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to right, #000 55%, transparent 98%);
+  mask-image: linear-gradient(to right, #000 55%, transparent 98%);
+}
+
+.lost__lead {
+  margin: clamp(18px, 3vh, 30px) 0 0;
+  max-width: 34ch;
+  text-wrap: balance;
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.35rem, 2.6vw, 1.75rem);
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--ink) 84%, transparent);
+}
+
+.lost__text {
+  margin: 14px 0 0;
+  max-width: 48ch;
+  text-wrap: pretty;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--ink) 72%, transparent);
+}
+
+.lost__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 22px 34px;
+  margin-top: clamp(28px, 5vh, 44px);
+}
