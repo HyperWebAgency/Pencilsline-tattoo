@@ -299,22 +299,9 @@ export default function BookingForm() {
         </label>
       </div>
 
-      <label className="field">
-        <span className="field__label">Votre projet *</span>
-        <textarea
-          className="field__input field__input--area"
-          value={values.project}
-          onChange={set('project')}
-          required
-          minLength={10}
-          maxLength={4000}
-          rows={6}
-          placeholder="Décrivez votre idée, le style souhaité, vos disponibilités…"
-        />
-        <span className="field__hint">{values.project.length}/4000</span>
-      </label>
-
-      {/* The rest of the form, once the e-mail is under way (see showMore). */}
+      {/* The rest of the form, once the e-mail is under way (see showMore):
+          phone, placement and size here, between the e-mail and the project,
+          and the images after the project. */}
       {showMore && (
         <div className="form__more">
           <div className="form__row">
@@ -354,7 +341,26 @@ export default function BookingForm() {
               />
             </label>
           </div>
+        </div>
+      )}
 
+      <label className="field">
+        <span className="field__label">Votre projet *</span>
+        <textarea
+          className="field__input field__input--area"
+          value={values.project}
+          onChange={set('project')}
+          required
+          minLength={10}
+          maxLength={4000}
+          rows={6}
+          placeholder="Décrivez votre idée, le style souhaité, vos disponibilités…"
+        />
+        <span className="field__hint">{values.project.length}/4000</span>
+      </label>
+
+      {showMore && (
+        <div className="form__more">
           {/* Also takes images dragged in from the desktop or another window. */}
           <div
             className={`field form__drop${dragging ? ' is-dragging' : ''}`}
