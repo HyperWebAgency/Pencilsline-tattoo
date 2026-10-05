@@ -6,6 +6,7 @@ import { getReviewCount } from '@/lib/settings'
 import {
   STUDIO_ADDRESS,
   STUDIO_ARTIST,
+  STUDIO_CITY,
   STUDIO_EMAIL,
   STUDIO_FACEBOOK,
   STUDIO_GOOGLE_URL,
@@ -108,13 +109,19 @@ export default async function Footer() {
         </section>
       </div>
 
-      <nav className="foot__legal" aria-label="Informations légales">
-        {LEGAL_PAGES.map((page) => (
-          <Link key={page.href} href={page.href}>
-            {page.label}
-          </Link>
-        ))}
-      </nav>
+      {/* Montpellier, not the shop's town: the site is out to rank there. */}
+      <div className="foot__legal">
+        <p>
+          © {new Date().getFullYear()} {STUDIO_NAME} — {STUDIO_CITY}
+        </p>
+        <nav className="foot__legal-links" aria-label="Informations légales">
+          {LEGAL_PAGES.map((page) => (
+            <Link key={page.href} href={page.href}>
+              {page.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
 
       {/* The name once more, the full width of the page, like a signature
           under everything. Decorative: the studio's name is already read out

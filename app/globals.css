@@ -3372,12 +3372,24 @@ html[data-lite] .merci-ink__line {
 .foot__legal {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 22px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 28px;
   margin: clamp(38px, 5vw, 60px) 0 0;
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(23, 21, 20, 0.4);
+}
+
+.foot__legal p {
+  margin: 0;
+}
+
+.foot__legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
 }
 
 .foot__legal a {
