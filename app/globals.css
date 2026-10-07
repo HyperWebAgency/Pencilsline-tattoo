@@ -410,17 +410,21 @@ html[data-lite] .nav--scrolled {
   transform: translateY(-56%);
   /* 520 rather than 640: no line in this block is wider than that — the subtitle
      is capped at 42ch — so the extra width was empty box holding the video off. */
-  max-width: 520px;
+  max-width: calc(520px * var(--hero-scale));
   z-index: 2;
+  /* The block's size as one factor. Its type, its gaps, the CTAs and the
+     rating all multiply by it, so the block grows in proportion. 1 here; a
+     desktop or a laptop raises it (see "Desktops and laptops" below). */
+  --hero-scale: 1;
 }
 
 .hero__kicker {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: calc(10px * var(--hero-scale));
   width: fit-content; /* a flex block would otherwise claim the whole column */
-  margin: 0 0 24px;
-  font-size: 11.5px;
+  margin: 0 0 calc(24px * var(--hero-scale));
+  font-size: calc(11.5px * var(--hero-scale));
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -439,7 +443,7 @@ html[data-lite] .nav--scrolled {
   margin: 0;
   font-family: var(--font-serif), Georgia, serif;
   /* Width sets it, but a short screen caps it too, or the block outgrows it. */
-  font-size: clamp(2.9rem, min(6.8vw, 11.5svh), 5.1rem);
+  font-size: calc(clamp(2.9rem, min(6.8vw, 11.5svh), 5.1rem) * var(--hero-scale));
   font-weight: 300;
   line-height: 1.03;
   /* Hug the longest line instead of claiming the whole 640px column: the video
@@ -489,7 +493,7 @@ html[data-lite] .nav--scrolled {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 30px;
+  gap: calc(30px * var(--hero-scale));
   margin-top: 40px;
   width: fit-content; /* same reason as the title */
   max-width: 100%;
@@ -595,6 +599,47 @@ html[data-lite] .nav--scrolled {
   }
 }
 
+/* Desktops and laptops, the photo beside the text: the block a size up, by
+   --hero-scale. A short window has no room above the block for it — it sits
+   just above centre, so it grows upwards into the navbar row — hence a
+   smaller step under 740px tall, and none under 690px. The photo keeps its
+   own size: what the block gains on the right runs into the photo's
+   transparent left edge, not into her. An upright screen goes back to 1, in
+   the next rule. */
+@media (min-width: 960px) and (min-height: 690px) {
+  .hero__content {
+    --hero-scale: 1.06;
+  }
+
+  /* Shared components, sized in their own rules (.stamp, .brush-link,
+     .grate__faces): the same values, at the block's scale. */
+  .hero__actions .stamp {
+    padding: calc(15px * var(--hero-scale)) calc(24px * var(--hero-scale));
+  }
+
+  .hero__actions .stamp span {
+    font-size: calc(11px * var(--hero-scale));
+  }
+
+  .hero__actions .brush-link {
+    font-size: calc(11.5px * var(--hero-scale));
+  }
+
+  .hero .grate__faces {
+    --face: calc(44px * var(--hero-scale));
+  }
+
+  .hero .grate--faces {
+    gap: calc(14px * var(--hero-scale));
+  }
+}
+
+@media (min-width: 960px) and (min-height: 740px) {
+  .hero__content {
+    --hero-scale: 1.12;
+  }
+}
+
 /* Upright tablets and portrait monitors: side by side, the text sat mid-screen
    over an empty top half and the photo shrank into the corner, if it showed at
    all. Stacked instead: the text near the top, the photo below it, as large as
@@ -605,6 +650,8 @@ html[data-lite] .nav--scrolled {
   .hero__content {
     top: clamp(110px, 13svh, 240px);
     transform: none;
+    /* At its own size: the photo's width below counts on that bound. */
+    --hero-scale: 1;
   }
 
   .hero__photo {
@@ -659,20 +706,20 @@ html[data-lite] .nav--scrolled {
    tiers below. */
 @media (min-width: 641px) {
   .hero__kicker {
-    margin-bottom: clamp(14px, 2.8svh, 24px);
+    margin-bottom: calc(clamp(14px, 2.8svh, 24px) * var(--hero-scale));
   }
 
   .hero__sub {
-    margin-top: clamp(16px, 3.2svh, 28px);
-    font-size: clamp(1.24rem, min(2vw, 3.6svh), 1.56rem);
+    margin-top: calc(clamp(16px, 3.2svh, 28px) * var(--hero-scale));
+    font-size: calc(clamp(1.24rem, min(2vw, 3.6svh), 1.56rem) * var(--hero-scale));
   }
 
   .hero__actions {
-    margin-top: clamp(22px, 4.5svh, 40px);
+    margin-top: calc(clamp(22px, 4.5svh, 40px) * var(--hero-scale));
   }
 
   .hero .grate--hero {
-    margin-top: clamp(14px, 2.9svh, 26px);
+    margin-top: calc(clamp(14px, 2.9svh, 26px) * var(--hero-scale));
   }
 }
 
@@ -2821,23 +2868,24 @@ html[data-lite] .nav--scrolled {
 }
 
 /* In the hero it sits under the CTAs, as a quiet endorsement of them rather
-   than something competing with the headline. */
+   than something competing with the headline. Its sizes follow the hero
+   block's --hero-scale. */
 .grate--hero {
   margin-top: 26px;
   gap: 9px;
 }
 
 .grate--hero .grate__stars svg {
-  width: 13px;
-  height: 13px;
+  width: calc(13px * var(--hero-scale, 1));
+  height: calc(13px * var(--hero-scale, 1));
 }
 
 .grate--hero .grate__score {
-  font-size: 17px;
+  font-size: calc(17px * var(--hero-scale, 1));
 }
 
 .grate--hero .grate__count {
-  font-size: 11px;
+  font-size: calc(11px * var(--hero-scale, 1));
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(23, 21, 20, 0.55);
