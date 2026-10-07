@@ -1,5 +1,4 @@
 import { Cormorant_Garamond, Inter, Roboto_Slab } from 'next/font/google';
-import localFont from 'next/font/local';
 import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import SmoothScroll from '@/components/SmoothScroll';
@@ -33,18 +32,6 @@ const sealFace = Roboto_Slab({
   weight: '600',
   subsets: ['latin'],
   variable: '--font-seal',
-  display: 'swap',
-});
-
-// DejaVu Sans — matplotlib's default face, requested for the contact intro
-// card. Self-hosted from app/fonts (the DejaVu licence permits redistribution
-// and web embedding; see DejaVu-LICENSE.txt).
-const introFace = localFont({
-  src: [
-    { path: './fonts/DejaVuSans.ttf', weight: '400', style: 'normal' },
-    { path: './fonts/DejaVuSans-Bold.ttf', weight: '700', style: 'normal' },
-  ],
-  variable: '--font-intro',
   display: 'swap',
 });
 
@@ -83,7 +70,7 @@ export default async function RootLayout({ children }) {
   return (
     <html
       lang="fr"
-      className={`${serif.variable} ${sans.variable} ${sealFace.variable} ${introFace.variable}`}
+      className={`${serif.variable} ${sans.variable} ${sealFace.variable}`}
       // LITE_BOOT may set data-lite before React gets here (see lib/lite.js).
       suppressHydrationWarning
     >

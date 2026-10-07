@@ -1007,7 +1007,7 @@ html[data-lite] .nav--scrolled {
   gap: 4px;
   padding: 0 24px;
   text-align: center;
-  font-family: var(--font-intro), 'DejaVu Sans', Verdana, sans-serif;
+  font-family: var(--font-serif), Georgia, serif;
   color: var(--ink);
 }
 
@@ -1041,26 +1041,33 @@ html[data-lite] .nav--scrolled {
   animation-delay: 0.52s;
 }
 
+/* The same three voices as the hero: a tracked Inter kicker, the name in light
+   Cormorant, and « Tattoo » in its italic, as in the footer signature. */
 .intro__artist {
-  font-size: clamp(0.82rem, 1.7vw, 1rem);
-  letter-spacing: 0.46em;
+  /* A little air over the name, as the hero kicker has over its title. */
+  margin-bottom: 8px;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  /* Balances the tracking after the last letter, so the word sits centred. */
+  text-indent: 0.24em;
   text-transform: uppercase;
-  text-indent: 0.46em;
+  color: rgba(23, 21, 20, 0.62);
 }
 
 .intro__studio {
-  font-size: clamp(2.1rem, 7.2vw, 4.4rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.05;
+  font-size: clamp(3.2rem, 8.4vw, 6rem);
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  line-height: 1.03;
 }
 
 .intro__tail {
-  font-size: clamp(0.78rem, 1.5vw, 0.95rem);
-  letter-spacing: 0.58em;
-  text-transform: uppercase;
-  text-indent: 0.58em;
-  color: rgba(23, 21, 20, 0.66);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.1;
 }
 
 /* The stroke sweeps in under the name, like a signature being underlined. */
