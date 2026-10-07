@@ -125,8 +125,10 @@ export default async function AdminPage({ searchParams }) {
 
           <Step n={2}>Vos photos, dans l&apos;ordre de la galerie</Step>
           <p className="admin__hint">
-            ↑ et ↓ changent l&apos;ordre de la galerie : la photo n° 1 est montrée en
-            premier. « Supprimer » l&apos;efface du site entier.
+            Pour changer l&apos;ordre, faites glisser une photo par sa poignée, à
+            gauche, ou utilisez les flèches : d&apos;une place, ou d&apos;un coup tout
+            en haut ou tout en bas. La photo n° 1 est montrée en premier.
+            « Supprimer » l&apos;efface du site entier.
           </p>
           <PhotoList photos={photos ?? []} />
         </section>

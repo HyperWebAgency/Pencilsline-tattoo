@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { BUCKET, MAX_HOME_PHOTOS } from '@/lib/supabase/config'
+import { MoveButtons, SortGrip, useSortable } from './Sortable'
 
 const publicUrl = (path) =>
   `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/${BUCKET}/${path}`
@@ -39,18 +40,24 @@ export default function HomeCarousel({ photos }) {
     router.refresh()
   }
 
-  function move(index, direction) {
-    const target = index + direction
-    if (target < 0 || target >= inCarousel.length) return
-    const reordered = [...inCarousel]
-    ;[reordered[index], reordered[target]] = [reordered[target], reordered[index]]
-    send(
-      '/api/photos/home/reorder',
-      { ids: reordered.map((p) => p.id) },
-      inCarousel[index].id,
-      'Réorganisation impossible.'
-    )
+  // Its own request rather than send(): the order shows before the answer,
+  // and comes back if the answer is a failure.
+  async function saveOrder(ids) {
+    setError('')
+    const res = await fetch('/api/photos/home/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids }),
+    }).catch(() => null)
+    const payload = await res?.json().catch(() => ({}))
+    if (!res?.ok) {
+      setError(payload?.error || 'Réorganisation impossible.')
+      return false
+    }
+    return true
   }
+
+  const { list, locked, dragging, listRef, grab, moveTo } = useSortable(inCarousel, saveOrder)
 
   return (
     <>
@@ -61,17 +68,23 @@ export default function HomeCarousel({ photos }) {
         Dans le carrousel ({inCarousel.length} sur {MAX_HOME_PHOTOS})
       </h3>
       <p className="admin__hint">
-        ↑ et ↓ changent l&apos;ordre du carrousel. « Retirer » la sort du carrousel
-        sans la supprimer : elle reste dans la galerie.
+        Pour changer l&apos;ordre du carrousel, faites glisser une photo par sa
+        poignée, à gauche, ou utilisez les flèches. « Retirer » la sort du
+        carrousel sans la supprimer : elle reste dans la galerie.
       </p>
 
-      {inCarousel.length ? (
-        <ol className="photo-list">
-          {inCarousel.map((photo, index) => (
-            <li key={photo.id} className="photo-list__item">
-              <span className="photo-list__pos" aria-hidden="true">
-                {index + 1}
-              </span>
+      {list.length ? (
+        <ol
+          ref={listRef}
+          className={`photo-list${dragging ? ' is-sorting' : ''}`}
+          aria-busy={locked || undefined}
+        >
+          {list.map((photo, index) => (
+            <li
+              key={photo.id}
+              className={`photo-list__item${dragging === photo.id ? ' is-dragging' : ''}`}
+            >
+              <SortGrip index={index} onPointerDown={(e) => grab(e, index)} />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={publicUrl(photo.storage_path)}
@@ -83,24 +96,13 @@ export default function HomeCarousel({ photos }) {
                 <p className="photo-list__alt">{photo.description || photo.alt_text}</p>
               </div>
               <div className="photo-list__actions">
-                <button
-                  type="button"
-                  onClick={() => move(index, -1)}
-                  disabled={index === 0 || busy === photo.id}
-                  aria-label="Monter"
-                  title="Monter"
-                >
-                  ↑
-                </button>
-                <button
-                  type="button"
-                  onClick={() => move(index, 1)}
-                  disabled={index === inCarousel.length - 1 || busy === photo.id}
-                  aria-label="Descendre"
-                  title="Descendre"
-                >
-                  ↓
-                </button>
+                <MoveButtons
+                  index={index}
+                  count={list.length}
+                  onMove={moveTo}
+                  locked={locked}
+                  disabled={busy === photo.id}
+                />
                 <button
                   type="button"
                   className="photo-list__delete"

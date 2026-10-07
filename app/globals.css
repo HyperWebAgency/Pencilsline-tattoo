@@ -2434,6 +2434,90 @@ html[data-lite] .nav--scrolled {
   background: var(--ink);
 }
 
+/* --------------------------------------- admin: drag to reorder (lists) -- */
+/* app/admin/Sortable.jsx. The grip is the row's number with dots under it,
+   reaching the row's top, bottom and left edges so a thumb finds it. Only
+   there does a touch drag the row; anywhere else it scrolls the page. */
+
+.photo-list__grip {
+  flex: none;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: -14px 0 -14px -14px;
+  padding: 14px 6px 14px 14px;
+  cursor: grab;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.photo-list__dots {
+  display: block;
+  fill: rgba(23, 21, 20, 0.4);
+}
+
+@media (hover: hover) {
+  .photo-list__grip:hover .photo-list__dots {
+    fill: var(--seal);
+  }
+}
+
+/* The row being dragged: lifted, opaque over the rows it passes. */
+.photo-list__item.is-dragging {
+  position: relative;
+  z-index: 2;
+  background: #f8f5ed;
+  border-color: rgba(23, 21, 20, 0.3);
+  box-shadow: 0 18px 34px -16px rgba(23, 21, 20, 0.45);
+}
+
+.photo-list.is-sorting,
+.photo-list.is-sorting * {
+  cursor: grabbing;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ↑ and ↓ are text, first and last are drawn: sized to match. */
+.photo-list__actions .photo-list__move {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.photo-list__move svg {
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Saving a move: the next one waits for the server's order. */
+.photo-list[aria-busy='true'] .photo-list__grip,
+.photo-list__move[aria-disabled='true'] {
+  opacity: 0.35;
+  cursor: progress;
+}
+
+/* Phone: bigger targets for a finger. */
+@media (max-width: 560px) {
+  .photo-list__actions .photo-list__move {
+    min-width: 40px;
+    min-height: 40px;
+  }
+}
+
+/* ----------------------------------- end admin: drag to reorder (lists) -- */
+
 /* ------------------------------------------------ admin layout and tabs -- */
 
 .admin__lead {
@@ -2778,6 +2862,101 @@ html[data-lite] .nav--scrolled {
   text-transform: uppercase;
   cursor: pointer;
 }
+
+/* ---------------------------------- admin: photo description (edit) -- */
+/* app/admin/PhotoDescription.jsx, inside a gallery row. Every control is at
+   least 44px tall: she manages the gallery from her phone too. */
+
+.photo-desc {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.photo-desc__text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: rgba(23, 21, 20, 0.6);
+  overflow-wrap: anywhere;
+}
+
+.photo-desc__empty {
+  font-style: italic;
+}
+
+.photo-desc__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* 16px stops iOS zooming the page when the field takes focus. */
+.admin .photo-desc textarea {
+  font-size: 1rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.photo-desc__hint {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(23, 21, 20, 0.6);
+}
+
+.photo-desc__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.photo-desc__actions button {
+  flex: 1 1 auto;
+  min-height: 44px;
+}
+
+.photo-desc__edit,
+.photo-desc__cancel {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.photo-desc__edit {
+  justify-self: start;
+  font-size: 12px;
+}
+
+.photo-desc__cancel {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.photo-desc__edit:hover:not(:disabled),
+.photo-desc__cancel:hover:not(:disabled) {
+  border-color: var(--seal);
+  color: var(--seal);
+}
+
+.photo-desc__edit:disabled,
+.photo-desc__cancel:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* Phone: while editing, the field takes the row's full width, under the
+   thumbnail, rather than the narrow column beside it. */
+@media (max-width: 560px) {
+  .photo-list__item:has(.photo-desc--editing) .photo-list__meta {
+    flex-basis: 100%;
+  }
+}
+
+/* ------------------------------- end admin: photo description (edit) -- */
 
 @media (max-width: 560px) {
   .photo-list__item {

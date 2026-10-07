@@ -15,6 +15,7 @@ import {
   buildAltText,
   buildStoragePath,
 } from '@/lib/supabase/config'
+import { validateDescription } from '@/lib/photoDescription'
 
 /**
  * Every photo is stored as WebP. The admin form already sends one from most
@@ -151,6 +152,59 @@ export async function POST(request) {
   revalidatePath('/', 'layout')
 
   return NextResponse.json({ photo }, { status: 201 })
+}
+
+// Postgres rejects anything else in a uuid column with an error, not a miss.
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Changes a photo's description after upload: body { id, description }.
+ * Rewrites alt_text and the raw description, nothing else. The file keeps its
+ * name on purpose: storage_path is built from the description at upload, but
+ * renaming it would change the image URL, which the sitemap lists and image
+ * search has already indexed.
+ */
+export async function PATCH(request) {
+  const user = await requireArtist()
+  if (!user) {
+    return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 })
+  }
+
+  const body = await request.json().catch(() => null)
+  const id = body?.id
+  if (!id || typeof id !== 'string') {
+    return NextResponse.json({ error: 'Identifiant manquant.' }, { status: 400 })
+  }
+  if (!UUID.test(id)) {
+    return NextResponse.json({ error: 'Photo introuvable.' }, { status: 404 })
+  }
+
+  const { description, error } = validateDescription(body.description)
+  if (error) {
+    return NextResponse.json({ error }, { status: 400 })
+  }
+
+  const admin = createSupabaseAdminClient()
+
+  const { data: photo, error: updateError } = await admin
+    .from('photos')
+    .update({ alt_text: buildAltText(description), description })
+    .eq('id', id)
+    .select('id, storage_path, alt_text, description, display_order, show_on_home, home_order')
+    .maybeSingle()
+
+  if (updateError) {
+    return NextResponse.json({ error: updateError.message }, { status: 500 })
+  }
+  if (!photo) {
+    return NextResponse.json({ error: 'Photo introuvable.' }, { status: 404 })
+  }
+
+  // The alt text shows on / and /portfolio, and in the layout's transition
+  // deck on every page, so refresh them all, like an upload does.
+  revalidatePath('/', 'layout')
+
+  return NextResponse.json({ photo })
 }
 
 export async function DELETE(request) {
