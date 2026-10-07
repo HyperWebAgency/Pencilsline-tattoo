@@ -26,28 +26,14 @@ export default function HeroBranches() {
 
   const shell = { position: 'absolute', pointerEvents: 'none' };
 
-  // Anchored into the corner and running off both edges, so it reads as growing
-  // in from outside the frame — the same move as the bottom-right branch, which
-  // sits at bottom:-50 / right:-60.
-  const topLeft = {
-    ...shell,
-    top: -62,
-    left: -145,
-    // Two caps, because the headline moves in two directions and the blossoms
-    // were landing on "Alexandra — Pencilsline Tattoo".
-    //   Height — the block is vertically centred, so a short screen lifts it
-    //   into the branch's band.
-    //   Width  — the text column starts at 11.5vw, so a narrow window slides it
-    //   left, under the branch. The 133px is this box's own -145px offset less
-    //   a gap, i.e. how far it may extend before touching that column.
-    // Whichever binds first wins.
-    width:
-      'clamp(150px, min(43vw, calc(97vh - 460px), calc(clamp(24px, 11.5vw, 220px) + 133px)), 415px)',
-  };
-
   return (
     <>
-      <div aria-hidden="true" style={topLeft}>
+      {/* Anchored into the corner and running off both edges, so it reads as
+          growing in from outside the frame — the same move as the bottom-right
+          branch, which sits at bottom:-50 / right:-60. Placed and sized in
+          globals.css (.hero-branch--tl), where a media query can switch it at
+          the phone breakpoint before first paint. */}
+      <div aria-hidden="true" className="hero-branch--tl" style={shell}>
         <InkBranch
           seed={7997}
           /* Mirrors the bottom-right branch. That one grows at 3.62 rad — left

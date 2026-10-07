@@ -523,6 +523,30 @@ html[data-lite] .nav--scrolled {
    - 1120px, about the file's own width.
    On a very wide screen it moves in from the edge to stay near the text, and
    its right side, the client's arm, is washed out like the other crops. */
+/* The top-left branch (HeroBranches). On a phone, a sliver in the corner. */
+.hero-branch--tl {
+  top: -62px;
+  left: -145px;
+  width: clamp(150px, min(43vw, calc(97vh - 460px), calc(clamp(24px, 11.5vw, 220px) + 133px)), 415px);
+}
+
+/* Above a phone the offsets are fractions of the box's own width, so the same
+   53% of the drawing shows on every screen, only scaled. They used to be fixed
+   (-145px / -62px) under a width that also shrank with the window's height: on
+   a 13" laptop's short window the box fell to 150px and the fixed offset hid
+   all of it. The width now comes from the room left of the text column alone
+   (clamp(24px, 11.5vw, 220px), less a 12px gap): what shows, 0.532 of the box,
+   ends just short of "Alexandra — Pencilsline Tattoo". At 1536px wide that is
+   the 310px box at -145 / -62 it always had there. */
+@media (min-width: 640px) {
+  .hero-branch--tl {
+    --branch-w: clamp(150px, calc((clamp(24px, 11.5vw, 220px) - 12px) / 0.532), 415px);
+    width: var(--branch-w);
+    top: calc(var(--branch-w) * -0.2);
+    left: calc(var(--branch-w) * -0.468);
+  }
+}
+
 .hero__photo {
   display: none;
 }
