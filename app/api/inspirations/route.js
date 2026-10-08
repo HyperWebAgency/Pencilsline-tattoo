@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import sharp from 'sharp'
+import { PROJECT_ID } from '@/lib/projectId'
 import { createSupabaseAdminClient } from '@/lib/supabase/server'
 import {
   ALLOWED_MIME,
@@ -32,6 +33,11 @@ export async function POST(request) {
   }
   if (photo.size > MAX_UPLOAD_BYTES) return fail('Image trop lourde.')
 
+  // The request's folder, so its page (/projet/<id>) can show them together.
+  // A form loaded before that page existed sends none: by month, as before.
+  const project = form.get('project')
+  if (project != null && !PROJECT_ID.test(String(project))) return fail('Demande invalide.')
+
   let webp
   try {
     webp = await sharp(Buffer.from(await photo.arrayBuffer()), { limitInputPixels: 50_000_000 })
@@ -48,9 +54,10 @@ export async function POST(request) {
     return fail("Cette image n'a pas pu être lue. Essayez avec une autre.")
   }
 
-  // Grouped by month, so old requests are easy to clear out later.
-  const month = new Date().toISOString().slice(0, 7)
-  const path = `${month}/${crypto.randomUUID()}.webp`
+  // Grouped by month either way (a project id starts with it), so old
+  // requests are easy to clear out later.
+  const folder = project ?? new Date().toISOString().slice(0, 7)
+  const path = `${folder}/${crypto.randomUUID()}.webp`
 
   const { error } = await createSupabaseAdminClient()
     .storage.from(INSPIRATION_BUCKET)

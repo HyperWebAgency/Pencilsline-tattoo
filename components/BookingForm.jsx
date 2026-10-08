@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import SealStamp from './SealStamp';
+import { makeProjectId } from '@/lib/projectId';
 import { SEND_AS_IS_BYTES, shrinkPhoto } from '@/lib/shrinkPhoto';
 import {
   ALLOWED_MIME,
@@ -55,10 +56,11 @@ function phoneError(phone) {
  * no database, no inbox to maintain. Set NEXT_PUBLIC_FORMSPREE_ENDPOINT to the
  * form URL (https://formspree.io/f/xxxxxxxx).
  *
- * Inspiration images go first to /api/inspirations, one request each, and the
- * email carries their links: Formspree only takes attachments on paid plans.
- * They are shrunk here beforehand, as a phone photo is often past what a
- * Vercel function accepts.
+ * Inspiration images go first to /api/inspirations, one request each, into a
+ * folder of their own, and the email carries one link to the page that shows
+ * them all (app/projet/[id]): one tap for Alexandra, rather than an address
+ * per image. They are shrunk here beforehand, as a phone photo is often past
+ * what a Vercel function accepts.
  */
 export default function BookingForm() {
   const router = useRouter();
@@ -172,13 +174,19 @@ export default function BookingForm() {
     );
   };
 
-  /** Stores each image and returns its link, or null with the error shown. */
+  /**
+   * Stores the images together, in one folder for this request, and returns
+   * the link to the page that shows them (/projet/<id>): '' without images,
+   * null with the error shown.
+   */
   const uploadImages = async () => {
-    const urls = [];
+    if (!images.length) return '';
+    const project = makeProjectId();
     for (const [i, image] of images.entries()) {
       setStep(`Envoi des images (${i + 1}/${images.length})…`);
       const body = new FormData();
       body.append('photo', image.file);
+      body.append('project', project);
       const res = await fetch('/api/inspirations', { method: 'POST', body });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) {
@@ -190,9 +198,8 @@ export default function BookingForm() {
         });
         return null;
       }
-      urls.push(data.url);
     }
-    return urls;
+    return `${window.location.origin}/projet/${project}`;
   };
 
   const onSubmit = async (e) => {
@@ -234,8 +241,8 @@ export default function BookingForm() {
 
     try {
       // A bot that filled the honeypot gets nothing stored.
-      const urls = gotcha ? [] : await uploadImages();
-      if (!urls) return;
+      const photos = gotcha ? '' : await uploadImages();
+      if (photos === null) return;
       setStep('');
 
       const res = await fetch(ENDPOINT, {
@@ -248,10 +255,10 @@ export default function BookingForm() {
           emplacement: values.placement.trim(),
           taille: values.size_cm.trim(),
           projet: values.project.trim(),
-          // One field per image: image_1, image_2… Formspree's e-mail drops the
-          // line breaks inside a field, which glued the links into one URL
-          // that opened nothing. On their own rows, each one opens its image.
-          ...Object.fromEntries(urls.map((url, i) => [`image_${i + 1}`, url])),
+          // One short link to a page on the site with every image, large. The
+          // images' own addresses were long and, several in a field, Formspree's
+          // e-mail ran them together into one link that opened nothing.
+          photos: photos || undefined,
           _gotcha: gotcha,
           // Shown as the email subject in the artist's inbox.
           _subject: `Demande de RDV — ${values.name.trim()}`,
