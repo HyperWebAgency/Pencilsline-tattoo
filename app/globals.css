@@ -68,6 +68,12 @@ html[data-nav-hidden] .nav:not(:focus-within):not(:has(.nav__overlay)) {
   transform: translateY(calc(-100% - 12px));
 }
 
+/* In the admin (Navbar's `quiet`): scrolls away with the page, never takes the
+   paper backing, the brush rule or the mark. */
+.nav--quiet {
+  position: absolute;
+}
+
 .nav--scrolled {
   background-color: rgba(243, 239, 229, 0.8);
   -webkit-backdrop-filter: blur(9px);

@@ -125,16 +125,22 @@ export default function Navbar() {
     };
   }, [open]);
 
+  // The admin (and its login) is a tool, not the site: there the bar is just
+  // its links. No paper backing or brush rule on scroll, no mark coming in,
+  // and it scrolls away with the page rather than floating over the forms.
+  const quiet = pathname?.startsWith('/admin');
+
   const classes = [
     'nav',
+    quiet && 'nav--quiet',
     // Not scrolled-styled while the menu is open: its backdrop-filter, like a
     // transform, makes the header the containing block of fixed children, so
     // the overlay shrank to the height of the bar. The menu covers the page
     // anyway, and it now looks the same whatever the scroll position.
-    scrolled && !open && 'nav--scrolled',
+    scrolled && !open && !quiet && 'nav--scrolled',
     // The logo comes in with the paper backing, on scroll, and stays over the
     // menu if it is opened from there.
-    scrolled && 'nav--branded',
+    scrolled && !quiet && 'nav--branded',
   ];
 
   return (
