@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 /** Below this many reviews the row stands still: looping one or two would
  *  just parade the same card past, over and over. */
@@ -11,6 +11,31 @@ const MIN_CARDS = 8;
 /** Crawl speed. The duration scales with the card count, so the pace is the
  *  same however many reviews there are. */
 const SECONDS_PER_CARD = 7;
+
+/** Phones swipe the row by hand instead of watching it crawl. The same query
+ *  as the phone block of the reviews rules in globals.css: keep them equal. */
+const PHONE = '(max-width: 640px)';
+
+function onPhoneChange(notify) {
+  const query = window.matchMedia(PHONE);
+  query.addEventListener('change', notify);
+  return () => query.removeEventListener('change', notify);
+}
+const isPhone = () => window.matchMedia(PHONE).matches;
+// The server cannot know the screen. It sends the full loop, and on a phone
+// the CSS already hides the echoes and stops the crawl before this runs.
+const isPhoneOnServer = () => false;
+
+/** Where the swiped row scrolls to for each card: its left edge on the
+ *  gutter (the scroll padding), or as far as the row goes for the last ones. */
+function cardStops(viewport) {
+  const gutter = parseFloat(getComputedStyle(viewport).scrollPaddingLeft) || 0;
+  const end = viewport.scrollWidth - viewport.clientWidth;
+  const origin = viewport.getBoundingClientRect().left - viewport.scrollLeft;
+  return Array.from(viewport.querySelectorAll('.reviews__group li:not([aria-hidden])'), (li) =>
+    Math.max(0, Math.min(end, li.getBoundingClientRect().left - origin - gutter))
+  );
+}
 
 /** French spacing: a narrow no-break space keeps "!!" off a line of its own. */
 const fr = (text) => text.replace(/\s+([!?;])/g, ' $1');
@@ -122,6 +147,13 @@ function Review({ review, index, long, open, echo, onToggle }) {
  * is off screen. Under prefers-reduced-motion, or in lite mode (lib/lite.js),
  * it does not move at all and scrolls by hand instead.
  *
+ * On a phone it never crawls. Each review shows once, in a row the visitor
+ * swipes card by card (native scrolling with scroll-snap, so the momentum and
+ * the page's vertical scroll are the phone's own), the next card peeking in,
+ * and a dot per review under it marks where they are. The CSS decides all of
+ * that, so the row is right before hydration; here, the echoes are then left
+ * out of the page altogether, and the dots follow the scroll.
+ *
  * Long reviews are clamped to five lines, with « Lire la suite ». Whether a
  * review is long is measured, not guessed from its length: the card's width
  * and the font decide where the lines break.
@@ -149,10 +181,53 @@ export default function ReviewCarousel({ reviews }) {
     return () => io.disconnect();
   }, []);
 
+  const phone = useSyncExternalStore(onPhoneChange, isPhone, isPhoneOnServer);
+  // The phone row's current card, for its dots.
+  const [current, setCurrent] = useState(0);
+
   const loop = reviews.length >= LOOP_FROM;
-  const repeats = loop ? Math.ceil(MIN_CARDS / reviews.length) : 1;
+  // A phone's row never loops, so it needs no echoes: each review once.
+  const echoes = loop && !phone;
+  const repeats = echoes ? Math.ceil(MIN_CARDS / reviews.length) : 1;
   const cards = Array.from({ length: repeats }, () => reviews).flat();
-  const copies = loop ? [0, 1] : [0];
+  const copies = echoes ? [0, 1] : [0];
+
+  // Follows the swipe, once a frame at most, and only on a phone: the card
+  // whose stop is nearest the scroll position is the current one.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!phone || !root) return undefined;
+
+    let frame = 0;
+    const follow = () => {
+      frame = 0;
+      const stops = cardStops(root);
+      const at = root.scrollLeft;
+      let nearest = 0;
+      stops.forEach((stop, i) => {
+        if (Math.abs(stop - at) < Math.abs(stops[nearest] - at)) nearest = i;
+      });
+      setCurrent(nearest);
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(follow);
+    };
+
+    follow();
+    root.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      root.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [phone]);
+
+  // A tapped dot glides the row to its card, or jumps under reduced motion.
+  const showCard = (i) => {
+    const root = rootRef.current;
+    if (!root) return;
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    root.scrollTo({ left: cardStops(root)[i], behavior: still ? 'auto' : 'smooth' });
+  };
 
   useEffect(() => {
     const root = rootRef.current;
@@ -177,42 +252,61 @@ export default function ReviewCarousel({ reviews }) {
   }, [reviews]);
 
   return (
-    <div
-      className={`reviews__viewport${loop ? ' is-looping' : ''}`}
-      ref={rootRef}
-      onFocus={(e) => setKeyboard(e.target.matches(':focus-visible'))}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setKeyboard(false);
-      }}
-    >
+    <>
       <div
-        className={`reviews__track${open || keyboard || offscreen ? ' is-paused' : ''}`}
-        style={{ '--reviews-duration': `${cards.length * SECONDS_PER_CARD}s` }}
+        className={`reviews__viewport${loop ? ' is-looping' : ''}`}
+        ref={rootRef}
+        onFocus={(e) => setKeyboard(e.target.matches(':focus-visible'))}
+        onBlur={(e) => {
+          if (!e.currentTarget.contains(e.relatedTarget)) setKeyboard(false);
+        }}
       >
-        {copies.map((copy) => (
-          <ul className="reviews__group" key={copy}>
-            {cards.map((review, i) => {
-              const key = `${copy}-${i}`;
-              const index = i % reviews.length;
-              // Each review is announced once. Every later appearance — the
-              // repeats and the whole second copy — is only there to be seen.
-              const echo = copy > 0 || i >= reviews.length;
-              return (
-                <li key={key} aria-hidden={echo || undefined}>
-                  <Review
-                    review={review}
-                    index={index}
-                    long={long.has(String(index))}
-                    open={open === key}
-                    echo={echo}
-                    onToggle={() => setOpen((cur) => (cur === key ? null : key))}
-                  />
-                </li>
-              );
-            })}
-          </ul>
-        ))}
+        <div
+          className={`reviews__track${open || keyboard || offscreen ? ' is-paused' : ''}`}
+          style={{ '--reviews-duration': `${cards.length * SECONDS_PER_CARD}s` }}
+        >
+          {copies.map((copy) => (
+            <ul className="reviews__group" key={copy}>
+              {cards.map((review, i) => {
+                const key = `${copy}-${i}`;
+                const index = i % reviews.length;
+                // Each review is announced once. Every later appearance — the
+                // repeats and the whole second copy — is only there to be seen.
+                const echo = copy > 0 || i >= reviews.length;
+                return (
+                  <li key={key} aria-hidden={echo || undefined}>
+                    <Review
+                      review={review}
+                      index={index}
+                      long={long.has(String(index))}
+                      open={open === key}
+                      echo={echo}
+                      onToggle={() => setOpen((cur) => (cur === key ? null : key))}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Phone only (the CSS hides them elsewhere): one dot per review, the
+          current one in seal red, a tap to go to it. */}
+      {reviews.length > 1 && (
+        <div className="reviews__dots" role="group" aria-label="Choisir un avis">
+          {reviews.map((review, i) => (
+            <button
+              key={review.id ?? i}
+              type="button"
+              className="reviews__dot"
+              aria-label={`Avis ${i + 1} sur ${reviews.length}`}
+              aria-current={current === i || undefined}
+              onClick={() => showCard(i)}
+            />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
