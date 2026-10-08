@@ -248,8 +248,10 @@ export default function BookingForm() {
           emplacement: values.placement.trim(),
           taille: values.size_cm.trim(),
           projet: values.project.trim(),
-          // One link per line; each opens the image.
-          images: urls.length ? urls.join('\n') : undefined,
+          // One field per image: image_1, image_2… Formspree's e-mail drops the
+          // line breaks inside a field, which glued the links into one URL
+          // that opened nothing. On their own rows, each one opens its image.
+          ...Object.fromEntries(urls.map((url, i) => [`image_${i + 1}`, url])),
           _gotcha: gotcha,
           // Shown as the email subject in the artist's inbox.
           _subject: `Demande de RDV — ${values.name.trim()}`,
