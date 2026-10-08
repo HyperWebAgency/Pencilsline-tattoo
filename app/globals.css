@@ -5132,3 +5132,429 @@ html[data-lite] .process__card {
   letter-spacing: 0.18em;
   color: rgba(23, 21, 20, 0.45);
 }
+
+/* ------------------------------------------------------------ admin guide -- */
+
+/* The admin's tutorial (app/admin/AdminGuide). Large on purpose: read on a
+   phone, by someone who has never used the admin. Full screen there, a card
+   on a computer. */
+.guide-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  min-height: 48px;
+  padding: 8px 20px 8px 8px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  border-radius: 999px;
+  background: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.guide-open span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--seal);
+  color: #fff;
+}
+
+.guide-open:hover,
+.guide-open:focus-visible {
+  border-color: var(--ink);
+}
+
+.guide {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.guide::backdrop {
+  background: rgba(23, 21, 20, 0.6);
+}
+
+.guide__card {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 18px 20px 0;
+}
+
+@media (min-width: 700px) {
+  .guide {
+    width: min(680px, 92vw);
+    /* fit-content, not auto: a modal dialog is pinned top and bottom, and
+       auto would stretch it to the window. */
+    height: fit-content;
+    max-height: 92dvh;
+    margin: auto;
+    border-radius: 18px;
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+  }
+
+  .guide__card {
+    min-height: 0;
+    padding: 28px 40px 0;
+  }
+}
+
+.guide__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.guide__count {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(23, 21, 20, 0.62);
+}
+
+.guide__close {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid rgba(23, 21, 20, 0.22);
+  border-radius: 999px;
+  background: transparent;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.guide__step {
+  flex: 1;
+  animation: guide-in 0.25s ease both;
+}
+
+@keyframes guide-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guide__step {
+    animation: none;
+  }
+}
+
+.guide__title {
+  margin: 22px 0 20px;
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.1rem, 7vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.1;
+  outline: none;
+}
+
+.guide__body {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+.guide__body p {
+  margin: 0 0 14px;
+}
+
+.guide__body ul,
+.guide__body ol {
+  margin: 0 0 14px;
+  padding-left: 1.3em;
+}
+
+.guide__body li {
+  margin-bottom: 10px;
+}
+
+.guide__body li::marker {
+  color: var(--seal);
+  font-weight: 600;
+}
+
+.guide__body strong {
+  font-weight: 650;
+}
+
+.guide__dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.guide__dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(23, 21, 20, 0.2);
+}
+
+.guide__dots .is-on {
+  background: var(--seal);
+}
+
+/* Stays at the foot of the screen while a long step scrolls. */
+.guide__nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 14px 0 20px;
+  background: var(--paper);
+}
+
+.guide__prev,
+.guide__next {
+  min-height: 58px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.guide__prev {
+  padding: 0 22px;
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  background: transparent;
+  color: var(--ink);
+}
+
+.guide__next {
+  padding: 0 30px;
+  border: none;
+  background: var(--seal);
+  color: #fff;
+  font-weight: 600;
+}
+
+.guide__next:focus-visible {
+  background: var(--seal-dark);
+}
+
+/* Only with a mouse: a tap would leave the button dark on the next step. */
+@media (hover: hover) {
+  .guide__next:hover {
+    background: var(--seal-dark);
+  }
+}
+
+/* The drawings of the admin, one per step. */
+.guide-mock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 22px;
+  padding: 16px;
+  border: 1px solid rgba(23, 21, 20, 0.14);
+  border-radius: 14px;
+  background: #fff;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.guide-mock--tabs {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.guide-mock__tab {
+  padding: 8px 14px;
+  border: 1px solid rgba(23, 21, 20, 0.2);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.guide-mock__tab small {
+  font-weight: 400;
+  color: rgba(23, 21, 20, 0.55);
+}
+
+.guide-mock__tab.is-on {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.guide-mock__tab.is-on small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.guide-mock__drop {
+  padding: 22px 14px;
+  border: 2px dashed rgba(23, 21, 20, 0.28);
+  border-radius: 10px;
+  text-align: center;
+  color: rgba(23, 21, 20, 0.7);
+}
+
+.guide-mock__label {
+  font-weight: 600;
+  color: rgba(23, 21, 20, 0.7);
+}
+
+.guide-mock__field {
+  padding: 10px 12px;
+  border: 1px solid rgba(23, 21, 20, 0.22);
+  border-radius: 8px;
+}
+
+.guide-mock__field--tall {
+  min-height: 64px;
+}
+
+.guide-mock__field--short {
+  align-self: flex-start;
+  min-width: 90px;
+}
+
+.guide-mock__button {
+  align-self: flex-start;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--seal);
+  color: #fff;
+  font-weight: 600;
+}
+
+.guide-mock__button--light {
+  border: 1px solid rgba(23, 21, 20, 0.25);
+  background: #fff;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.guide-mock--row,
+.guide-mock__line {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.guide-mock__line {
+  display: flex;
+}
+
+.guide-mock__line .guide-mock__button {
+  margin-left: auto;
+}
+
+.guide-mock__grip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(23, 21, 20, 0.07);
+  font-weight: 700;
+}
+
+.guide-mock__grip i {
+  font-style: normal;
+  color: rgba(23, 21, 20, 0.45);
+}
+
+.guide-mock__thumb {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #d8cfc0, #a89b88);
+}
+
+.guide-mock__thumb--video {
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.guide-mock__text {
+  flex: 1;
+  min-width: 140px;
+}
+
+.guide-mock__badge {
+  display: block;
+  margin-top: 4px;
+  color: var(--seal);
+  font-weight: 600;
+}
+
+.guide-mock__arrows {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.guide-mock__arrows b {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(23, 21, 20, 0.22);
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.guide-mock__avatar {
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9b8a3, #8f7f6b);
+}
+
+.guide-mock__stars {
+  display: block;
+  font-style: normal;
+  color: var(--seal-bright);
+  letter-spacing: 0.1em;
+}
+
+.guide-mock--mail span {
+  display: block;
+}
+
+.guide-mock--mail b {
+  display: inline-block;
+  min-width: 92px;
+  color: rgba(23, 21, 20, 0.55);
+  font-weight: 600;
+}
+
+.guide-mock__subject {
+  font-weight: 700;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(23, 21, 20, 0.1);
+}
+
+.guide-mock--mail u {
+  color: #1a56c4;
+  overflow-wrap: anywhere;
+}

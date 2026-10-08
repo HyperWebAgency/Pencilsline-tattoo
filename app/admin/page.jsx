@@ -1,8 +1,15 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getReviewCount } from '@/lib/settings'
-import { MAX_GALLERY_PHOTOS, MAX_HOME_PHOTOS, MAX_REVIEWS } from '@/lib/supabase/config'
+import {
+  MAX_GALLERY_PHOTOS,
+  MAX_HOME_PHOTOS,
+  MAX_REVIEWS,
+  STUDIO_ARTIST,
+  STUDIO_EMAIL,
+} from '@/lib/supabase/config'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
+import AdminGuide from './AdminGuide'
 import HomeCarousel from './HomeCarousel'
 import UploadForm from './UploadForm'
 import PhotoList from './PhotoList'
@@ -93,6 +100,11 @@ export default async function AdminPage({ searchParams }) {
             Ici, vous changez les photos, les vidéos et les avis Google du
             site. Chaque changement est en ligne en quelques secondes.
           </p>
+          {/* Opens by itself until the account has seen it once. */}
+          <AdminGuide
+            firstTime={!user.user_metadata?.admin_guide_seen}
+            name={user.email === STUDIO_EMAIL ? STUDIO_ARTIST : null}
+          />
         </div>
         <AccountBar email={user.email} />
       </header>
