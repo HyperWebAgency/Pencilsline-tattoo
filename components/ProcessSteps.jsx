@@ -312,7 +312,7 @@ export default function ProcessSteps() {
           <p className="process__sub">
             Mon univers tourne autour de la ligne, du mouvement et du geste du
             pinceau, dans l&apos;esprit de l&apos;encre de Chine. Graphique,
-            fineline, brush ou abstrait, souvent d&apos;inspiration japonaise&nbsp;:
+            fineline, brush, effet fumée ou abstrait, souvent d&apos;inspiration japonaise&nbsp;:
             chaque tatouage est une pièce unique, composée pour ton corps.
           </p>
           <div className="process__actions">

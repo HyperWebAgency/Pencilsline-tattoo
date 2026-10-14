@@ -121,7 +121,7 @@ export default async function Page() {
 
           {/* An h2, not a <p>: it carries "tatouage" and "Montpellier" for search. */}
           <h2 className="hero__sub">
-            Tatouage à Montpellier, fineline, graphique, brush et abstrait.
+            Tatouage à Montpellier, fineline, graphique, brush, effet fumée et abstrait.
             L&apos;esprit de l&apos;encre de Chine, avec une influence japonaise.
           </h2>
 

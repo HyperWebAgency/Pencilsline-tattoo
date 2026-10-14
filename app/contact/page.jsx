@@ -29,7 +29,7 @@ export const metadata = {
   // Montpellier, not the shop's town: the site is out to rank there. The real
   // address stays in the page and its schema.
   title: `Contact & rendez-vous — ${STUDIO_NAME}, ${STUDIO_CITY}`,
-  description: `Prendre rendez-vous avec ${STUDIO_ARTIST}, tatoueuse à ${STUDIO_CITY} : tatouage graphique, fineline, brush et abstrait d'inspiration japonaise. Décrivez votre projet, je vous réponds par e-mail.`,
+  description: `Prendre rendez-vous avec ${STUDIO_ARTIST}, tatoueuse à ${STUDIO_CITY} : tatouage graphique, fineline, brush, effet fumée et abstrait d'inspiration japonaise. Décrivez votre projet, je vous réponds par e-mail.`,
   alternates: { canonical: '/contact' },
 }
 
@@ -47,7 +47,7 @@ const schema = {
     jobTitle: 'Tatoueuse',
     sameAs: [STUDIO_INSTAGRAM, STUDIO_FACEBOOK, STUDIO_GOOGLE_URL],
   },
-  description: `Tatouage graphique, fineline, brush et abstrait par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
+  description: `Tatouage graphique, fineline, brush, effet fumée et abstrait par ${STUDIO_ARTIST} au studio ${VENUE_NAME}, ${STUDIO_ADDRESS.city}, près de ${STUDIO_CITY}.`,
   address: {
     '@type': 'PostalAddress',
     streetAddress: STUDIO_ADDRESS.street,

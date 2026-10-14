@@ -42,7 +42,7 @@ const QUESTIONS = [
   },
   {
     q: 'Quels styles de tatouage proposes-tu à Montpellier ?',
-    a: "Les dessins se font dans mon style : du tatouage graphique, fineline, brush et abstrait, souvent d'inspiration japonaise, dans l'esprit de l'encre de Chine, avec une importance particulière donnée au travail de la ligne. Je réalise des petits, moyens et plus gros projets, mais je ne fais ni réalisme ni copie : une inspiration reste une base de travail. Pour une demande simple (cœur, phrase, symbole…), je peux réaliser ce que tu souhaites. Regarde bien mon travail avant de m'écrire.",
+    a: "Les dessins se font dans mon style : du tatouage graphique, fineline, brush, effet fumée et abstrait, souvent d'inspiration japonaise, dans l'esprit de l'encre de Chine, avec une importance particulière donnée au travail de la ligne. Je réalise des petits, moyens et plus gros projets, mais je ne fais ni réalisme ni copie : une inspiration reste une base de travail. Pour une demande simple (cœur, phrase, symbole…), je peux réaliser ce que tu souhaites. Regarde bien mon travail avant de m'écrire.",
   },
   {
     q: 'Est-ce que je peux me faire tatouer un flash ?',

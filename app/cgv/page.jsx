@@ -122,7 +122,7 @@ const sections = [
     body: (
       <>
         <p>
-          Alexandra dessine dans son style&nbsp;: tatouage graphique, fineline, brush et abstrait,
+          Alexandra dessine dans son style&nbsp;: tatouage graphique, fineline, brush, effet fumée et abstrait,
           souvent d’inspiration japonaise, dans l’esprit de l’encre de Chine, avec une attention
           particulière au travail de la ligne. Elle réalise des petits, moyens et plus gros
           projets. Pour une demande simple (cœur, phrase, symbole…), elle peut réaliser ce que

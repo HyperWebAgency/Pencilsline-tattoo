@@ -35,14 +35,14 @@ export async function GET() {
 
   const body = `# ${STUDIO_NAME} — ${STUDIO_ARTIST}, tatoueuse à ${STUDIO_CITY}
 
-> ${STUDIO_ARTIST} (${STUDIO_NAME}) est tatoueuse à ${STUDIO_CITY} : tatouage graphique, fineline, brush et abstrait d'inspiration japonaise, dans l'esprit de l'encre de Chine. Chaque pièce est unique, dessinée pour une seule personne, au studio ${VENUE_NAME} de ${STUDIO_ADDRESS.city}, aux portes de ${STUDIO_CITY}.
+> ${STUDIO_ARTIST} (${STUDIO_NAME}) est tatoueuse à ${STUDIO_CITY} : tatouage graphique, fineline, brush, effet fumée et abstrait d'inspiration japonaise, dans l'esprit de l'encre de Chine. Chaque pièce est unique, dessinée pour une seule personne, au studio ${VENUE_NAME} de ${STUDIO_ADDRESS.city}, aux portes de ${STUDIO_CITY}.
 
-In English: ${STUDIO_ARTIST} (${STUDIO_NAME}) is a tattoo artist in ${STUDIO_CITY}, France, working in graphic, fineline, brush and abstract styles with a Japanese influence. She tattoos at ${VENUE_NAME} in ${STUDIO_ADDRESS.city}, on the edge of ${STUDIO_CITY}. The site is in French.
+In English: ${STUDIO_ARTIST} (${STUDIO_NAME}) is a tattoo artist in ${STUDIO_CITY}, France, working in graphic, fineline, brush, smoke-effect and abstract styles with a Japanese influence. She tattoos at ${VENUE_NAME} in ${STUDIO_ADDRESS.city}, on the edge of ${STUDIO_CITY}. The site is in French.
 
 ## L'essentiel
 
 - Artiste : ${LEGAL_NAME}, tatoueuse indépendante, à son compte depuis 2018.
-- Styles : graphique, fineline, brush et abstrait, souvent d'inspiration japonaise, avec une attention particulière au travail de la ligne. Petits, moyens et grands projets ; flashs en exemplaire unique. Pas de réalisme, pas de copie.
+- Styles : graphique, fineline, brush, effet fumée et abstrait, souvent d'inspiration japonaise, avec une attention particulière au travail de la ligne. Petits, moyens et grands projets ; flashs en exemplaire unique. Pas de réalisme, pas de copie.
 - Adresse : ${address} (${STUDIO_CITY}). ${STUDIO_ACCESS.join('. ')}.
 - Horaires : ${STUDIO_HOURS.map((h) => `${h.days.toLowerCase()} : ${h.time.toLowerCase()}`).join(' ; ')}.
 - Rendez-vous : par le formulaire de la page Contact, par e-mail ou au salon. Tarif sur devis ; un acompte réserve la date.

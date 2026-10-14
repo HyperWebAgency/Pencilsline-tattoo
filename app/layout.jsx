@@ -37,7 +37,7 @@ const sealFace = Roboto_Slab({
 
 const TITLE = 'Tatouage à Montpellier, fineline, graphique, brush et abstrait';
 const DESCRIPTION =
-  "Tatouage graphique, fineline, brush et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
+  "Tatouage graphique, fineline, brush, effet fumée et abstrait à Montpellier. L'esprit de l'encre de Chine, une influence japonaise.";
 
 export const metadata = {
   // Required for the share card: og:image must be an absolute URL, and this is
