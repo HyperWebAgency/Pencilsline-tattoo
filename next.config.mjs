@@ -20,6 +20,28 @@ const nextConfig = {
     ];
   },
 
+  // Browser protections on every page (HSTS comes from Vercel):
+  // - no other site may show these pages in a frame, so nobody can lay a
+  //   trap over /admin and make her click « Supprimer » unawares;
+  // - files are taken for what they're served as, never sniffed;
+  // - other sites get the origin at most, never a path such as /projet/<id>.
+  //   Formspree's domain check only needs the origin;
+  // - no camera, microphone or location.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'none'" },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ];
+  },
+
   images: {
     // Portfolio images are served from Supabase Storage. Uses remotePatterns
     // (images.domains is deprecated in Next 16).
