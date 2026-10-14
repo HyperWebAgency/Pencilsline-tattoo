@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { createSupabaseBrowserClient } from '@/lib/supabase/client'
@@ -24,6 +25,16 @@ export default function LoginPage() {
 
     if (signInError) {
       setError('Email ou mot de passe incorrect.')
+      setPending(false)
+      return
+    }
+
+    // A real account that isn't on the admin list (public.admins): /admin
+    // would send it straight back here, so say so and close the session.
+    const { data: isAdmin } = await supabase.rpc('is_admin')
+    if (isAdmin !== true) {
+      await supabase.auth.signOut()
+      setError('Ce compte n’a pas accès à l’administration.')
       setPending(false)
       return
     }
@@ -62,6 +73,10 @@ export default function LoginPage() {
         <button type="submit" disabled={pending}>
           {pending ? 'Connexion…' : 'Se connecter'}
         </button>
+
+        <Link className="admin-login__link" href="/admin/mot-de-passe-oublie">
+          Mot de passe oublié&nbsp;?
+        </Link>
       </form>
     </main>
   )

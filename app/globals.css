@@ -5564,3 +5564,42 @@ html[data-lite] .process__card {
   color: #1a56c4;
   overflow-wrap: anywhere;
 }
+
+/* ------------------------------------------------- password reset pages -- */
+
+/* « Mot de passe oublié » and « Nouveau mot de passe », on the login card. */
+.admin-login__text {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(23, 21, 20, 0.8);
+}
+
+.admin-login__link {
+  justify-self: start;
+  padding: 6px 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+.admin-login__link:hover,
+.admin-login__link:focus-visible {
+  color: var(--seal);
+}
+
+.admin-login__check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* Not the full-width box the login's other inputs get. */
+.admin-login .admin-login__check input {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  accent-color: var(--seal);
+}
