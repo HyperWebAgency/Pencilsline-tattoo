@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { getAdmin } from '@/lib/admin'
 import { getReviewCount } from '@/lib/settings'
 import {
   MAX_GALLERY_PHOTOS,
@@ -54,9 +55,7 @@ export default async function AdminPage({ searchParams }) {
 
   // Server-side check on every request. The login UI is cosmetic; this and
   // RLS are the real boundary.
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAdmin(supabase)
 
   if (!user) {
     redirect('/admin/login')

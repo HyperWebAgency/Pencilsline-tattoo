@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { getAdmin } from '@/lib/admin'
 import {
   createSupabaseAdminClient,
   createSupabaseServerClient,
@@ -10,9 +11,7 @@ const MAX_REVIEW_COUNT = 100000
 
 export async function POST(request) {
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAdmin(supabase)
 
   if (!user) {
     return NextResponse.json({ error: 'Non autorisé.' }, { status: 401 })

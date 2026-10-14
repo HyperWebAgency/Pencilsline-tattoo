@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { getAdmin } from '@/lib/admin'
 import {
   createSupabaseAdminClient,
   createSupabaseServerClient,
@@ -8,9 +9,7 @@ import { VIDEO_BUCKET, VIDEO_MIME } from '@/lib/supabase/config'
 
 async function requireArtist() {
   const supabase = await createSupabaseServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAdmin(supabase)
   return user
 }
 
