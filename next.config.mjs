@@ -43,6 +43,13 @@ const nextConfig = {
   },
 
   images: {
+    // Keep optimized images 31 days, not the 4-hour default. Supabase serves
+    // them with max-age=3600, so each width was re-transformed (and billed
+    // against Vercel's 5K/month Hobby quota) every few hours. Safe because
+    // uploads never overwrite: every file gets a random name, so a new photo
+    // always has a new URL.
+    minimumCacheTTL: 2678400,
+
     // Portfolio images are served from Supabase Storage. Uses remotePatterns
     // (images.domains is deprecated in Next 16).
     remotePatterns: [
