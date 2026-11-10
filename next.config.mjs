@@ -14,6 +14,10 @@ const nextConfig = {
       { source: '/reservation-tatouage-montpellier', destination: '/contact', permanent: true },
       { source: '/galerie-tatouages', destination: '/portfolio', permanent: true },
       { source: '/dessins-flashs-tatouages', destination: '/portfolio', permanent: true },
+      // An older name of the same flashs page, still known to Google (Search
+      // Console, Nov. 2026). The old blog's /blog and /feed stay 404: the new
+      // site has no counterpart, and Google drops them by itself.
+      { source: '/dessins-et-flashs', destination: '/portfolio', permanent: true },
       // Two placeholder posts the site builder shipped with.
       { source: '/my-first-blog-postdf896e93', destination: '/', permanent: true },
       { source: '/10-reasons-you-should-love-blogging5659edd9', destination: '/', permanent: true },
