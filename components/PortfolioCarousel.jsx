@@ -10,7 +10,9 @@ import Lightbox from './Lightbox';
  * it from serving the 3000px originals, which cost far more to decode and
  * downscale each frame than they do to download.
  */
-const SLIDE_SIZES = '(max-width: 640px) 80vw, (max-width: 1200px) 30vw, 400px';
+// Past the 1536px laptop the site scales up (html font-size): a slide is then
+// about a quarter of the window, not 400px.
+const SLIDE_SIZES = '(max-width: 640px) 80vw, (max-width: 1200px) 30vw, (min-width: 1537px) 26vw, 400px';
 
 /** Empty slots until real photos are passed in — no drawn placeholders. */
 const DEFAULT_COUNT = 6;

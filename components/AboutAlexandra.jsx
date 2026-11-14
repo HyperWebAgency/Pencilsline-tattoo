@@ -103,7 +103,7 @@ export default function AboutAlexandra() {
                 src="/about/alexandra-tatoueuse-brush-japonais-lemontattoo-castelnau-le-lez.webp"
                 alt="Portrait d'Alexandra, tatoueuse spécialisée dans le brush japonais et le fineline, chez Lemon Tattoo à Castelnau-le-Lez"
                 fill
-                sizes="(max-width: 640px) 28vw, 200px"
+                sizes="(max-width: 640px) 28vw, (min-width: 1537px) 14vw, 200px"
               />
             </figure>
             <Bloom id="about-bloom-a" seed={11} />
@@ -115,7 +115,7 @@ export default function AboutAlexandra() {
                 src="/about/tatoueuse-montpellier-alexandra-en-seance.webp"
                 alt="Alexandra, tatoueuse fineline et graphique, pendant une séance de tatouage à l'atelier de Castelnau-le-Lez, près de Montpellier"
                 fill
-                sizes="(max-width: 640px) 28vw, 216px"
+                sizes="(max-width: 640px) 28vw, (min-width: 1537px) 14vw, 216px"
               />
             </figure>
           </div>
@@ -126,7 +126,7 @@ export default function AboutAlexandra() {
                 src="/about/tatouage-montpellier-dragon-encre-de-chine-bras.webp"
                 alt="Tatouage brush d'inspiration chinoise réalisé par Alexandra : dragon à l'encre de Chine sur le bras"
                 fill
-                sizes="(max-width: 640px) 28vw, 216px"
+                sizes="(max-width: 640px) 28vw, (min-width: 1537px) 14vw, 216px"
               />
             </figure>
             <Bloom id="about-bloom-b" seed={27} />
