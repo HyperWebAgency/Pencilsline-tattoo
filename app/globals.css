@@ -1657,7 +1657,10 @@ html[data-lite] .nav--scrolled {
   --pf-arrow-x: calc(var(--pf-step) - var(--pf-slide-w) / 2);
   --pf-ease: cubic-bezier(0.22, 0.68, 0.24, 1);
 
-  padding: clamp(4rem, 9vw, 7.25rem) 0 clamp(3.5rem, 8vw, 6.25rem);
+  /* Section rhythm (desktop): about 120px between one section's content and
+     the next, at the 1536px laptop (scaled up past it with the rem base).
+     The minimums are the phone's values, unchanged. */
+  padding: clamp(4rem, 10vw, 9.125rem) 0 clamp(3.5rem, 4vw, 3.75rem);
   overflow: hidden;
 }
 
@@ -3160,7 +3163,8 @@ html[data-lite] .nav--scrolled {
    row of cards runs edge to edge, since it crawls past. */
 .reviews {
   --reviews-gap: clamp(0.875rem, 2vw, 1.375rem);
-  padding: clamp(3.5rem, 8vw, 6.875rem) 0 clamp(2.5rem, 6vw, 5rem);
+  /* With the gallery's bottom padding, the section rhythm's ~120px. */
+  padding: clamp(3.5rem, 4vw, 3.75rem) 0 clamp(2.5rem, 6vw, 5rem);
 }
 
 /* 1200px of content plus the padding, as in the process and FAQ sections,
@@ -4478,7 +4482,8 @@ html[data-lite] .process__card {
 /* ---------------------------------------------------------------- faq -- */
 
 .faq {
-  padding: clamp(3.5rem, 8vw, 6.875rem) clamp(1rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem);
+  /* The section rhythm's ~120px below « Univers » (was 154px). */
+  padding: clamp(3.5rem, 5vw, 4.75rem) clamp(1rem, 4vw, 3rem) clamp(1.5rem, 4vw, 3rem);
 }
 
 /* The process section's layout, so the two read as a pair: the heading on
